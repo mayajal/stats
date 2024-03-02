@@ -92,3 +92,4 @@ plt.scatter(df['log_CONC'], df['predicted_logits'], label='Logit Model')
 plt.title('Logit Model: log10(CONC) vs Mortality proportion logits')
 sns.regplot(x='log_CONC', y='predicted_logits',data=df)  # Add regression line
 plt.show()
+
