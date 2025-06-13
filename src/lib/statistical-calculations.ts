@@ -2,6 +2,7 @@
 import type { DataRow, VariableMapping, AnalysisResult, AnalysisType } from '@/types';
 
 // Helper function to get numeric values and filter out non-numbers or nulls
+// This function is not directly used in the new ANOVA logic but kept for potential future use or other functions.
 function getNumericDependentValues(data: DataRow[], depVarKey: string): number[] {
   return data
     .map(row => row[depVarKey])
@@ -10,7 +11,6 @@ function getNumericDependentValues(data: DataRow[], depVarKey: string): number[]
 
 function calculateANOVA(data: DataRow[], variables: VariableMapping): AnalysisResult {
   const depVarKey = variables.dependentVariable;
-  // For one-way ANOVA, use the first selected independent variable
   const indepVarKey = variables.independentVariables && variables.independentVariables.length > 0 ? variables.independentVariables[0] : null;
 
   if (!depVarKey || !indepVarKey) {
@@ -21,41 +21,42 @@ function calculateANOVA(data: DataRow[], variables: VariableMapping): AnalysisRe
     };
   }
 
-  const groups: Record<string, number[]> = {};
-  let allNumericDependentValues: number[] = [];
+  // Prepare data in the format: { [groupName: string]: number[] }
+  const groupedData: { [key: string]: number[] } = {};
+  let allNumericValuesFlat: number[] = [];
 
   data.forEach(row => {
-    const groupVal = String(row[indepVarKey]); // Independent variable forms the groups
-    const depValue = row[depVarKey];
+    const groupName = String(row[indepVarKey]);
+    const value = row[depVarKey];
 
-    if (typeof depValue === 'number' && !isNaN(depValue)) {
-      if (!groups[groupVal]) {
-        groups[groupVal] = [];
+    if (typeof value === 'number' && !isNaN(value)) {
+      if (!groupedData[groupName]) {
+        groupedData[groupName] = [];
       }
-      groups[groupVal].push(depValue);
-      allNumericDependentValues.push(depValue);
+      groupedData[groupName].push(value);
+      allNumericValuesFlat.push(value);
     }
   });
 
-  if (allNumericDependentValues.length === 0) {
+  if (allNumericValuesFlat.length === 0) {
     return {
       title: 'ANOVA Error',
-      statistics: { error: `Dependent variable '${depVarKey}' contains no numeric data.` },
+      statistics: { error: `Dependent variable '${depVarKey}' contains no numeric data, or no data matches the selected independent variable groups.` },
       summaryTable: { headers: ['Error'], rows: [['No numeric dependent data.']] }
     };
   }
 
-  const groupNames = Object.keys(groups);
-  if (groupNames.length < 2) {
+  const groupKeys = Object.keys(groupedData);
+  if (groupKeys.length < 2) {
     return {
       title: 'ANOVA Error',
-      statistics: { error: `Independent variable '${indepVarKey}' must have at least two distinct groups with numeric data.` },
-      summaryTable: { headers: ['Error'], rows: [['Not enough groups.']] }
+      statistics: { error: `Independent variable '${indepVarKey}' must result in at least two distinct groups with numeric data.` },
+      summaryTable: { headers: ['Error'], rows: [['Not enough groups with data.']] }
     };
   }
-  
-  for (const groupName of groupNames) {
-    if (groups[groupName].length < 1) { // Each group needs at least one data point, ideally more
+
+  for (const groupName of groupKeys) {
+    if (groupedData[groupName].length === 0) {
         return {
             title: 'ANOVA Error',
             statistics: { error: `Group '${groupName}' for independent variable '${indepVarKey}' has no numeric data.` },
@@ -63,91 +64,95 @@ function calculateANOVA(data: DataRow[], variables: VariableMapping): AnalysisRe
         };
     }
   }
-
-
-  const N = allNumericDependentValues.length; // Total number of observations
-  const k = groupNames.length; // Number of groups
+  
+  const N = allNumericValuesFlat.length; // Total number of observations
+  const k = groupKeys.length; // Number of groups
 
   if (N <= k) {
     return {
       title: 'ANOVA Error',
-      statistics: { error: 'Total number of observations must be greater than the number of groups.' },
-      summaryTable: { headers: ['Error'], rows: [['Insufficient data points for groups.']] }
+      statistics: { error: 'Total number of observations must be greater than the number of groups for a valid ANOVA.' },
+      summaryTable: { headers: ['Error'], rows: [['Insufficient data points relative to groups.']] }
     };
   }
 
-  const overallMean = allNumericDependentValues.reduce((sum, val) => sum + val, 0) / N;
+  const overallMean = allNumericValuesFlat.reduce((sum, value) => sum + value, 0) / N;
 
-  let SSB = 0; // Sum of Squares Between groups
-  const groupMeans: Record<string, number> = {};
-  const groupCounts: Record<string, number> = {};
+  let ssBetween = 0;
+  let ssWithin = 0;
+  const groupMeans: { [key: string]: number } = {};
+  const groupCounts: { [key: string]: number } = {};
 
-  for (const groupName of groupNames) {
-    const groupData = groups[groupName];
-    groupCounts[groupName] = groupData.length;
-    groupMeans[groupName] = groupData.reduce((sum, val) => sum + val, 0) / groupCounts[groupName];
-    SSB += groupCounts[groupName] * Math.pow(groupMeans[groupName] - overallMean, 2);
-  }
+  groupKeys.forEach(groupKey => {
+    const groupValues = groupedData[groupKey];
+    groupCounts[groupKey] = groupValues.length;
+    const meanOfGroup = groupValues.reduce((sum, value) => sum + value, 0) / groupCounts[groupKey];
+    groupMeans[groupKey] = meanOfGroup;
+    
+    ssBetween += groupCounts[groupKey] * Math.pow(meanOfGroup - overallMean, 2);
+    ssWithin += groupValues.reduce((sum, value) => sum + Math.pow(value - meanOfGroup, 2), 0);
+  });
 
-  let SSW = 0; // Sum of Squares Within groups
-  for (const groupName of groupNames) {
-    const groupData = groups[groupName];
-    const meanOfGroup = groupMeans[groupName];
-    SSW += groupData.reduce((sum, val) => sum + Math.pow(val - meanOfGroup, 2), 0);
-  }
-
-  const SST = SSB + SSW; // Sum of Squares Total
+  const ssTotal = ssBetween + ssWithin; // Or: allNumericValuesFlat.reduce((sum, value) => sum + Math.pow(value - overallMean, 2), 0);
 
   const dfBetween = k - 1;
   const dfWithin = N - k;
   const dfTotal = N - 1;
 
+  if (dfBetween <= 0) { // Should not happen if k >= 2
+     return {
+      title: 'ANOVA Error',
+      statistics: { error: 'Degrees of freedom between groups is zero or less. Check group definitions.' },
+      summaryTable: { headers: ['Error'], rows: [['df Between groups error.']] }
+    };
+  }
   if (dfWithin <= 0) {
      return {
         title: `ANOVA Results (Calculated for ${depVarKey} by ${indepVarKey})`,
         summaryTable: {
             headers: ['Source', 'SS', 'df', 'MS', 'F', 'p-value'],
             rows: [
-                [`Between Groups (Effect of ${indepVarKey})`, SSB.toFixed(3), dfBetween, dfBetween > 0 ? (SSB/dfBetween).toFixed(3) : 'N/A', 'N/A', 'N/A'],
-                ['Within Groups (Error)', SSW.toFixed(3), dfWithin, 'N/A', '', ''],
-                ['Total', SST.toFixed(3), dfTotal, '', '', ''],
+                [`Between Groups (Effect of ${indepVarKey})`, parseFloat(ssBetween.toFixed(3)), dfBetween, parseFloat((ssBetween/dfBetween).toFixed(3)), 'N/A', 'N/A'],
+                ['Within Groups (Error)', parseFloat(ssWithin.toFixed(3)), dfWithin, 'N/A', '', ''],
+                ['Total', parseFloat(ssTotal.toFixed(3)), dfTotal, '', '', ''],
             ],
         },
         statistics: { 
-            error: 'Cannot calculate F-statistic: Not enough data for degrees of freedom within groups (dfWithin <= 0).',
+            error: 'Cannot calculate F-statistic: Degrees of freedom within groups is zero or less (dfWithin <= 0). Ensure each group has more than one data point if possible, or that N > k.',
             'Note': 'P-value is illustrative. Accurate p-values require a statistical library.'
         },
     };
   }
 
-  const MSB = SSB / dfBetween; // Mean Square Between
-  const MSW = SSW / dfWithin; // Mean Square Within
-  const F_statistic = MSW === 0 ? Infinity : MSB / MSW; // Handle division by zero if MSW is 0
+  const msBetween = ssBetween / dfBetween;
+  const msWithin = ssWithin / dfWithin;
+  const F_statistic = msWithin === 0 ? (msBetween === 0 ? 0 : Infinity) : msBetween / msWithin; // Handle division by zero
 
+  const pValueIllustrative = F_statistic === Infinity ? "< 0.001 (illustrative, F is Infinity)" : (F_statistic > 3.5 ? "< 0.05 (illustrative)" : (F_statistic > 2.5 ? "< 0.10 (illustrative)" : "> 0.10 (illustrative)"));
 
-  // P-value calculation is complex and requires statistical distribution functions (e.g., F-distribution CDF)
-  // For this basic implementation, p-value will be illustrative.
-  // A real app would use a library like jStat or similar for accurate p-values.
-  const pValueIllustrative = F_statistic > 3.5 ? "< 0.05 (illustrative)" : (F_statistic > 2.5 ? "< 0.10 (illustrative)" : "> 0.10 (illustrative)");
+  const finalStatistics: Record<string, string | number> = {
+    'F-statistic': parseFloat(F_statistic.toFixed(3)),
+    'p-value (illustrative)': pValueIllustrative,
+    'Degrees of Freedom (Between)': dfBetween,
+    'Degrees of Freedom (Within)': dfWithin,
+    'Note': 'P-value is illustrative and very approximate. Accurate p-values require a dedicated statistical library.',
+  };
 
+  groupKeys.forEach(groupKey => {
+    finalStatistics[`Mean of ${groupKey}`] = parseFloat(groupMeans[groupKey].toFixed(3));
+  });
 
   return {
     title: `ANOVA Results (Calculated for ${depVarKey} by ${indepVarKey})`,
     summaryTable: {
       headers: ['Source', 'SS', 'df', 'MS', 'F', 'p-value'],
       rows: [
-        [`Between Groups (Effect of ${indepVarKey})`, parseFloat(SSB.toFixed(3)), dfBetween, parseFloat(MSB.toFixed(3)), parseFloat(F_statistic.toFixed(3)), pValueIllustrative],
-        ['Within Groups (Error)', parseFloat(SSW.toFixed(3)), dfWithin, parseFloat(MSW.toFixed(3)), '', ''],
-        ['Total', parseFloat(SST.toFixed(3)), dfTotal, '', '', ''],
+        [`Between Groups (Effect of ${indepVarKey})`, parseFloat(ssBetween.toFixed(3)), dfBetween, parseFloat(msBetween.toFixed(3)), parseFloat(F_statistic.toFixed(3)), pValueIllustrative],
+        ['Within Groups (Error)', parseFloat(ssWithin.toFixed(3)), dfWithin, parseFloat(msWithin.toFixed(3)), '', ''],
+        ['Total', parseFloat(ssTotal.toFixed(3)), dfTotal, '', '', ''],
       ],
     },
-    statistics: {
-      'F-statistic': parseFloat(F_statistic.toFixed(3)),
-      'p-value (illustrative)': pValueIllustrative,
-      'Degrees of Freedom (Between)': dfBetween,
-      'Degrees of Freedom (Within)': dfWithin,
-      'Note': 'P-value is illustrative and very approximate. Accurate p-values require a dedicated statistical library.',
-    },
+    statistics: finalStatistics,
   };
 }
 
@@ -208,9 +213,14 @@ export function performStatisticalAnalysis(
        const anovaForTukey = calculateANOVA(data, variables); // Run ANOVA first to get some values
       return {
         title: "Tukey's HSD Results (Mock - uses ANOVA inputs)",
-        summaryTable: anovaForTukey.summaryTable, // Tukey often follows ANOVA
+        // If ANOVA had an error, anovaForTukey.summaryTable might be an error table.
+        // If ANOVA was successful, we can show its table.
+        summaryTable: anovaForTukey.summaryTable,
         postHocTests: createMockTukeyResults(),
-        statistics: {...(anovaForTukey.statistics || {}), Note: "Tukey's HSD specific part is mock."}
+        statistics: {
+            ...(anovaForTukey.statistics || {}), // Spread existing stats (could include error messages or ANOVA stats)
+            Note: "Tukey's HSD specific part is mock. ANOVA part is calculated."
+        }
       };
     case 'Linear Regression':
       // Placeholder: Linear Regression is a distinct calculation
@@ -230,3 +240,4 @@ export function performStatisticalAnalysis(
       };
   }
 }
+
