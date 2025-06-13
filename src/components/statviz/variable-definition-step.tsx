@@ -1,12 +1,13 @@
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { ColumnDefinition, VariableMapping } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { GripVertical, PackagePlus, PackageMinus, Target, CheckCircle } from 'lucide-react';
+import { GripVertical, PackageMinus, Target, CheckCircle } from 'lucide-react'; // Changed PackagePlus to PackageMinus
 import { useToast } from '@/hooks/use-toast';
 
 interface VariableDefinitionStepProps {
@@ -59,30 +60,32 @@ export function VariableDefinitionStep({ columns, initialMapping, onVariablesDef
 
     const { column, sourceType }: { column: ColumnDefinition; sourceType: DropZoneType | 'available' } = JSON.parse(transferData);
 
-    // Remove from source
-    if (sourceType === 'dependent') setDependentVariable(null);
-    else if (sourceType === 'independent') setIndependentVariables(prev => prev.filter(c => c.id !== column.id));
-    else if (sourceType === 'values') setValuesColumn(null);
-    else if (sourceType === 'covariates') setCovariates(prev => prev.filter(c => c.id !== column.id));
-    // No need to remove from 'available' as it's derived
-
+    // Remove from source if it's not 'available'
+    if (sourceType !== 'available') {
+      handleRemoveVariable(column, sourceType, false); // silent removal from source
+    }
+    
     // Add to target
     if (targetZone === 'dependent') {
-      if (dependentVariable) { // If there's already a var, move it back to available
-         // This logic is implicitly handled by useEffect updating availableColumns
+      if (dependentVariable && dependentVariable.id !== column.id) {
+        // Moving existing dependent variable back to available is handled by useEffect
       }
       setDependentVariable(column);
     } else if (targetZone === 'independent') {
       setIndependentVariables(prev => [...prev.filter(c => c.id !== column.id), column]);
     } else if (targetZone === 'values') {
-       if (valuesColumn) {
-         // This logic is implicitly handled by useEffect updating availableColumns
+       if (valuesColumn && valuesColumn.id !== column.id) {
+        // Moving existing values column back to available is handled by useEffect
        }
       setValuesColumn(column);
     } else if (targetZone === 'covariates') {
       setCovariates(prev => [...prev.filter(c => c.id !== column.id), column]);
     }
     (e.currentTarget as HTMLDivElement).classList.remove('border-accent', 'bg-accent/10');
+    toast({
+      title: "Variable Assigned",
+      description: `Column "${column.name}" assigned to ${targetZone}.`,
+    });
   };
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -95,15 +98,47 @@ export function VariableDefinitionStep({ columns, initialMapping, onVariablesDef
     (e.currentTarget as HTMLDivElement).classList.remove('border-accent', 'bg-accent/10');
   };
 
+  const handleRemoveVariable = (column: ColumnDefinition, zoneType: DropZoneType, showToast = true) => {
+    if (zoneType === 'dependent') {
+      setDependentVariable(null);
+    } else if (zoneType === 'independent') {
+      setIndependentVariables(prev => prev.filter(c => c.id !== column.id));
+    } else if (zoneType === 'values') {
+      setValuesColumn(null);
+    } else if (zoneType === 'covariates') {
+      setCovariates(prev => prev.filter(c => c.id !== column.id));
+    }
+    if (showToast) {
+      toast({
+        title: "Variable Unassigned",
+        description: `Column "${column.name}" removed from ${zoneType} and returned to available columns.`,
+        variant: "default"
+      });
+    }
+  };
+
   const DraggableColumn = ({ column, sourceType }: { column: ColumnDefinition; sourceType: DropZoneType | 'available' }) => (
     <div
-      draggable
-      onDragStart={(e) => handleDragStart(e, column, sourceType)}
-      className="p-2 border rounded-md bg-card hover:shadow-md cursor-grab flex items-center text-sm"
-      aria-label={`Draggable column ${column.name}`}
+      draggable={sourceType === 'available'} // Only allow dragging from available pool initially
+      onDragStart={(e) => sourceType === 'available' && handleDragStart(e, column, sourceType)}
+      className="p-2 border rounded-md bg-card hover:shadow-md flex items-center justify-between text-sm group"
+      aria-label={`Column ${column.name}. Currently in ${sourceType} zone.`}
     >
-      <GripVertical className="h-4 w-4 mr-2 text-muted-foreground" />
-      {column.name}
+      <div className="flex items-center">
+        <GripVertical className={`h-4 w-4 mr-2 text-muted-foreground ${sourceType === 'available' ? 'cursor-grab' : 'cursor-default'}`} />
+        {column.name}
+      </div>
+      {sourceType !== 'available' && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 opacity-50 group-hover:opacity-100"
+          onClick={() => handleRemoveVariable(column, sourceType)}
+          aria-label={`Remove ${column.name} from ${sourceType}`}
+        >
+          <PackageMinus className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 
@@ -112,7 +147,7 @@ export function VariableDefinitionStep({ columns, initialMapping, onVariablesDef
       onDrop={(e) => handleDrop(e, zoneType)} 
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      className="min-h-[150px] transition-colors duration-150"
+      className="min-h-[150px] transition-colors duration-150 flex flex-col" // Added flex flex-col
     >
       <CardHeader>
         <CardTitle className="font-headline text-md flex items-center">
@@ -122,10 +157,13 @@ export function VariableDefinitionStep({ columns, initialMapping, onVariablesDef
         </CardTitle>
         <p className="text-xs text-muted-foreground">{description}</p>
       </CardHeader>
-      <CardContent className="space-y-2 p-4 pt-0">
+      <CardContent className="space-y-2 p-4 pt-0 flex-grow"> {/* Added flex-grow */}
         {children}
-        {((zoneType === 'dependent' && !dependentVariable) || (zoneType === 'values' && !valuesColumn) || (zoneType !== 'dependent' && zoneType !== 'values')) && (
-          <div className="text-center text-muted-foreground p-4 border-2 border-dashed rounded-md">
+        {((zoneType === 'dependent' && !dependentVariable) || 
+          (zoneType === 'values' && !valuesColumn) || 
+          (zoneType === 'independent' && independentVariables.length === 0) ||
+          (zoneType === 'covariates' && covariates.length === 0)) && (
+          <div className="text-center text-muted-foreground p-4 border-2 border-dashed rounded-md h-full flex items-center justify-center"> {/* Ensured placeholder takes height */}
             Drag column here
           </div>
         )}
@@ -135,7 +173,7 @@ export function VariableDefinitionStep({ columns, initialMapping, onVariablesDef
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-muted-foreground">Drag and drop columns from the 'Available Columns' list into the appropriate variable boxes below.</p>
+      <p className="text-sm text-muted-foreground">Drag and drop columns from the 'Available Columns' list into the appropriate variable boxes below. Click the minus icon to unassign a variable.</p>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="md:col-span-1">
           <CardHeader>
@@ -155,16 +193,21 @@ export function VariableDefinitionStep({ columns, initialMapping, onVariablesDef
             {dependentVariable && <DraggableColumn column={dependentVariable} sourceType="dependent" />}
           </DropZone>
           <DropZone title="Independent Variables" zoneType="independent" description="Factors or predictors (can be multiple columns).">
-            {independentVariables.map(col => <DraggableColumn key={col.id} column={col} sourceType="independent" />)}
+            <div className="space-y-2">
+              {independentVariables.map(col => <DraggableColumn key={col.id} column={col} sourceType="independent" />)}
+            </div>
           </DropZone>
           <DropZone title="Values Column" zoneType="values" description="Numerical data column (often used if data is 'long' or for specific plot types)." singleItemOnly>
             {valuesColumn && <DraggableColumn column={valuesColumn} sourceType="values" />}
           </DropZone>
           <DropZone title="Covariates (for ANCOVA)" zoneType="covariates" description="Continuous variables to control for (optional, can be multiple).">
-            {covariates.map(col => <DraggableColumn key={col.id} column={col} sourceType="covariates" />)}
+             <div className="space-y-2">
+              {covariates.map(col => <DraggableColumn key={col.id} column={col} sourceType="covariates" />)}
+            </div>
           </DropZone>
         </div>
       </div>
     </div>
   );
 }
+
