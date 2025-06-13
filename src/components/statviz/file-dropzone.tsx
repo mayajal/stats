@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useCallback, useState } from 'react';
@@ -95,7 +96,7 @@ export function FileDropzone({
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      <CardContent className="p-6 text-center">
+      <CardContent className="p-3 text-center"> {/* Reduced padding from p-6 to p-3 */}
         <input
           type="file"
           ref={fileInputRef}
@@ -104,16 +105,22 @@ export function FileDropzone({
           className="hidden"
           aria-label="File uploader"
         />
-        <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <p className="font-headline text-lg mb-2">Drag & drop your data file here</p>
-        <p className="text-sm text-muted-foreground mb-4">
-          Supports .csv and .xlsx files up to {maxFileSize / (1024 * 1024)}MB
-        </p>
-        <Button onClick={handleBrowseClick} variant="outline">
-          <FileIcon className="mr-2 h-4 w-4" />
-          Browse Files
-        </Button>
-        {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
+        <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-3">
+          <div className="flex items-center gap-2">
+            <UploadCloud className="h-7 w-7 text-muted-foreground flex-shrink-0" />
+            <p className="text-sm font-medium text-foreground">
+              Drag & drop or
+            </p>
+          </div>
+          <Button onClick={handleBrowseClick} variant="outline" size="sm" className="px-3 py-1.5 text-sm h-auto">
+            <FileIcon className="mr-1.5 h-4 w-4" />
+            Browse Files
+          </Button>
+          <p className="text-xs text-muted-foreground sm:whitespace-nowrap">
+            (Supports .csv, .xlsx up to {maxFileSize / (1024 * 1024)}MB)
+          </p>
+        </div>
+        {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
       </CardContent>
     </Card>
   );
