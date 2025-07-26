@@ -20,10 +20,10 @@ const initialBotMessage: Message = {
   role: 'bot',
   content: `Hello! I'm here to help you choose the right statistical analysis. To get started, please tell me a bit about your research. For example:
 
-- **What kind of field experiment did you conduct?** (e.g., testing pesticide efficacy, comparing hybrid performance)
-- **What type of data are you analyzing?** (e.g., experimental observations, survey results)
-- **What is your primary goal?** (e.g., comparing group means, testing a hypothesis)
-- **Are you considering a specific test?** (e.g., ANOVA, t-test, regression)`
+- What kind of field experiment did you conduct? (e.g., testing pesticide efficacy, comparing hybrid performance)
+- What type of data are you analyzing? (e.g., experimental observations, survey results)
+- What is your primary goal? (e.g., comparing group means, testing a hypothesis)
+- Are you considering a specific test? (e.g., ANOVA, t-test, regression)`
 };
 
 export default function GuidePage() {

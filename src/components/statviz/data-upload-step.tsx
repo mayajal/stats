@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { parseCSV } from '@/lib/csv-parser';
-import { getSheetNamesFromXLSX, parseXLSXSheet } from '@/lib/excel-parser'; // Mocked
+import { getSheetNamesFromXLSX, parseXLSXSheet } from '@/lib/excel-parser';
 import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, AlertTriangle } from 'lucide-react';
 
@@ -95,13 +95,13 @@ export function DataUploadStep({ onDataProcessed }: DataUploadStepProps) {
             setPreviewColumns(columns);
             onDataProcessed(data, columns, file.name);
           } else {
-            toast({ title: "XLSX Sheet Error", description: `Sheet '${selectedSheet}' appears to be empty or improperly formatted. (Mocked data might be empty).`, variant: "destructive" });
+            toast({ title: "XLSX Sheet Error", description: `Sheet '${selectedSheet}' appears to be empty or improperly formatted.`, variant: "destructive" });
             setPreviewData([]); // Clear previous preview if sheet is empty
             setPreviewColumns([]);
           }
         } catch (error) {
           console.error(`Error parsing sheet ${selectedSheet}:`, error);
-          toast({ title: "XLSX Parse Error", description: `Failed to parse sheet '${selectedSheet}'. (This is a mock parser).`, variant: "destructive" });
+          toast({ title: "XLSX Parse Error", description: `Failed to parse sheet '${selectedSheet}'.`, variant: "destructive" });
         } finally {
           setIsLoading(false);
         }
@@ -121,19 +121,6 @@ export function DataUploadStep({ onDataProcessed }: DataUploadStepProps) {
   return (
     <div className="space-y-6">
       <FileDropzone onFileAccepted={handleFileAccepted} />
-      
-      {file && file.name.toLowerCase().endsWith('.xlsx') && (
-         <div className="p-4 border rounded-md bg-accent/10 border-accent/30 text-accent-foreground/80">
-            <div className="flex items-start">
-                <AlertTriangle className="h-5 w-5 mr-2 mt-0.5 text-accent" />
-                <p className="text-sm">
-                    <strong>XLSX Support Note:</strong> Full XLSX parsing is complex and requires dedicated libraries. 
-                    This application uses a simplified mock parser for .xlsx files. For best results and full functionality, 
-                    <strong> we strongly recommend using CSV files.</strong> Sheet selection and data preview for XLSX are illustrative.
-                </p>
-            </div>
-        </div>
-      )}
 
       {isLoading && <p className="text-center text-primary">Loading file data...</p>}
 
