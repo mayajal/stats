@@ -1,4 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" class="logo" width="120"/>
 
 # What common mistakes should the chatbot warn about when choosing statistical methods
 
@@ -71,7 +70,4 @@ When guiding users to select statistical methods, the chatbot should actively wa
 
 By flagging these pitfalls, the chatbot will provide more robust, scientifically sound guidance and help prevent common analytical errors in agricultural research.
 
-<div style="text-align: center">⁂</div>
-
-[^1]: Stat_decision_tree.txt
 

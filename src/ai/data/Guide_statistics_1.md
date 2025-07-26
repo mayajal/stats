@@ -134,6 +134,6 @@ This guide transforms the provided decision tree into a comprehensive, step-by-s
 - Provide practical advice on reporting results and potential study limitations.
 - For complex/nested designs or uncertainty, recommend consulting with a statistician.
 
-This guide forms a structured knowledge base for an AI chatbot, ensuring agricultural scientists receive precise, context-appropriate, and actionable guidance on selecting and applying statistical tools in their research[^1].
+This guide forms a structured knowledge base for an AI chatbot, ensuring agricultural scientists receive precise, context-appropriate, and actionable guidance on selecting and applying statistical tools in their research.
 
 
