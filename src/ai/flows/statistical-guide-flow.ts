@@ -10,7 +10,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {knowledgeBase} from '@/ai/data/knowledge-base';
+import fs from 'fs';
+import path from 'path';
 
 const StatisticalGuidanceInputSchema = z.object({
   question: z.string().describe('The user\'s question about statistics.'),
@@ -26,11 +27,38 @@ export async function getStatisticalGuidance(input: StatisticalGuidanceInput): P
   return statisticalGuidanceFlow(input);
 }
 
+// Function to read knowledge base files
+function getKnowledgeBase(): string {
+  const dataDir = path.join(process.cwd(), 'src', 'ai', 'data');
+  const fileNames = [
+    'Guide_statistics_1.md',
+    'common_mistakes_statistics.md',
+    'common_statistical_tools.md',
+  ];
+
+  const knowledgeBase = fileNames
+    .map(fileName => {
+      try {
+        return fs.readFileSync(path.join(dataDir, fileName), 'utf-8');
+      } catch (error) {
+        console.error(`Error reading file ${fileName}:`, error);
+        return ''; // Return empty string if a file is not found or fails to read
+      }
+    })
+    .join('\n\n---\n\n'); // Separate file contents clearly
+
+  return knowledgeBase;
+}
+
+
 const prompt = ai.definePrompt({
   name: 'statisticalGuidancePrompt',
-  input: {schema: StatisticalGuidanceInputSchema},
+  input: {schema: z.object({
+      question: StatisticalGuidanceInputSchema.shape.question,
+      knowledgeBase: z.string(),
+  })},
   output: {schema: StatisticalGuidanceOutputSchema},
-  prompt: `You are a helpful AI assistant for the StatViz application. Your role is to provide clear and accurate guidance on statistical methods.
+  prompt: `You are a helpful AI assistant for the StatViz application. Your role is to provide clear and accurate guidance on statistical methods for agricultural research.
 
   You MUST base your answers exclusively on the information provided in the "Knowledge Base" section below. Do not use any external knowledge or make assumptions. If the answer cannot be found in the knowledge base, state that you do not have information on that topic.
 
@@ -55,6 +83,7 @@ const statisticalGuidanceFlow = ai.defineFlow(
     outputSchema: StatisticalGuidanceOutputSchema,
   },
   async (input) => {
+    const knowledgeBase = getKnowledgeBase();
     const {output} = await prompt({ ...input, knowledgeBase });
     return output!;
   }
