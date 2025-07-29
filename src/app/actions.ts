@@ -29,6 +29,7 @@ export async function performAnalysisAction(
   variables: VariableMapping,
   analysisType: AnalysisType
 ): Promise<AnalysisResult> {
+  // Using http://127.0.0.1:5001 which is the default for a local flask server
   const backendUrl = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || 'http://127.0.0.1:5001/analyze';
   
   try {
