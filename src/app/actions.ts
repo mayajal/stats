@@ -62,9 +62,8 @@ export async function performAnalysisAction(
         rows: [[`Could not connect to the Python backend at ${backendUrl}. Please ensure the backend server is running and accessible.`]] 
       },
       statistics: { 
-        error: `Failed to fetch results from the Python backend. See server console for more details.`,
-        details: error instanceof Error ? error.message : String(error),
-      }
+        error: `Failed to fetch results from the Python backend. See server console for details.` 
+      },
     };
   }
 }
