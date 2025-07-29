@@ -12,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Sparkles, BarChart3 } from 'lucide-react';
 import type { DataRow, ColumnDefinition, VariableMapping, AnalysisType, AnalysisResult } from '@/types';
-import { performStatisticalAnalysis } from '@/lib/statistical-calculations'; // Mocked
+import { performAnalysisAction } from '@/app/actions'; // Using Server Action
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 
@@ -64,7 +64,7 @@ export default function StatVizAnalysisPage() {
     setSelectedAnalysis(analysis);
   }, []);
   
-  const runAnalysis = useCallback(() => {
+  const runAnalysis = useCallback(async () => {
     if (!selectedAnalysis || !variableMapping.dependentVariable || variableMapping.independentVariables.length === 0) {
        toast({
         title: "Analysis Error",
@@ -75,17 +75,18 @@ export default function StatVizAnalysisPage() {
     }
     setIsCalculating(true);
     try {
-      // Simulate delay for calculation
-      setTimeout(() => {
-        const results = performStatisticalAnalysis(parsedData, variableMapping, selectedAnalysis);
-        setAnalysisResults(results);
-        setIsCalculating(false);
-        setCurrentStep(4);
+      const results = await performAnalysisAction(parsedData, variableMapping, selectedAnalysis);
+      setAnalysisResults(results);
+      if(results.statistics?.error) {
+        toast({ title: "Analysis Failed", description: results.statistics.error as string, variant: "destructive" });
+      } else {
         toast({ title: "Analysis Complete", description: `Results for ${selectedAnalysis} are ready.`, });
-      }, 1500); // 1.5s mock delay
+      }
+      setCurrentStep(4);
     } catch (error) {
       console.error("Error performing analysis:", error);
       toast({ title: "Analysis Failed", description: `An error occurred during ${selectedAnalysis} calculation.`, variant: "destructive" });
+    } finally {
       setIsCalculating(false);
     }
   }, [selectedAnalysis, parsedData, variableMapping, toast]);
@@ -107,7 +108,6 @@ export default function StatVizAnalysisPage() {
 
     if (currentStep === 3 && selectedAnalysis) { // Transition from step 3 to 4 means run analysis
       runAnalysis();
-      // setCurrentStep is handled by runAnalysis after completion
     } else if (currentStep < TOTAL_STEPS) {
       setCurrentStep(prev => prev + 1);
     }
