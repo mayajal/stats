@@ -38,11 +38,28 @@ def perform_anova(data, variables):
         
         # Format the table for the frontend
         anova_table_reset = anova_table.reset_index()
-        headers = ['Source'] + list(anova_table_reset.columns)
+        # headers = ['Source'] + list(anova_table_reset.columns) # This was the old way
+        headers = ['Source', 'Sum of Squares', 'df', 'F-statistic', 'p-value'] # Correct headers
         rows = []
-        for index, row in anova_table_reset.iterrows():
-            row_data = [row['index']] + [f'{val:.3f}' if isinstance(val, float) else str(val) for val in row[1:]]
-            rows.append(row_data)
+        # for index, row in anova_table_reset.iterrows(): # Old way, had issues with column names
+        #     row_data = [row['index']] + [f'{val:.3f}' if isinstance(val, float) else str(val) for val in row[1:]]
+        #     rows.append(row_data)
+
+        # Let's rebuild the rows correctly based on anova_lm output
+        for i, (index, series) in enumerate(anova_table.iterrows()):
+             row = [index] # Source
+             row.append(f'{series["sum_sq"]:.3f}')
+             row.append(f'{series["df"]:.0f}')
+             if "F" in series and pd.notna(series["F"]):
+                 row.append(f'{series["F"]:.3f}')
+             else:
+                 row.append('') # No F-value for Residual row
+             if "PR(>F)" in series and pd.notna(series["PR(>F)"]):
+                 row.append(f'{series["PR(>F)"]:.4f}')
+             else:
+                 row.append('') # No p-value for Residual row
+             rows.append(row)
+
         
         # Calculate group means for the first independent variable
         means = df.groupby(ind_vars[0])[dep_var].mean().to_dict()
@@ -50,12 +67,12 @@ def perform_anova(data, variables):
         return {
             "title": f"ANOVA Results for {dep_var} by {', '.join(ind_vars)}",
             "summaryTable": {
-                "headers": ['Source', 'Sum of Squares', 'df', 'F-statistic', 'p-value'],
+                "headers": headers,
                 "rows": rows
             },
             "statistics": {
-                "F-statistic": f'{anova_table["F"]["sum_sq"]:.3f}',
-                "p-value": f'{anova_table["PR(>F)"]["sum_sq"]:.4f}',
+                "F-statistic": f'{anova_table["F"][0]:.3f}',
+                "p-value": f'{anova_table["PR(>F)"][0]:.4f}',
                 "Model-Note": "Results calculated by Python backend.",
                 **{f"Mean of {key}": f'{value:.3f}' for key, value in means.items()}
             }

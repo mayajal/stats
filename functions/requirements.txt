@@ -3,5 +3,5 @@ Flask==2.3.2
 Flask-Cors==4.0.0
 pandas==2.0.3
 statsmodels==0.14.0
-
+scipy==1.11.1
     
