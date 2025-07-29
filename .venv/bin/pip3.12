@@ -1,4 +1,4 @@
-#!/home/user/studio/.venv/bin/python
+#!/Users/gajendrababubaktavachalam/WebApps/statviz/stats/.venv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
