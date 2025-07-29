@@ -8,8 +8,12 @@
     pkgs.nodejs_20
     pkgs.zulu
     pkgs.python3
-    pkgs.python
-  ];
+    pkgs.python3Packages.scipy
+    pkgs.gcc
+    pkgs.gfortran
+    pkgs.openblas
+    pkgs.pkg-config
+    ];
   
   # Sets environment variables in the workspace
   env = {};
