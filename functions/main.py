@@ -114,5 +114,5 @@ def analyze():
 
 if __name__ == '__main__':
     # For local development, you can run this file directly.
-    # The server will run on http://127.0.0.1:5001
+    # The server will run on http://127.0.0.1:5001 and be accessible from your network.
     app.run(host='0.0.0.0', port=5001, debug=True)
