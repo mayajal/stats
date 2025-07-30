@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -34,7 +35,7 @@ function getKnowledgeBase(): string {
     'Guide_statistics_1.md',
     'common_mistakes_statistics.md',
     'common_statistical_tools.md',
-    'field_trial_designs.md', // Added the new knowledge base file
+    'field_trial_designs.md',
   ];
 
   const knowledgeBase = fileNames
@@ -55,7 +56,7 @@ function getKnowledgeBase(): string {
 const prompt = ai.definePrompt({
   name: 'statisticalGuidancePrompt',
   input: {schema: z.object({
-      question: StatisticalGuidanceInputSchema.shape.question,
+      question: z.string(),
       knowledgeBase: z.string(),
   })},
   output: {schema: StatisticalGuidanceOutputSchema},
