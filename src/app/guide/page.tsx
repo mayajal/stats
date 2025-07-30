@@ -42,8 +42,8 @@ export default function GuidePage() {
     setIsLoading(true);
 
     try {
-      const botResponse = await getStatisticalGuidance(input);
-      const botMessage: Message = { role: 'bot', content: botResponse };
+      const botResponse = await getStatisticalGuidance({ question: input });
+      const botMessage: Message = { role: 'bot', content: botResponse.answer };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       const errorMessage: Message = { role: 'bot', content: 'Sorry, I encountered an error. Please try again.' };
