@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { getStatisticalGuidance } from '@/app/actions';
 
 interface Message {
@@ -54,7 +54,6 @@ export default function GuidePage() {
   };
 
   useEffect(() => {
-    // Scroll to bottom when new messages are added
     if (scrollAreaRef.current) {
         const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
         if (viewport) {
@@ -95,7 +94,7 @@ export default function GuidePage() {
                       </Avatar>
                     )}
                     <div className={`rounded-lg px-3 py-2 max-w-sm ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                      <p className="text-sm" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }}/>
+                      <p className="text-sm" dangerouslySetInnerHTML={{ __html: message.content.replace(/\\n/g, '<br />') }}/>
                     </div>
                     {message.role === 'user' && (
                        <Avatar className="h-8 w-8">
@@ -115,11 +114,6 @@ export default function GuidePage() {
                         </div>
                     </div>
                 )}
-                 {messages.length === 0 && !isLoading && (
-                     <div className="text-center text-muted-foreground p-4">
-                        <p>No messages yet. Start by asking a question below.</p>
-                    </div>
-                 )}
               </div>
             </ScrollArea>
             <form onSubmit={handleSendMessage} className="mt-4 flex items-center gap-2 border-t pt-4">
