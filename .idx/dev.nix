@@ -7,15 +7,7 @@
   packages = [
     pkgs.nodejs_20
     pkgs.zulu
-    pkgs.python3
-    pkgs.python3Packages.scipy
-    pkgs.python3Packages.pip
-    pkgs.python3Packages.flask
-    pkgs.python3Packages.requests
-    pkgs.gcc
-    pkgs.gfortran
-    pkgs.openblas
-    pkgs.pkg-config
+    
     ];
   
   # Sets environment variables in the workspace
