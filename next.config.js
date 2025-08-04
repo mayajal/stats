@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['genkit'],
-  },
+  serverExternalPackages: ['genkit'],
   webpack: (config) => {
     config.externals.push({
       'genkit': 'commonjs genkit',
