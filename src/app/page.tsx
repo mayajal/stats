@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, BarChart3, MessageSquare } from "lucide-react";
+import { ArrowRight, BarChart3, MessageSquare, CheckCircle, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -17,7 +17,7 @@ export default function HomePage() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* AI Guide Card */}
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
@@ -43,26 +43,51 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          {/* Statistical Analysis Card */}
+          {/* Data Quality Check Card */}
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
               <div className="mx-auto mb-4 p-3 bg-green-100 rounded-full w-fit">
-                <BarChart3 className="h-8 w-8 text-green-600" />
+                <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
               <CardTitle className="text-2xl font-bold">
-                Statistical Analysis
+                Data Quality Check
               </CardTitle>
               <CardDescription className="text-base">
-                Upload your data and get descriptive statistics
+                Check for normality, heterogeneity, and descriptive statistics.
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
               <p className="mb-6 text-sm text-muted-foreground">
-                Upload Excel files and perform descriptive statistical analysis including mean, median, mode, variance, and standard deviation.
+                Upload Excel files and perform data quality checks.
               </p>
-              <Link href="/analysis" passHref>
+              <Link href="/data-quality" passHref>
                 <Button size="lg" className="w-full">
                   Start Analysis <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* FRBD Analysis Card */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 p-3 bg-purple-100 rounded-full w-fit">
+                <SlidersHorizontal className="h-8 w-8 text-purple-600" />
+              </div>
+              <CardTitle className="text-2xl font-bold">
+                FRBD Analysis
+              </CardTitle>
+              <CardDescription className="text-base">
+                Factorial Randomized Block Design Analysis.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="mb-6 text-sm text-muted-foreground">
+                Upload Excel files and perform Factorial Randomized Block Design (FRBD) analysis.
+              </p>
+              <Link href="/frbd" passHref>
+                <Button size="lg" className="w-full">
+                  Start FRBD Analysis <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
             </CardContent>
