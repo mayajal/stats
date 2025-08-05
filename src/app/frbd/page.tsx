@@ -262,9 +262,117 @@ export default function FrbdPage() {
               <CardTitle>FRBD Analysis Results</CardTitle>
             </CardHeader>
             <CardContent>
-              <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
-                {JSON.stringify(frbdResults, null, 2)}
-              </pre>
+              <h3 className="text-lg font-semibold mb-2">ANOVA Table</h3>
+              <div className="overflow-x-auto mb-6">
+                {frbdResults.anova_table && (() => {
+                  try {
+                    const parsedAnovaTable = JSON.parse(frbdResults.anova_table);
+                    const columnHeaders = Object.keys(parsedAnovaTable);
+                    // Determine the number of rows by checking the length of the first column's values
+                    const rowCount = columnHeaders.length > 0 ? Object.keys(parsedAnovaTable[columnHeaders[0]]).length : 0;
+
+                    if (rowCount === 0) {
+                      return <p>ANOVA table is empty or could not be parsed. Raw data: {frbdResults.anova_table}</p>;
+                    }
+
+                    return (
+                      <table className="w-full border-collapse border border-gray-300">
+                        <thead>
+                          <tr className="bg-gray-50">
+                            {/* Render index column header */}
+                            <th className="border border-gray-300 px-4 py-2 text-left"></th>
+                            {columnHeaders.map((header, index) => (
+                              <th key={index} className="border border-gray-300 px-4 py-2 text-left">
+                                {header}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {/* Iterate through the row indices to build each table row */}
+                          {Object.keys(parsedAnovaTable[columnHeaders[0]]).map((rowIndex) => (
+                            <tr key={rowIndex}>
+                              {/* Render the index column value */}
+                              <td className="border border-gray-300 px-4 py-2 font-medium">
+                                {rowIndex}
+                              </td>
+                              {columnHeaders.map((header, colIndex) => (
+                                <td key={colIndex} className="border border-gray-300 px-4 py-2">
+                                  {parsedAnovaTable[header][rowIndex]}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    );
+                  } catch (e) {
+                    console.error("Error parsing ANOVA table:", e);
+                    return <p>Error loading ANOVA table. Raw data: {frbdResults.anova_table}</p>;
+                  }
+                })()}
+              </div>
+
+              <h3 className="text-lg font-semibold mb-2">Tukey HSD Post-Hoc Tests</h3>
+              {frbdResults.tukey_results && Object.keys(frbdResults.tukey_results).map((factor) => (
+                <div key={factor} className="mb-4">
+                  <h4 className="text-md font-medium mb-1">Factor: {factor}</h4>
+                  <div 
+                    className="bg-gray-100 p-4 rounded-md overflow-x-auto"
+                    dangerouslySetInnerHTML={{ __html: frbdResults.tukey_results[factor] }}
+                  />
+                </div>
+              ))}
+
+              <h3 className="text-lg font-semibold mb-2">Mean Separation Results</h3>
+              {frbdResults.mean_separation_results && Object.keys(frbdResults.mean_separation_results).map((factor) => (
+                <div key={factor} className="mb-4">
+                  <h4 className="text-md font-medium mb-1">Factor: {factor}</h4>
+                  <div
+                    className="bg-gray-100 p-4 rounded-md overflow-x-auto"
+                    dangerouslySetInnerHTML={{ __html: frbdResults.mean_separation_results[factor] }}
+                  />
+                </div>
+              ))}
+
+              <h3 className="text-lg font-semibold mb-2">Shapiro-Wilk Test for Normality of Residuals</h3>
+              {frbdResults.shapiro && (
+                <div className="bg-gray-100 p-4 rounded-md mb-6">
+                  <p><strong>Statistic:</strong> {frbdResults.shapiro.stat.toFixed(4)}</p>
+                  <p><strong>P-value:</strong> {frbdResults.shapiro.p.toFixed(4)}</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {frbdResults.shapiro.p < 0.05 ? 
+                      "Residuals are likely not normally distributed (p < 0.05)." : 
+                      "Residuals appear to be normally distributed (p >= 0.05)."}
+                  </p>
+                </div>
+              )}
+
+              <h3 className="text-lg font-semibold mb-2">Diagnostic Plots</h3>
+              {frbdResults.plots && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {frbdResults.plots.residuals_vs_fitted && (
+                    <div className="border p-2 rounded-md">
+                      <h4 className="text-md font-medium mb-1">Residuals vs Fitted</h4>
+                      <img 
+                        src={`data:image/png;base64,${frbdResults.plots.residuals_vs_fitted}`} 
+                        alt="Residuals vs Fitted Plot" 
+                        className="w-full h-auto"
+                      />
+                    </div>
+                  )}
+                  {frbdResults.plots.qq_plot && (
+                    <div className="border p-2 rounded-md">
+                      <h4 className="text-md font-medium mb-1">Normal Q-Q Plot</h4>
+                      <img 
+                        src={`data:image/png;base64,${frbdResults.plots.qq_plot}`} 
+                        alt="Normal Q-Q Plot" 
+                        className="w-full h-auto"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
