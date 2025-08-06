@@ -67,6 +67,33 @@ export default function HomePage() {
               </Link>
             </CardContent>
           </Card>
+          
+          {/* RBD Analysis Card */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 p-3 bg-purple-100 rounded-full w-fit">
+                <SlidersHorizontal className="h-8 w-8 text-purple-600" />
+              </div>
+              <CardTitle className="text-2xl font-bold">
+                RBD Analysis
+              </CardTitle>
+              <CardDescription className="text-base">
+                Randomized Block Design Analysis.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="mb-6 text-sm text-muted-foreground">
+                Upload Excel files and perform Randomized Block Design (RBD) analysis.
+              </p>
+              <Link href="/rbd" passHref>
+                <Button size="lg" className="w-full">
+                  Start RBD Analysis <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        
+     
 
           {/* FRBD Analysis Card */}
           <Card className="hover:shadow-lg transition-shadow">

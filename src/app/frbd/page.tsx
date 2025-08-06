@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +21,12 @@ export default function FrbdPage() {
   const [frbdResults, setFrbdResults] = useState<any>(null);
   const [frbdError, setFrbdError] = useState<string>('');
   const [frbdLoading, setFrbdLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Helper function to clean factor names
+  const cleanFactorName = (name: string) => {
+    return name.replace(/^C\(Q\(\"(.+)\"\)\)$/, '$1').replace(/^C\((.+)\)$/, '$1');
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -29,6 +35,21 @@ export default function FrbdPage() {
       setError('');
       setData([]);
       setFrbdResults(null);
+    }
+  };
+
+  const handleReset = () => {
+    setFile(null);
+    setData([]);
+    setError('');
+    setBlockCol('');
+    setFactorCols('');
+    setResponseCol('');
+    setFrbdResults(null);
+    setFrbdError('');
+    setFrbdLoading(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Clear the file input
     }
   };
 
@@ -136,7 +157,7 @@ export default function FrbdPage() {
               Upload Data File
             </CardTitle>
             <CardDescription>
-              Select an Excel (.xlsx) file containing your data
+              Select an Excel (.xlsx) file containing your data (up to 5 MB)
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -145,7 +166,8 @@ export default function FrbdPage() {
                 type="file"
                 accept=".xlsx,.xls"
                 onChange={handleFileUpload}
-                className="flex-1"
+                className="flex-1 bg-gray-100"
+                ref={fileInputRef}
               />
               <Button 
                 onClick={processFile} 
@@ -153,6 +175,14 @@ export default function FrbdPage() {
                 className="min-w-[120px]"
               >
                 {loading ? 'Processing...' : 'Process File'}
+              </Button>
+              <Button 
+                onClick={handleReset} 
+                variant="outline"
+                disabled={!file && data.length === 0 && !frbdResults}
+                className="min-w-[120px]"
+              >
+                Reset
               </Button>
             </div>
             
@@ -280,7 +310,7 @@ export default function FrbdPage() {
                         <thead>
                           <tr className="bg-gray-50">
                             {/* Render index column header */}
-                            <th className="border border-gray-300 px-4 py-2 text-left"></th>
+                            <th className="border border-gray-300 px-4 py-2 text-left">Source of error</th>
                             {columnHeaders.map((header, index) => (
                               <th key={index} className="border border-gray-300 px-4 py-2 text-left">
                                 {header}
@@ -298,7 +328,7 @@ export default function FrbdPage() {
                               </td>
                               {columnHeaders.map((header, colIndex) => (
                                 <td key={colIndex} className="border border-gray-300 px-4 py-2">
-                                  {parsedAnovaTable[header][rowIndex]}
+                                  {header === 'Source' ? cleanFactorName(parsedAnovaTable[header][rowIndex]) : parsedAnovaTable[header][rowIndex]}
                                 </td>
                               ))}
                             </tr>
@@ -313,25 +343,129 @@ export default function FrbdPage() {
                 })()}
               </div>
 
+              <h3 className="text-lg font-semibold mb-2">One-way ANOVA F-test Results</h3>
+              {frbdResults.f_oneway_results && (
+                <div className="bg-gray-100 p-4 rounded-md mb-6">
+                  {Object.entries(frbdResults.f_oneway_results).map(([factor, values]: [string, any]) => (
+                    <div key={factor} className="mb-2">
+                      <p className="font-semibold">Factor: {cleanFactorName(factor)}</p>
+                      <p><strong>F-statistic:</strong> {values.f_stat.toFixed(4)}</p>
+                      <p><strong>P-value:</strong> {values.p_val.toFixed(4)}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <h3 className="text-lg font-semibold mb-2">Tukey HSD Post-Hoc Tests</h3>
               {frbdResults.tukey_results && Object.keys(frbdResults.tukey_results).map((factor) => (
                 <div key={factor} className="mb-4">
-                  <h4 className="text-md font-medium mb-1">Factor: {factor}</h4>
-                  <div 
-                    className="bg-gray-100 p-4 rounded-md overflow-x-auto"
-                    dangerouslySetInnerHTML={{ __html: frbdResults.tukey_results[factor] }}
-                  />
+                  <h4 className="text-md font-medium mb-1">Factor: {cleanFactorName(factor)}</h4>
+                  {(() => {
+                    try {
+                      const tableHtml = frbdResults.tukey_results[factor];
+                      const parser = new DOMParser();
+                      const doc = parser.parseFromString(tableHtml, 'text/html');
+                      const table = doc.querySelector('table');
+
+                      if (!table) {
+                        return <p>Tukey HSD table not found or could not be parsed.</p>;
+                      }
+
+                      const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent?.trim() || '');
+                      const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr =>
+                        Array.from(tr.querySelectorAll('td')).map(td => td.textContent?.trim() || '')
+                      );
+
+                      return (
+                        <div className="overflow-x-auto bg-gray-100 p-4 rounded-md">
+                          <table className="w-full border-collapse border border-gray-300">
+                            <thead>
+                              <tr className="bg-gray-50">
+                                {headers.map((header, index) => (
+                                  <th key={index} className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">
+                                    {header}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {rows.map((row, rowIndex) => (
+                                <tr key={rowIndex}>
+                                  {row.map((cell, cellIndex) => (
+                                    <td key={cellIndex} className="border border-gray-300 px-4 py-2 text-sm">
+                                      {cell}
+                                    </td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    } catch (e) {
+                      console.error("Error parsing Tukey HSD table:", e);
+                      return <p>Error loading Tukey HSD results.</p>;
+                    }
+                  })()}
                 </div>
               ))}
+
+              {frbdResults.tukey_explanation && (
+                  <div dangerouslySetInnerHTML={{ __html: frbdResults.tukey_explanation }} />
+              )}
+
 
               <h3 className="text-lg font-semibold mb-2">Mean Separation Results</h3>
               {frbdResults.mean_separation_results && Object.keys(frbdResults.mean_separation_results).map((factor) => (
                 <div key={factor} className="mb-4">
-                  <h4 className="text-md font-medium mb-1">Factor: {factor}</h4>
-                  <div
-                    className="bg-gray-100 p-4 rounded-md overflow-x-auto"
-                    dangerouslySetInnerHTML={{ __html: frbdResults.mean_separation_results[factor] }}
-                  />
+                  <h4 className="text-md font-medium mb-1">Factor: {cleanFactorName(factor)}</h4>
+                  {(() => {
+                    try {
+                      const tableHtml = frbdResults.mean_separation_results[factor];
+                      const parser = new DOMParser();
+                      const doc = parser.parseFromString(tableHtml, 'text/html');
+                      const table = doc.querySelector('table');
+
+                      if (!table) {
+                        return <p>Mean Separation table not found or could not be parsed.</p>;
+                      }
+
+                      const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent?.trim() || '');
+                      const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr =>
+                        Array.from(tr.querySelectorAll('td')).map(td => td.textContent?.trim() || '')
+                      );
+
+                      return (
+                        <div className="overflow-x-auto bg-gray-100 p-4 rounded-md">
+                          <table className="w-full border-collapse border border-gray-300">
+                            <thead>
+                              <tr className="bg-gray-50">
+                                {headers.map((header, index) => (
+                                  <th key={index} className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">
+                                    {header}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {rows.map((row, rowIndex) => (
+                                <tr key={rowIndex}>
+                                  {row.map((cell, cellIndex) => (
+                                    <td key={cellIndex} className="border border-gray-300 px-4 py-2 text-sm">
+                                      {cell}
+                                    </td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    } catch (e) {
+                      console.error("Error parsing Mean Separation table:", e);
+                      return <p>Error loading Mean Separation results.</p>;
+                    }
+                  })()}
                 </div>
               ))}
 
