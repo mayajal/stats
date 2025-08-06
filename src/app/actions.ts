@@ -10,5 +10,5 @@ import {
 export async function getStatisticalGuidance(
   input: StatisticalGuidanceInput
 ): Promise<StatisticalGuidanceOutput> {
-  return await getStatisticalGuidanceFlow(input);
+  return await getStatisticalGuidanceFlow({...input});
 }

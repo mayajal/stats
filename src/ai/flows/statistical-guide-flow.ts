@@ -25,6 +25,7 @@ const StatisticalGuidanceOutputSchema = z.object({
 export type StatisticalGuidanceOutput = z.infer<typeof StatisticalGuidanceOutputSchema>;
 
 export async function getStatisticalGuidance(input: StatisticalGuidanceInput): Promise<StatisticalGuidanceOutput> {
+  process.env.NEXT_PUBLIC_GOOGLE_API_KEY
   return statisticalGuidanceFlow(input);
 }
 
@@ -93,7 +94,7 @@ const statisticalGuidanceFlow = ai.defineFlow(
     outputSchema: StatisticalGuidanceOutputSchema,
   },
   async (input) => {
-    const knowledgeBase = getKnowledgeBase();
+    const knowledgeBase = getKnowledgeBase()
     const {output} = await prompt({ ...input, knowledgeBase });
     return output!;
   }

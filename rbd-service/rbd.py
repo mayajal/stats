@@ -71,17 +71,13 @@ def analyze():
         return jsonify({"error": f"Error reading Excel file: {str(e)}"}), 400
 
     block_col = request.form.get('block_col')
-    factor_cols_input = request.form.get('factor_cols')
+    factor_col = request.form.get('factor_col')
     response_col = request.form.get('response_col')
 
-    if not all([block_col, factor_cols_input, response_col]):
-        return jsonify({"error": "Missing one or more required fields: block_col, factor_cols, response_col"}), 400
+    if not all([block_col, factor_col, response_col]):
+        return jsonify({"error": "Missing one or more required fields: block_col, factor_col, response_col"}), 400
 
-    factor_cols = [col.strip() for col in factor_cols_input.split(',') if col.strip()]
-    if not factor_cols:
-        return jsonify({"error": "At least one factor column must be provided."}), 400
-
-    selected_cols = [block_col] + factor_cols + [response_col]
+    selected_cols = [block_col, factor_col, response_col]
     for col in selected_cols:
         if col not in df.columns:
             return jsonify({"error": f"Column '{col}' not found in the uploaded file."}), 400
@@ -92,31 +88,25 @@ def analyze():
         return jsonify({"error": f"Response column '{response_col}' must be numeric"}), 400
 
     try:
-        f_oneway_results = {}
-        for factor in factor_cols:
-            groups = [df_processed[response_col][df_processed[factor] == level] for level in df_processed[factor].unique()]
-            f_stat, p_val = stats.f_oneway(*groups)
-            f_oneway_results[factor] = {"f_stat": f_stat, "p_val": p_val}
-        
+        groups = [df_processed[response_col][df_processed[factor_col] == level] for level in df_processed[factor_col].unique()]
+        f_stat, p_val = stats.f_oneway(*groups)
+        f_oneway_results = {
+            factor_col: {"f_stat": f_stat, "p_val": p_val}
+        }
+
         f_oneway_df = pd.DataFrame(f_oneway_results).T
         f_oneway_df.rename(columns={'f_stat': 'F-statistic', 'p_val': 'P-Value'}, inplace=True)
         f_oneway_df['Significance'] = f_oneway_df['P-Value'].apply(lambda p: 'Significant' if p < 0.05 else 'Not significant')
         f_oneway_df.index.name = 'Factor'
         f_oneway_df = f_oneway_df.reset_index()
-        
+
         # Format numeric columns to 4 decimal places
         numeric_cols = ['F-statistic', 'P-Value']
         f_oneway_df[numeric_cols] = f_oneway_df[numeric_cols].round(4)
 
-        interaction_factors = ":".join([f"C(Q('{col}'))" for col in factor_cols])
-        factors_str = " + ".join([f"C(Q('{col}'))" for col in factor_cols])
-
-        formula = f'Q("{response_col}") ~ C(Q("{block_col}")) + {factors_str} + {interaction_factors}'
-        
+        formula = f'Q("{response_col}") ~ C(Q("{block_col}")) + C(Q("{factor_col}"))'
         model = ols(formula, data=df_processed).fit()
         anova_table = sm.stats.anova_lm(model, typ=2)
-        
-        # Format ANOVA table to 4 decimal places
         anova_table = anova_table.round(4)
 
     except Exception as e:
@@ -147,56 +137,51 @@ Here's why:</p>
 </ul>
 <p>So, a significant ANOVA result indicates a difference exists somewhere among the group means, but the post-hoc test might not find specific pairs that are significantly different after the adjustment for multiple comparisons, especially if the overall effect is modest or the differences are spread across several groups rather than concentrated in one or two large pairwise differences.</p>
 '''
-    for factor in factor_cols:
-        try:
-            if df_processed[factor].nunique() < 2:
-                tukey_results[factor] = f"Factor '{factor}' has less than 2 levels, Tukey HSD not applicable"
-            else:
-                tukey = pairwise_tukeyhsd(
-                    endog=df_processed[response_col],
-                    groups=df_processed[factor],
-                    alpha=0.05
-                )
-                
-                tukey_df = pd.DataFrame(data=tukey._results_table.data[1:], columns=tukey._results_table.data[0])
-                
-                # Identify numeric columns for formatting
-                numeric_cols = ['meandiff', 'p-adj', 'lower', 'upper']
-                for col in numeric_cols:
-                    tukey_df[col] = pd.to_numeric(tukey_df[col], errors='coerce')
-                
-                tukey_df[numeric_cols] = tukey_df[numeric_cols].round(4)
 
-                tukey_html = tukey_df.to_html(index=False, classes='table table-striped table-bordered')
-                tukey_results[factor] = tukey_html
+    try:
+        if df_processed[factor_col].nunique() < 2:
+            tukey_results[factor_col] = f"Factor '{factor_col}' has less than 2 levels, Tukey HSD not applicable"
+        else:
+            tukey = pairwise_tukeyhsd(
+                endog=df_processed[response_col],
+                groups=df_processed[factor_col],
+                alpha=0.05
+            )
 
-                factor_means = df_processed.groupby(factor)[response_col].mean()
-                significance_letters = assign_significance_letters(tukey_df, factor_means)
+            tukey_df = pd.DataFrame(data=tukey._results_table.data[1:], columns=tukey._results_table.data[0])
+            numeric_cols = ['meandiff', 'p-adj', 'lower', 'upper']
+            for col in numeric_cols:
+                tukey_df[col] = pd.to_numeric(tukey_df[col], errors='coerce')
+            tukey_df[numeric_cols] = tukey_df[numeric_cols].round(4)
 
-                mean_separation_df = factor_means.to_frame(name='Mean').reset_index()
-                mean_separation_df.rename(columns={factor: 'Treatment'}, inplace=True)
-                mean_separation_df['Significance'] = mean_separation_df['Treatment'].map(significance_letters)
+            tukey_html = tukey_df.to_html(index=False, classes='table table-striped table-bordered')
+            tukey_results[factor_col] = tukey_html
 
-                mean_separation_df = mean_separation_df.sort_values(by='Mean', ascending=False).reset_index(drop=True)
+            factor_means = df_processed.groupby(factor_col)[response_col].mean()
+            significance_letters = assign_significance_letters(tukey_df, factor_means)
 
-                numeric_cols_to_format = mean_separation_df.select_dtypes(include=['float', 'number']).columns.tolist()
-                if 'Significance' in numeric_cols_to_format:
-                    numeric_cols_to_format.remove('Significance')
-                if 'Treatment' in numeric_cols_to_format:
-                    numeric_cols_to_format.remove('Treatment')
-                
-                for col in numeric_cols_to_format:
-                    mean_separation_df[col] = mean_separation_df[col].apply(lambda x: f"{x:.4f}")
+            mean_separation_df = factor_means.to_frame(name='Mean').reset_index()
+            mean_separation_df.rename(columns={factor_col: 'Treatment'}, inplace=True)
+            mean_separation_df['Significance'] = mean_separation_df['Treatment'].map(significance_letters)
+            mean_separation_df = mean_separation_df.sort_values(by='Mean', ascending=False).reset_index(drop=True)
 
-                mean_separation_results[factor] = mean_separation_df.to_html(index=False, classes='table table-striped table-bordered')
+            numeric_cols_to_format = mean_separation_df.select_dtypes(include=['float', 'number']).columns.tolist()
+            if 'Significance' in numeric_cols_to_format:
+                numeric_cols_to_format.remove('Significance')
+            if 'Treatment' in numeric_cols_to_format:
+                numeric_cols_to_format.remove('Treatment')
 
-        except Exception as e:
-            tukey_results[factor] = f"Error performing Tukey HSD for '{factor}': {e}"
+            for col in numeric_cols_to_format:
+                mean_separation_df[col] = mean_separation_df[col].apply(lambda x: f"{x:.4f}")
+
+            mean_separation_results[factor_col] = mean_separation_df.to_html(index=False, classes='table table-striped table-bordered')
+
+    except Exception as e:
+        tukey_results[factor_col] = f"Error performing Tukey HSD for '{factor_col}': {e}"
 
     shapiro_stat, shapiro_p = stats.shapiro(model.resid)
 
     plots = {}
-    tukey_plots = {}
     try:
         # Residuals vs Fitted
         fig, ax = plt.subplots()
@@ -218,20 +203,6 @@ Here's why:</p>
         plots['qq_plot'] = base64.b64encode(img_io.getvalue()).decode('utf-8')
         plt.close(fig)
 
-        for factor in factor_cols:
-            if df_processed[factor].nunique() >= 2:
-                tukey = pairwise_tukeyhsd(
-                    endog=df_processed[response_col],
-                    groups=df_processed[factor],
-                    alpha=0.05
-                )
-                fig, ax = plt.subplots()
-                tukey.plot_simultaneous(ax=ax)
-                img_io = io.BytesIO()
-                plt.savefig(img_io, format='png', bbox_inches='tight')
-                tukey_plots[factor] = base64.b64encode(img_io.getvalue()).decode('utf-8')
-                plt.close(fig)
-
     except Exception as e:
         return jsonify({"error": f"Error generating plots: {str(e)}"}), 500
 
@@ -240,7 +211,6 @@ Here's why:</p>
         "tukey_results": tukey_results,
         "shapiro": {"stat": shapiro_stat, "p": shapiro_p},
         "plots": plots,
-        "tukey_plots": tukey_plots,
         "mean_separation_results": mean_separation_results,
         "f_oneway_results": f_oneway_df.to_html(index=False, classes='table table-striped table-bordered'),
         "tukey_explanation": tukey_explanation
