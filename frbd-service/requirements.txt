@@ -7,4 +7,5 @@ tabulate
 Flask
 gunicorn
 openpyxl
-Flask-Cors
+flask_cors
+numpy

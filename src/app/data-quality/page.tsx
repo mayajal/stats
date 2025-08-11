@@ -299,15 +299,9 @@ export default function AnalysisPage() {
             <h1 className="text-3xl font-bold">Statistical Analysis</h1>
           </div>
           <p className="text-muted-foreground">
-            Upload your Excel file and perform descriptive statistical analysis
+            Upload your Excel file and perform descriptive statistical analysis. 
+            Check for normality, heterogeneity, and descriptive statistics.
           </p>
-        </div>
-
-        {/* Home Button */}
-        <div className="mb-6">
-          <Link href="/" passHref>
-            <Button variant="outline">Home</Button>
-          </Link>
         </div>
 
         {/* File Upload Card */}

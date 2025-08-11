@@ -6,3 +6,4 @@ matplotlib
 seaborn
 flask_cors
 gunicorn
+numpy

@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy": "firebase deploy"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.8.0",
@@ -27,6 +28,8 @@
     "react": "^18.3.1",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.3.1",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.7.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "xlsx": "^0.18.5",
@@ -36,9 +39,10 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@types/xlsx": "^0.0.36",
+    "@types/xlsx": "^0.0.35",
     "autoprefixer": "^10.4.20",
     "genkit-cli": "^1.8.0",
+    "firebase-tools": "^13.1.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

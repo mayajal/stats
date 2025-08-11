@@ -65,14 +65,9 @@ export default function GuidePage() {
   return (
     <div className="container mx-auto py-8 px-4 flex flex-col items-center min-h-screen">
       <header className="mb-4 text-center w-full flex flex-col items-center">
-        <div className="w-full flex justify-start">
-          <Link href="/" passHref>
-            <Button variant="outline" size="sm"> &larr; Home</Button>
-          </Link>
-        </div>
-        <div className="flex items-center justify-center my-4">
+          <div className="flex items-center justify-center my-4">
           <BookOpen className="h-10 w-10 text-primary mr-3" />
-          <h1 className="font-headline text-4xl font-bold tracking-tight">Statistical Guide</h1>
+          <h1 className="mt-4 font-headline text-4xl font-bold tracking-tight">Statistical Guide</h1>
         </div>
         <p className="text-muted-foreground text-lg max-w-2xl">Ask me anything about which statistical test to use! For example: "When should I use ANOVA?"</p>
       </header>

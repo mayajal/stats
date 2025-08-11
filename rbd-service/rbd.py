@@ -10,16 +10,21 @@ from statsmodels.formula.api import ols
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import logging
+import numpy as np
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": ["https://vita.chloropy.com", "http://localhost:9002"]}})
 
 # Health Check endpoint for Cloud Run
 @app.route("/")
 def health():
     return "OK", 200
 
-@app.route('/analyze', methods=['POST'])
+@app.route('/rbd/analyze', methods=['POST'])
 def analyze():
     def assign_significance_letters(tukey_df, means):
         means = means.sort_values(ascending=False)
@@ -48,27 +53,21 @@ def analyze():
             letters[treatment] = ''.join(sorted(set(letters[treatment])))
         return letters
 
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+    if 'data' not in request.form:
+        logging.error("No data part in form")
+        return jsonify({"error": "No data part in form"}), 400
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-    if not file.filename.lower().endswith(('.xlsx', '.xls')):
-        return jsonify({"error": "Only Excel files (.xlsx, .xls) are allowed"}), 400
-
-    file.seek(0, os.SEEK_END)
-    file_size = file.tell()
-    file.seek(0)
-    if file_size > 5 * 1024 * 1024:  # 10MB
-        return jsonify({"error": "File size exceeds 5MB limit"}), 400
+    data_str = request.form.get('data')
+    if not data_str:
+        logging.error("Data is empty")
+        return jsonify({"error": "Data is empty"}), 400
 
     try:
-        df = pd.read_excel(file)
-    except pd.errors.EmptyDataError:
-        return jsonify({"error": "The Excel file is empty"}), 400
+        df = pd.read_json(io.StringIO(data_str))
+        logging.info("Successfully processed incoming data.")
     except Exception as e:
-        return jsonify({"error": f"Error reading Excel file: {str(e)}"}), 400
+        logging.error(f"Error processing data: {str(e)}")
+        return jsonify({"error": f"Error processing data: {str(e)}"}), 400
 
     block_col = request.form.get('block_col')
     factor_col = request.form.get('factor_col')
@@ -88,34 +87,31 @@ def analyze():
         return jsonify({"error": f"Response column '{response_col}' must be numeric"}), 400
 
     try:
+        formula = f'Q("{response_col}") ~ C(Q("{block_col}")) + C(Q("{factor_col}"))'
+        model = ols(formula, data=df_processed).fit()
+        anova_table = sm.stats.anova_lm(model, typ=2)
+        anova_table = anova_table.round(4)
+
         groups = [df_processed[response_col][df_processed[factor_col] == level] for level in df_processed[factor_col].unique()]
         f_stat, p_val = stats.f_oneway(*groups)
         f_oneway_results = {
             factor_col: {"f_stat": f_stat, "p_val": p_val}
         }
-
         f_oneway_df = pd.DataFrame(f_oneway_results).T
         f_oneway_df.rename(columns={'f_stat': 'F-statistic', 'p_val': 'P-Value'}, inplace=True)
         f_oneway_df['Significance'] = f_oneway_df['P-Value'].apply(lambda p: 'Significant' if p < 0.05 else 'Not significant')
         f_oneway_df.index.name = 'Factor'
         f_oneway_df = f_oneway_df.reset_index()
-
-        # Format numeric columns to 4 decimal places
         numeric_cols = ['F-statistic', 'P-Value']
         f_oneway_df[numeric_cols] = f_oneway_df[numeric_cols].round(4)
-
-        formula = f'Q("{response_col}") ~ C(Q("{block_col}")) + C(Q("{factor_col}"))'
-        model = ols(formula, data=df_processed).fit()
-        anova_table = sm.stats.anova_lm(model, typ=2)
-        anova_table = anova_table.round(4)
 
     except Exception as e:
         return jsonify({"error": f"Error fitting ANOVA model: {str(e)}"}), 400
 
     tukey_results = {}
     mean_separation_results = {}
-    tukey_explanation = '''
-<br>
+    cd_value = None
+    tukey_explanation = '''<br>
 <p><b>Explanation of the Post-hoc Table:</b></p>
 <ul>
     <li><b>group1, group2:</b> The two groups being compared.</li>
@@ -132,7 +128,7 @@ def analyze():
 but find no significant pairwise differences in post-hoc tests like Tukey HSD.
 Here's why:</p>
 <ul>
-    <li>ANOVA tests the null hypothesis that <em>all</em> group means are equal. A significant p-value (e.g., &lt; 0.05) means we reject this overall hypothesis, concluding that <em>at least one</em> group mean is different from the others.</li>
+    <li>ANOVA tests the null hypothesis that <em>all</em> group means are equal. A significant p-value (e.g., < 0.05) means we reject this overall hypothesis, concluding that <em>at least one</em> group mean is different from the others.</li>
     <li>Post-hoc tests, like Tukey HSD, perform pairwise comparisons between specific group means. They are more conservative than the overall ANOVA because they adjust the significance level (p-value) to account for multiple comparisons, which reduces the chance of false positives (Type I errors).</li>
 </ul>
 <p>So, a significant ANOVA result indicates a difference exists somewhere among the group means, but the post-hoc test might not find specific pairs that are significantly different after the adjustment for multiple comparisons, especially if the overall effect is modest or the differences are spread across several groups rather than concentrated in one or two large pairwise differences.</p>
@@ -154,13 +150,23 @@ Here's why:</p>
                 tukey_df[col] = pd.to_numeric(tukey_df[col], errors='coerce')
             tukey_df[numeric_cols] = tukey_df[numeric_cols].round(4)
 
-            tukey_html = tukey_df.to_html(index=False, classes='table table-striped table-bordered')
-            tukey_results[factor_col] = tukey_html
+            tukey_results[factor_col] = tukey_df.to_json(orient='records')
 
-            factor_means = df_processed.groupby(factor_col)[response_col].mean()
+            # Calculate Critical Difference (CD)
+            mse = model.mse_resid
+            n_blocks = df_processed[block_col].nunique()
+            q_crit = tukey.q_crit
+            cd_value = q_crit * np.sqrt(mse / n_blocks)
+
+
+            factor_groups = df_processed.groupby(factor_col)[response_col]
+            factor_means = factor_groups.mean()
+            factor_sem = factor_groups.sem()
             significance_letters = assign_significance_letters(tukey_df, factor_means)
 
-            mean_separation_df = factor_means.to_frame(name='Mean').reset_index()
+            mean_separation_df = factor_means.to_frame(name='Mean')
+            mean_separation_df['SEM'] = factor_sem
+            mean_separation_df = mean_separation_df.reset_index()
             mean_separation_df.rename(columns={factor_col: 'Treatment'}, inplace=True)
             mean_separation_df['Significance'] = mean_separation_df['Treatment'].map(significance_letters)
             mean_separation_df = mean_separation_df.sort_values(by='Mean', ascending=False).reset_index(drop=True)
@@ -174,7 +180,7 @@ Here's why:</p>
             for col in numeric_cols_to_format:
                 mean_separation_df[col] = mean_separation_df[col].apply(lambda x: f"{x:.4f}")
 
-            mean_separation_results[factor_col] = mean_separation_df.to_html(index=False, classes='table table-striped table-bordered')
+            mean_separation_results[factor_col] = mean_separation_df.to_json(orient='records')
 
     except Exception as e:
         tukey_results[factor_col] = f"Error performing Tukey HSD for '{factor_col}': {e}"
@@ -202,9 +208,50 @@ Here's why:</p>
         plt.savefig(img_io, format='png', bbox_inches='tight')
         plots['qq_plot'] = base64.b64encode(img_io.getvalue()).decode('utf-8')
         plt.close(fig)
+        logging.info("Generated Q-Q plot.")
+
+        # Bar plot of means with SEM (Sorted by factor name in ascending order)
+        fig, ax = plt.subplots()
+        # Sort mean_separation_df by 'Treatment' (factor name) in ascending order for plotting
+        plot_data = mean_separation_df.sort_values(by='Treatment', ascending=True).reset_index(drop=True)
+        ax.bar(plot_data['Treatment'], plot_data['Mean'].astype(float), yerr=plot_data['SEM'].astype(float), capsize=5)
+        ax.set_xlabel(factor_col)
+        ax.set_ylabel(f"Mean of {response_col}")
+        ax.set_title("Mean of each Factor Level with Standard Error")
+        plt.xticks(rotation=0, ha='right')
+        plt.tight_layout()
+        img_io = io.BytesIO()
+        plt.savefig(img_io, format='png', bbox_inches='tight')
+        plots['mean_bar_plot'] = base64.b64encode(img_io.getvalue()).decode('utf-8')
+        plt.close(fig)
+        logging.info("Generated Bar plot.")
+
+        # Box plot of means (NO SORTING)
+        fig, ax = plt.subplots()
+        # Do not specify the 'order' argument
+        sns.boxplot(x=factor_col, y=response_col, data=df_processed, ax=ax)
+        ax.set_xlabel(factor_col)
+        ax.set_ylabel(response_col)
+        ax.set_title("Box Plot of each Factor Level")
+        plt.xticks(rotation=0, ha='right')
+        plt.tight_layout()
+        img_io = io.BytesIO()
+        plt.savefig(img_io, format='png', bbox_inches='tight')
+        plots['mean_box_plot'] = base64.b64encode(img_io.getvalue()).decode('utf-8')
+        plt.close(fig)
+        logging.info("Generated Box plot.")
+       
 
     except Exception as e:
+        logging.error(f"Error generating plots: {str(e)}")
         return jsonify({"error": f"Error generating plots: {str(e)}"}), 500
+
+    overall_mean = df_processed[response_col].mean()
+    overall_std = df_processed[response_col].std()
+    if overall_mean != 0: # Avoid division by zero
+        overall_cv = (overall_std / overall_mean) * 100
+    else:
+        overall_cv = 0
 
     return jsonify({
         "anova_table": anova_table.to_json(),
@@ -212,11 +259,8 @@ Here's why:</p>
         "shapiro": {"stat": shapiro_stat, "p": shapiro_p},
         "plots": plots,
         "mean_separation_results": mean_separation_results,
-        "f_oneway_results": f_oneway_df.to_html(index=False, classes='table table-striped table-bordered'),
-        "tukey_explanation": tukey_explanation
+        "f_oneway_results": f_oneway_df.to_json(orient='records'),
+        "tukey_explanation": tukey_explanation,
+        "overall_cv": overall_cv,
+        "cd_value": cd_value if cd_value is not None else None
     })
-
-
-if __name__ == "__main__":
-    debug_mode = os.environ.get("FLASK_ENV", "production") == "development"
-    app.run(debug=debug_mode, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
