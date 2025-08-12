@@ -68,6 +68,7 @@ docker stop <container_id_or_name>
 For example:
 
 docker stop abc123def456
+
 3. Verify the Container is Stopped
 Run the following command to ensure the container is no longer running:
 

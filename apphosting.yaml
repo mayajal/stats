@@ -1,0 +1,35 @@
+
+# You might have other configurations here, like runConfig:
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  concurrency: 80
+  minInstances: 1
+  maxInstances: 5
+
+
+env:
+  - variable: NEXT_PUBLIC_FRBD_SERVICE_URL
+    value: https://frbd-service-737809041422.us-central1.run.app/frbd/analyze
+    # Since this is NEXT_PUBLIC_, it's likely needed for both build and runtime
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_RBD_SERVICE_URL
+    value: https://rbd-service-737809041422.us-central1.run.app/rbd/analyze
+    # Since this is NEXT_PUBLIC_, it's likely needed for both build and runtime
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: FIREBASE_CONFIG
+    value: '{"apiKey": "AIzaSyDlBQSqy5zwe43cZ6Wb7mfqKjVa03bxA9c",
+            "authDomain": "statviz-j3txi.firebaseapp.com",
+            "projectId": "statviz-j3txi",
+            "storageBucket": "statviz-j3txi.firebasestorage.app",
+            "messagingSenderId": "737809041422",
+            "appId": "1:737809041422:web:22c97023c02733c2c2d45f",
+            "measurementId": "G-N7NSNDLSHF"}'
+    availability:
+      - BUILD
+      - RUNTIME
