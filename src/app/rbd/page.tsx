@@ -365,7 +365,7 @@ export default function RbdPage() {
             <h1 className="text-3xl font-bold">RBD Analysis</h1>
           </div>
           <p className="text-muted-foreground">
-            Upload your Excel file and perform Randomized Block Design (RBD) analysis.
+            Upload your Excel file and perform Randomized Complete Block Design (RCBD) analysis.
           </p>
         </div>
 
@@ -382,6 +382,14 @@ export default function RbdPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="text-sm">
+                Before uploading check out the required data format.  
+                <Link href="/data_arrangement" passHref>
+                  <Button variant="link" className="p-1 h-auto ml-1, text-blue-600 hover:underline">
+                  Read this to prepare your data.
+                  </Button>
+                </Link>
+            </div>
             <div className="flex items-center space-x-4">
               <Input
                 type="file"

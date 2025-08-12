@@ -8,7 +8,7 @@ const ibmPlexSans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '700'] }
 
 export const metadata: Metadata = {
   title: 'VITA - AI-Powered Statistical Guide & Analysis Tool',
-  description: 'Get expert help choosing the right statistical methods for your agricultural research',
+  description: 'Get expert help choosing the right statistical methods and perform statistics for your agricultural research',
 }
 
 export default function RootLayout({

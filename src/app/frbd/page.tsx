@@ -349,6 +349,15 @@ export default function FrbdPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="text-sm">
+                Before uploading check out the required data format. 
+                <Link href="/data_arrangement#frbd-section" passHref>
+                  <Button variant="link" className="p-1 h-auto ml-1, text-blue-600 hover:underline">
+                  Read this to prepare your data.
+                  </Button>
+                </Link>
+            </div>
+            
             <div className="flex items-center space-x-4">
               <Input
                 type="file"
