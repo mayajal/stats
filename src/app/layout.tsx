@@ -49,7 +49,7 @@ export default function RootLayout({
         <main className="flex-grow">{children}</main>
         <hr className="border-t border-gray-200 my-4" />
         <footer className="text-center p-4 text-sm text-gray-500">
-          &copy; Chloropy 2025 <a href="mailto:contact@chloropy.com" className="text-blue-600 hover:underline">Feedback</a>  <a href="https://www.chloropy.com/vita/data-privacy" className="text-blue-600 hover:underline">Data Privacy</a>
+          &copy; Chloropy 2025 || <a href="mailto:contact@chloropy.com" className="text-blue-600 hover:underline">Feedback ||</a>  <a href="https://www.chloropy.com/vita/data-privacy" className="text-blue-600 hover:underline">Data Privacy</a>
         </footer>
       </body>
     </html>

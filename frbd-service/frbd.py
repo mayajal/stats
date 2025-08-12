@@ -17,7 +17,7 @@ import numpy as np
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["https://vita.chloropy.com", "http://localhost:9002"]}})
+CORS(app, resources={r"/*": {"origins": ["https://vita.chloropy.com","https://vita-zur5dejluq-uc.a.run.app", "http://localhost:9002"]}})
 
 # Health Check endpoint for Cloud Run
 @app.route("/")
