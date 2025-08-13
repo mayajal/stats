@@ -19,8 +19,8 @@ const features = [
   },
   {
     icon: <FaThLarge className="text-2xl text-purple-600" />,
-    title: "RBD Analysis",
-    button: "Start RBD Analysis",
+    title: "RCBD Analysis",
+    button: "Start RCBD Analysis",
     link: "/rbd",
   },
   {

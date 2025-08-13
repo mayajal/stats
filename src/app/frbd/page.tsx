@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Upload, BarChart3, Info, Sparkles } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { generateFrbdAnalysisSummary } from '../actions';
+import DOMPurify from 'dompurify';
+
 
 export default function FrbdPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -15,6 +17,7 @@ export default function FrbdPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [columnHeaders, setColumnHeaders] = useState<string[]>([]);
+  const [missingValuesCount, setMissingValuesCount] = useState<number>(0);
   
   // State for FRBD analysis
   const [blockCol, setBlockCol] = useState<string>('');
@@ -27,6 +30,8 @@ export default function FrbdPage() {
   const [analysisCompleted, setAnalysisCompleted] = useState(false);
   const [showRawJson, setShowRawJson] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // State for AI summary
   const [aiSummary, setAiSummary] = useState<string>('');
@@ -55,6 +60,13 @@ export default function FrbdPage() {
     }
 
     return name; // Return original name if no patterns match
+  };
+
+  const isValidBase64Image = (str: string) => {
+    if (!str || typeof str !== 'string') return false;
+    // Check if string is not excessively large (e.g., > 10MB)
+    const maxSize = 10 * 1024 * 1024 * 4 / 3; // 10MB in base64
+    return str.length < maxSize;
   };
 
   const renderResultsTable = (data: string, isSignificant?: boolean) => {
@@ -205,6 +217,7 @@ export default function FrbdPage() {
     setFrbdLoading(false);
     setAnalysisCompleted(false);
     setShowRawJson(false);
+    setMissingValuesCount(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = ''; // Clear the file input
     }
@@ -224,12 +237,22 @@ export default function FrbdPage() {
       const workbook = XLSX.read(arrayBuffer);
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: null });
 
       if (jsonData.length === 0) {
         setError('No data found in the file');
         return;
       }
+
+      let missingCount = 0;
+      jsonData.forEach(row => {
+        Object.values(row).forEach(value => {
+          if (value === null || value === undefined || value === '') {
+            missingCount++;
+          }
+        });
+      });
+      setMissingValuesCount(missingCount);
 
       setData(jsonData);
       const headers = Object.keys(jsonData[0] || {});
@@ -248,10 +271,28 @@ export default function FrbdPage() {
       return;
     }
 
+    // Validate column names exist in data
+    const headers = data.length > 0 ? Object.keys(data[0]) : [];
+    const missingCols = [];
+    if (!headers.includes(blockCol)) missingCols.push(`Block: ${blockCol}`);
+    if (!headers.includes(responseCol)) missingCols.push(`Response: ${responseCol}`);
+    if (!headers.includes(factor1Col)) missingCols.push(`Factor 1: ${factor1Col}`);
+    if (!headers.includes(factor2Col)) missingCols.push(`Factor 2: ${factor2Col}`);
+
+    if (missingCols.length > 0) {
+      setFrbdError(`Column(s) not found in data: ${missingCols.join('; ')}`);
+      return;
+    }
+
     setFrbdLoading(true);
     setFrbdError('');
     setFrbdResults(null);
     setAnalysisCompleted(false);
+    setCountdown(30);
+
+    intervalRef.current = setInterval(() => {
+      setCountdown(prev => (prev ? prev - 1 : null));
+    }, 1000);
 
     const formData = new FormData();
     const jsonData = JSON.stringify(data);
@@ -260,7 +301,7 @@ export default function FrbdPage() {
     formData.append('factor_cols', [factor1Col, factor2Col].join(','));
     formData.append('response_col', responseCol);
 
-    const frbdServiceUrl = process.env.NEXT_PUBLIC_FRBD_SERVICE_URL;
+    const frbdServiceUrl = process.env.NEXT_PUBLIC_FRBD_SERVICE_URL || 'https://frbd-service-737809041422.us-central1.run.app';
 
     if (!frbdServiceUrl) {
       setFrbdError('FRBD service URL not configured');
@@ -269,10 +310,17 @@ export default function FrbdPage() {
     }
 
     try {
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch(frbdServiceUrl, {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -284,10 +332,17 @@ export default function FrbdPage() {
       setAnalysisCompleted(true);
 
     } catch (err: any) {
-      setFrbdError(err.message);
-    }
-    finally {
+      if (err.name === 'AbortError') {
+        setFrbdError('Request timed out. Please try again.');
+      } else {
+        setFrbdError(err.message || 'An unexpected error occurred');
+      }
+    } finally {
       setFrbdLoading(false);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      setCountdown(null);
     }
   };
 
@@ -439,6 +494,11 @@ export default function FrbdPage() {
                 <div className="mt-4 text-sm text-muted-foreground">
                   Total rows: {data.length}
                 </div>
+                {missingValuesCount > 0 && (
+                  <div className="mt-2 text-sm text-yellow-600">
+                    Warning: Found {missingValuesCount} missing value(s) in your data. Rows with missing values will be excluded from the analysis.
+                  </div>
+                )}
               </CardContent>
             </Card>
         )}
@@ -512,7 +572,7 @@ export default function FrbdPage() {
                   onClick={handleFrbdAnalysis}
                   disabled={frbdLoading || !blockCol || !factor1Col || !factor2Col || !responseCol}
                 >
-                  {frbdLoading ? 'Running Analysis...' : 'Run FRBD Analysis'}
+                  {frbdLoading ? `Running Analysis... (${countdown}s)` : 'Run FRBD Analysis'}
                 </Button>
                 {analysisCompleted && !frbdLoading && (
                   <div className="text-green-600 text-sm bg-green-50 p-3 rounded"> {/* Removed mt-4 */}
@@ -536,23 +596,31 @@ export default function FrbdPage() {
               <CardContent>
                 <h3 className="text-lg font-semibold mb-2">Diagnostic Plots</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {frbdResults.plots.residuals_vs_fitted && (
+                  {frbdResults.plots.residuals_vs_fitted && isValidBase64Image(frbdResults.plots.residuals_vs_fitted) && (
                     <div className="border p-2 rounded-md">
                       <h4 className="text-md font-medium mb-1">Residuals vs Fitted</h4>
                       <img
                         src={`data:image/png;base64,${frbdResults.plots.residuals_vs_fitted}`}
                         alt="Residuals vs Fitted Plot"
                         className="w-full h-auto"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.insertAdjacentHTML('afterend', '<p class="text-red-500">Failed to load plot</p>');
+                        }}
                       />
                     </div>
                   )}
-                  {frbdResults.plots.qq_plot && (
+                  {frbdResults.plots.qq_plot && isValidBase64Image(frbdResults.plots.qq_plot) && (
                     <div className="border p-2 rounded-md">
                       <h4 className="text-md font-medium mb-1">Normal Q-Q Plot</h4>
                       <img
                         src={`data:image/png;base64,${frbdResults.plots.qq_plot}`}
                         alt="Normal Q-Q Plot"
                         className="w-full h-auto"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.insertAdjacentHTML('afterend', '<p class="text-red-500">Failed to load plot</p>');
+                        }}
                       />
                     </div>
                   )}
@@ -680,25 +748,33 @@ export default function FrbdPage() {
                   <h3 className="text-lg font-semibold mb-2">Mean Plots</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[factor1Col, factor2Col].map(factor => (
-                      frbdResults.plots[`mean_bar_plot_${factor}`] && (
+                      frbdResults.plots[`mean_bar_plot_${factor}`] && isValidBase64Image(frbdResults.plots[`mean_bar_plot_${factor}`]) && (
                         <div key={`bar-plot-${factor}`} className="border p-2 rounded-md">
                           <h4 className="text-md font-medium mb-1">Bar Plot for {factor}</h4>
                           <img
                             src={`data:image/png;base64,${frbdResults.plots[`mean_bar_plot_${factor}`]}`}
                             alt={`Bar Plot for ${factor}`}
                             className="w-full h-auto"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.insertAdjacentHTML('afterend', '<p class="text-red-500">Failed to load plot</p>');
+                            }}
                           />
                         </div>
                       )
                     ))}
                     {[factor1Col, factor2Col].map(factor => (
-                      frbdResults.plots[`mean_box_plot_${factor}`] && (
+                      frbdResults.plots[`mean_box_plot_${factor}`] && isValidBase64Image(frbdResults.plots[`mean_box_plot_${factor}`]) && (
                         <div key={`box-plot-${factor}`} className="border p-2 rounded-md">
                           <h4 className="text-md font-medium mb-1">Box Plot for {factor}</h4>
                           <img
                             src={`data:image/png;base64,${frbdResults.plots[`mean_box_plot_${factor}`]}`}
                             alt={`Box Plot for ${factor}`}
                             className="w-full h-auto"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.insertAdjacentHTML('afterend', '<p class="text-red-500">Failed to load plot</p>');
+                            }}
                           />
                         </div>
                       )

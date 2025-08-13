@@ -63,15 +63,15 @@ export default function GuidePage() {
   }, [messages]);
 
   return (
-    <div className="container mx-auto py-8 px-4 flex flex-col items-center min-h-screen">
-      <header className="mb-4 text-center w-full flex flex-col items-center">
-          <div className="flex items-center justify-center my-4">
-          <BookOpen className="h-10 w-10 text-primary mr-3" />
-          <h1 className="mt-4 font-headline text-4xl font-bold tracking-tight">Statistical Guide</h1>
+    <div className="container mx-auto py-4 px-4 flex flex-col items-center min-h-screen">
+      
+          <div className="flex items-center justify-center my-2">
+          <BookOpen className="h-6 w-10 text-primary mr-3" />
+          <h1 className="mt-2 font-headline text-3xl font-bold tracking-tight">Statistical Guide</h1>
         </div>
-        <p className="text-muted-foreground text-lg max-w-2xl">Ask me anything about which statistical test to use! For example: "When should I use ANOVA?"</p>
-      </header>
-
+        <p className="text-muted-foreground text-lg max-w-2xl">Ask me anything about which statistical test to use!</p>
+        <p className="text-muted-foreground text-lg max-w-2xl">For example: "When should I use ANOVA?"</p>
+        <p className="text-muted-foreground text-lg max-w-2xl mb-4"> </p>
       <main className="w-full max-w-2xl flex-grow flex flex-col">
         <Card className="flex-grow flex flex-col">
           <CardHeader>
@@ -128,9 +128,7 @@ export default function GuidePage() {
         </Card>
       </main>
 
-      <footer className="mt-12 text-center text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} StatViz. All rights reserved.</p>
-      </footer>
+
     </div>
   );
 }

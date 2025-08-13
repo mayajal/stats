@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { IBM_Plex_Sans } from 'next/font/google'
 import './globals.css'
 import Link from "next/link";
-import { FaHome, FaBook } from "react-icons/fa";
+import { FaHome, FaBook} from "react-icons/fa";
+import { FaRepeat } from "react-icons/fa6";
 
 const ibmPlexSans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '700'] })
 
@@ -42,6 +43,10 @@ export default function RootLayout({
             <Link href="/guide" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
               <FaBook />
               <span>AI-Guide</span>
+            </Link>
+            <Link href="/tranx" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+              <FaRepeat/>
+              <span>Transform</span>
             </Link>
           </nav>
         </header>

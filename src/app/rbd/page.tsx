@@ -16,6 +16,7 @@ export default function RbdPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [columnHeaders, setColumnHeaders] = useState<string[]>([]);
+  const [missingValuesCount, setMissingValuesCount] = useState<number>(0);
 
   // State for AI summary
   const [aiSummary, setAiSummary] = useState<string>('');
@@ -37,6 +38,8 @@ export default function RbdPage() {
   const [analysisCompleted, setAnalysisCompleted] = useState(false);
   const [showRawJson, setShowRawJson] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (rbdResults && rbdResults.plots) {
@@ -216,6 +219,7 @@ export default function RbdPage() {
     setAiSummary('');
     setAiSummaryError('');
     setAiSummaryLoading(false);
+    setMissingValuesCount(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = ''; // Clear the file input
     }
@@ -235,12 +239,22 @@ export default function RbdPage() {
       const workbook = XLSX.read(arrayBuffer);
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: null });
 
       if (jsonData.length === 0) {
         setError('No data found in the file');
         return;
       }
+      
+      let missingCount = 0;
+      jsonData.forEach(row => {
+        Object.values(row).forEach(value => {
+          if (value === null || value === undefined || value === '') {
+            missingCount++;
+          }
+        });
+      });
+      setMissingValuesCount(missingCount);
 
       setData(jsonData);
       setColumnHeaders(Object.keys(jsonData[0] || {}));
@@ -271,6 +285,11 @@ export default function RbdPage() {
     setRbdError('');
     setRbdResults(null);
     setAnalysisCompleted(false);
+    setCountdown(30);
+
+    intervalRef.current = setInterval(() => {
+      setCountdown(prev => (prev ? prev - 1 : null));
+    }, 1000);
 
     const formData = new FormData();
     // Instead of appending the entire file, we'll send the filtered data as JSON
@@ -288,10 +307,16 @@ export default function RbdPage() {
     }
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30-second timeout
+
       const response = await fetch(rbdServiceUrl, {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -319,9 +344,17 @@ export default function RbdPage() {
         }
       }
     } catch (err: any) {
-      setRbdError(err.message);
+      if (err.name === 'AbortError') {
+        setRbdError('Request timed out. Please try again.');
+      } else {
+        setRbdError(err.message || 'An unexpected error occurred');
+      }
     } finally {
       setRbdLoading(false);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      setCountdown(null);
     }
   };
 
@@ -362,7 +395,7 @@ export default function RbdPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <BarChart3 className="h-8 w-8 text-blue-600 mr-3" />
-            <h1 className="text-3xl font-bold">RBD Analysis</h1>
+            <h1 className="text-3xl font-bold">RCBD Analysis</h1>
           </div>
           <p className="text-muted-foreground">
             Upload your Excel file and perform Randomized Complete Block Design (RCBD) analysis.
@@ -471,6 +504,11 @@ export default function RbdPage() {
                 <div className="mt-4 text-sm text-muted-foreground">
                   Total rows: {data.length}
                 </div>
+                {missingValuesCount > 0 && (
+                  <div className="mt-2 text-sm text-yellow-600">
+                    Warning: Found {missingValuesCount} missing value(s) in your data. Rows with missing values will be excluded from the analysis.
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
@@ -479,7 +517,7 @@ export default function RbdPage() {
           {data.length > 0 && (
               <Card className="mb-8 border border-blue-200 rounded-lg">
                 <CardHeader>
-                  <CardTitle>RBD Analysis Setup</CardTitle>
+                  <CardTitle>RCBD Analysis Setup</CardTitle>
                   <CardDescription>Specify the columns for the analysis.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -572,7 +610,7 @@ export default function RbdPage() {
                       onClick={handleRbdAnalysis}
                       disabled={rbdLoading || !blockCol || !factorCol || !responseValueCol || (responseVariableCol && !selectedResponseVariable)}
                     >
-                      {rbdLoading ? 'Running Analysis...' : 'Run RBD Analysis'}
+                      {rbdLoading ? `Running Analysis... (${countdown}s)` : 'Run RCBD Analysis'}
                     </Button>
                     {analysisCompleted && !rbdLoading && (
                       <div className="text-blue-600 text-sm bg-blue-50 p-3 rounded"> {/* Removed mt-4 */}
@@ -640,7 +678,7 @@ export default function RbdPage() {
           {rbdResults && (
             <Card className="mb-8 border border-blue-200 rounded-lg">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>RBD Analysis Results</CardTitle>
+                <CardTitle>RCBD Analysis Results</CardTitle>
                 <Button variant="outline" size="sm" onClick={() => setShowRawJson(!showRawJson)}>
                     {showRawJson ? 'Hide' : 'Show'} Raw JSON
                 </Button>

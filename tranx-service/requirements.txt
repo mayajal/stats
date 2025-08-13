@@ -1,0 +1,9 @@
+flask
+flask-cors
+pandas
+statsmodels
+scipy
+numpy
+gunicorn
+matplotlib
+seaborn
