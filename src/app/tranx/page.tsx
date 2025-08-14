@@ -13,11 +13,50 @@ interface SkewnessData {
     log: number | null;
     sqrt: number | null;
     boxcox: number | null;
+    arcsine?: number | null;
+    arcsine_percentage?: number | null;
+    yeo_johnson?: number | null;
 }
 
 interface AnalysisResult {
     skewness: SkewnessData;
     suggestion: string;
+    originalNormalityInterpretation?: string;
+    suggestedTransformationFormula?: string;
+    allScores?: { [key: string]: number };
+    original_normality: {
+        shapiro_wilk?: { name: string; interpretation: string; };
+        dagostino_pearson?: { name: string; interpretation: string; };
+        kolmogorov_smirnov: { name: string; interpretation: string; };
+        descriptive_stats: { skewness_interpretation: string; kurtosis_interpretation: string; };
+        overall_assessment: { recommendation: string; };
+    };
+}
+
+interface BackendAnalysisResult {
+    recommendation: string;
+    score: number;
+    reason: string;
+    original_normality: {
+        shapiro_wilk?: { name: string; statistic: number; p_value: number; is_normal: boolean; interpretation: string; };
+        dagostino_pearson?: { name: string; statistic: number; p_value: number; is_normal: boolean; interpretation: string; };
+        kolmogorov_smirnov: { name: string; statistic: number; p_value: number; is_normal: boolean; interpretation: string; };
+        descriptive_stats: { skewness: number; kurtosis: number; skewness_interpretation: string; kurtosis_interpretation: string; };
+        overall_assessment: { likely_normal: boolean; recommendation: string; };
+    };
+    transformation_details?: {
+        data: number[];
+        formula: string;
+        applicable: boolean;
+        normality_tests: any;
+    };
+    all_scores?: { [key: string]: number };
+    suggested_transformation?: {
+        data: number[];
+        formula: string;
+        applicable: boolean;
+        normality_tests: any;
+    };
 }
 
 export default function TranxPage() {
@@ -126,16 +165,15 @@ export default function TranxPage() {
     setAnalysisError('');
     setAnalysisResult(null);
 
-    const formData = new FormData();
-    formData.append('data', JSON.stringify(data));
-    formData.append('response_col', responseCol);
-
     const analyzeServiceUrl = 'http://localhost:8080/analyze_transformations';
 
     try {
       const response = await fetch(analyzeServiceUrl, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data, response_col: responseCol }),
       });
 
       if (!response.ok) {
@@ -143,9 +181,27 @@ export default function TranxPage() {
         throw new Error(errorData.error || 'Analysis failed');
       }
 
-      const results = await response.json();
-      setAnalysisResult(results);
-      setTransformChoice(results.suggestion || 'untransformed');
+      const results: BackendAnalysisResult = await response.json();
+
+      const newSkewnessData: SkewnessData = {
+          untransformed: results.original_normality.descriptive_stats.skewness,
+          log: results.transformation_details?.normality_tests?.log?.descriptive_stats?.skewness ?? null,
+          sqrt: results.transformation_details?.normality_tests?.square_root?.descriptive_stats?.skewness ?? null,
+          boxcox: results.transformation_details?.normality_tests?.box_cox?.descriptive_stats?.skewness ?? null,
+          arcsine: results.transformation_details?.normality_tests?.arcsine?.descriptive_stats?.skewness ?? null,
+          arcsine_percentage: results.transformation_details?.normality_tests?.arcsine_percentage?.descriptive_stats?.skewness ?? null,
+          yeo_johnson: results.transformation_details?.normality_tests?.yeo_johnson?.descriptive_stats?.skewness ?? null,
+      };
+
+      setAnalysisResult({
+          skewness: newSkewnessData,
+          suggestion: results.recommendation,
+          originalNormalityInterpretation: results.original_normality.overall_assessment.recommendation,
+          suggestedTransformationFormula: results.suggested_transformation?.formula,
+          allScores: results.all_scores,
+          original_normality: results.original_normality,
+      });
+      setTransformChoice(results.recommendation || 'untransformed');
 
     } catch (err: any) {
       setAnalysisError(err.message || 'An unexpected error occurred during analysis');
@@ -170,17 +226,15 @@ export default function TranxPage() {
     setTransformError('');
     setTransformedData([]);
 
-    const formData = new FormData();
-    formData.append('data', JSON.stringify(data));
-    formData.append('response_col', responseCol);
-    formData.append('transform_choice', transformChoice);
-
     const tranxServiceUrl = 'http://localhost:8080/transform';
 
     try {
       const response = await fetch(tranxServiceUrl, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data, response_col: responseCol, transform_choice: transformChoice }),
       });
 
       if (!response.ok) {
@@ -307,30 +361,81 @@ export default function TranxPage() {
         {analysisResult && (
           <Card className="mb-8 border border-pink-200 rounded-lg">
             <CardHeader>
-              <CardTitle className="flex items-center"><BarChart className="h-5 w-5 mr-2" /> 3. Transformation Analysis</CardTitle>
-              <CardDescription>Skewness for different transformations.</CardDescription>
+              <CardTitle className="flex items-center"><BarChart className="h-5 w-5 mr-2" /> Original Data Assessment</CardTitle>
+              <CardDescription>Normality tests for the original data.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <table className="min-w-full divide-y divide-pink-200">
+                    <thead className="bg-pink-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Test</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Result</th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-pink-200">
+                        {analysisResult.original_normality?.shapiro_wilk && (
+                            <tr>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">{analysisResult.original_normality.shapiro_wilk.name}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality.shapiro_wilk.interpretation}</td>
+                            </tr>
+                        )}
+                        {analysisResult.original_normality?.dagostino_pearson && (
+                            <tr>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">{analysisResult.original_normality.dagostino_pearson.name}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality.dagostino_pearson.interpretation}</td>
+                            </tr>
+                        )}
+                        {analysisResult.original_normality?.kolmogorov_smirnov && (
+                            <tr>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">{analysisResult.original_normality.kolmogorov_smirnov.name}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality.kolmogorov_smirnov.interpretation}</td>
+                            </tr>
+                        )}
+                        <tr>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">Skewness</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality?.descriptive_stats?.skewness_interpretation}</td>
+                        </tr>
+                        <tr>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">Kurtosis</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality?.descriptive_stats?.kurtosis_interpretation}</td>
+                        </tr>
+                        <tr>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">Overall Assessment</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality?.overall_assessment?.recommendation}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </CardContent>
+          </Card>
+        )}
+
+        {analysisResult && analysisResult.allScores && (
+          <Card className="mb-8 border border-pink-200 rounded-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center"><BarChart className="h-5 w-5 mr-2" /> Transformation Scores</CardTitle>
+              <CardDescription>Scores for different transformations. Higher score is better.</CardDescription>
             </CardHeader>
             <CardContent>
                 <table className="min-w-full divide-y divide-pink-200">
                     <thead className="bg-pink-50">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Transformation</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Skewness</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Score</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Recommendation</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-pink-200">
-                        {Object.entries(analysisResult.skewness).map(([key, value]) => (
+                        {Object.entries(analysisResult.allScores).map(([key, value]) => (
                             <tr key={key}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900 capitalize">{key}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{value?.toFixed(5) ?? 'N/A'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900 capitalize">{key.replace('_', ' ')}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{value.toFixed(3)}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">
+                                    {key === analysisResult.suggestion && <CheckCircle className="h-5 w-5 text-green-600"/>}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-              <div className="mt-6 text-center bg-pink-50 p-4 rounded-lg">
-                <h3 className="font-semibold flex items-center justify-center"><CheckCircle className="h-5 w-5 mr-2 text-green-600"/> Suggested Transformation</h3>
-                <p className="text-lg capitalize">{analysisResult.suggestion}</p>
-              </div>
             </CardContent>
           </Card>
         )}
@@ -349,6 +454,8 @@ export default function TranxPage() {
                   <option value="log">Log Transformation</option>
                   <option value="sqrt">Square Root Transformation</option>
                   <option value="boxcox">Box-Cox Transformation</option>
+                  <option value="yeo_johnson">Yeo-Johnson Transformation</option>
+                  <option value="arcsine">Arcsine Transformation</option>
                 </select>
               </div>
               <Button onClick={handleTransform} disabled={transformLoading || !responseCol}>
