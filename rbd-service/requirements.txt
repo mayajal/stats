@@ -1,9 +1,0 @@
-Flask
-pandas
-statsmodels
-scipy
-matplotlib
-seaborn
-flask_cors
-gunicorn
-numpy

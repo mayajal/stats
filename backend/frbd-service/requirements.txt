@@ -1,0 +1,11 @@
+pandas
+statsmodels
+matplotlib
+seaborn
+scipy
+tabulate
+Flask
+gunicorn
+openpyxl
+flask_cors
+numpy

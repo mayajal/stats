@@ -1,0 +1,16 @@
+{
+  "node": {
+    "4050fc074b235e5371c338fb7cc10a8d35ed97edad": {
+      "workers": {
+        "app/frbd/page": {
+          "moduleId": "[project]/.next-internal/server/app/frbd/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true
+        }
+      },
+      "layer": {
+        "app/frbd/page": "action-browser"
+      }
+    }
+  },
+  "edge": {}
+}
