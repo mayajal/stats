@@ -46,6 +46,7 @@ firestore-debug.log
 
 .idx/
 .venv/
+.md
 cloudbuild_run.md
 JSON_output_Genkit.md
 docker.md
