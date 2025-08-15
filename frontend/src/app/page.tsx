@@ -38,6 +38,7 @@ const features = [
   {
     icon: <FaBug className="text-2xl" style={{ color: "#e719ddff" }} />,
     title: "Probit Analysis",
+    text: "Coming Soon",
     button: "Start Analysis",
     link: "#",
   },
@@ -51,7 +52,7 @@ const StatVizHome: React.FC = () => {
         <p className="text-gray-500 text-lg">Your AI-Powered Statistical Guide & Analysis Tool</p>
       </header>
 
-      <main className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
+      <main className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
         {features.map((f, i) => (
           <section
             key={i}
@@ -59,6 +60,7 @@ const StatVizHome: React.FC = () => {
           >
             <div className="mb-4">{f.icon}</div>
             <h2 className="text-xl font-bold text-gray-800 mb-2">{f.title}</h2>
+            <h4 className="text-xl font-bold text-gray-800 mb-2">{f.title}</h4>
             <Link
               href={f.link}
               className="mt-auto px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors w-full shadow-sm text-center"
