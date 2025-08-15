@@ -32,6 +32,7 @@ const features = [
   {
     icon: <FaLayerGroup className="text-2xl" style={{ color: "#edb83dff" }} />,
     title: "Split Plot Analysis",
+    text: "Coming Soon",
     button: "Start Analysis",
     link: "#",
   },
@@ -60,7 +61,7 @@ const StatVizHome: React.FC = () => {
           >
             <div className="mb-4">{f.icon}</div>
             <h2 className="text-xl font-bold text-gray-800 mb-2">{f.title}</h2>
-            <h4 className="text-xl font-bold text-gray-800 mb-2">{f.title}</h4>
+            <p className="text-gray-500 text-lg mb-2">{f.text}</p>
             <Link
               href={f.link}
               className="mt-auto px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors w-full shadow-sm text-center"
