@@ -166,7 +166,7 @@ export default function TranxPage() {
     setAnalysisError('');
     setAnalysisResult(null);
 
-    const analyzeServiceUrl = 'http://localhost:8080/analyze_transformations';
+    const analyzeServiceUrl = process.env.NEXT_PUBLIC_TRANX_SERVICE_URL;
 
     try {
       const response = await fetch(analyzeServiceUrl, {
