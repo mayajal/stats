@@ -64,7 +64,7 @@ const StatVizHome: React.FC = () => {
             <p className="text-gray-400 text-lg mb-2">{f.text}</p>
             <Link
               href={f.link}
-              className="mt-auto px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors w-full shadow-sm text-center"
+              className="mt-auto px-5 py-2 rounded-lg bg-[#004aad] hover:bg-[#003a9d] text-white font-semibold transition-colors w-full shadow-sm text-center"
             >
               {f.button}
             </Link>

@@ -35,18 +35,21 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${ibmPlexSans.className} flex flex-col min-h-screen`}>
-        <header className="sticky top-0 z-50 bg-white text-left p-4 text-2xl font-bold flex justify-between items-center">
-          <Link href="/" className="text-gray-900 hover:text-blue-900">VITA</Link>
-          <nav className="flex space-x-4 text-lg">
-            <Link href="/" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+        <header className="sticky top-0 z-50 bg-[#004aad] text-white text-left p-4 text-3xl font-bold flex justify-between items-center">
+          <Link href="/" className="flex items-center text-white hover:text-yellow-200 font-bold text-900">
+            <img src="/assets/favicon2.png" alt="VITA Logo" className="h-8 w-8 mr-2"/>
+            VITA
+          </Link>
+          <nav className="flex space-x-4 text-lg font-normal">
+            <Link href="/" className="flex items-center space-x-2 text-white hover:text-yellow-200">
               <FaHome />
               <span>Home</span>
             </Link>
-            <Link href="/guide" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+            <Link href="/guide" className="flex items-center space-x-2 text-white hover:text-yellow-200">
               <FaBook />
               <span>AI-Guide</span>
             </Link>
-            <Link href="/tranx" className="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+            <Link href="/tranx" className="flex items-center space-x-2 text-white hover:text-yellow-200">
               <FaRepeat/>
               <span>Transform</span>
             </Link>
@@ -55,7 +58,7 @@ export default function RootLayout({
         <hr className="border-b border-gray-200 mb-4" />
         <main className="flex-grow">{children}</main>
         <hr className="border-t border-gray-200 my-4" />
-        <footer className="text-center p-4 text-sm text-gray-500">
+        <footer className=" sticky top-0 z-50 text-center p-4 text-sm text-gray-500">
           &copy; Chloropy 2025 || <a href="mailto:contact@chloropy.com" className="text-blue-600 hover:underline">Feedback ||</a>  <a href="https://www.chloropy.com/vita/data-privacy" className="text-blue-600 hover:underline">Data Privacy</a>
         </footer>
       </body>

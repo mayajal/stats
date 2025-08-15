@@ -178,7 +178,7 @@ const StatisticalGuidanceOutputSchema = __TURBOPACK__imported__module__$5b$exter
     answer: __TURBOPACK__imported__module__$5b$externals$5d2f$genkit__$5b$external$5d$__$28$genkit$2c$__esm_import$29$__["z"].string().describe('The AI-generated answer to the user\'s question, based on the provided knowledge base.')
 });
 async function getStatisticalGuidance(input) {
-    "TURBOPACK compile-time value", "AIzaSyDkCsOmS1jxhENyCjRX3VEy0kMoIojbwjw";
+    process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
     return statisticalGuidanceFlow(input);
 }
 // Function to read knowledge base files

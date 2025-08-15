@@ -256,6 +256,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/client/app-dir/link.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/image.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/button.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/card.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/input.tsx [app-client] (ecmascript)");
@@ -268,6 +269,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$data$3a$7e8b33
 ;
 var _s = __turbopack_context__.k.signature();
 'use client';
+;
 ;
 ;
 ;
@@ -318,7 +320,7 @@ function RbdPage() {
     const cleanFactorName = (name)=>{
         // Extracts content from Q('...') or Q("...")
         const qMatches = [
-            ...name.matchAll(/Q\(['"]([^\'\"]*)['\"]\)/g)
+            ...name.matchAll(/Q\(['"]([^\'\"]*)['"]\)/g)
         ];
         if (qMatches.length > 0) {
             const factors = qMatches.map((m)=>m[1]);
@@ -335,7 +337,7 @@ function RbdPage() {
     };
     const renderResultsTable = (data, isSignificant)=>{
         try {
-            // First, try to see if it's HTML content with a table
+            // First, try to see if it\'s HTML content with a table
             if (typeof data === 'string' && data.includes('<table')) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(data, 'text/html');
@@ -358,17 +360,17 @@ function RbdPage() {
                                                     children: h
                                                 }, `${h}-${i}`, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 88,
+                                                    lineNumber: 89,
                                                     columnNumber: 64
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 87,
+                                            lineNumber: 88,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                        lineNumber: 86,
+                                        lineNumber: 87,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -378,28 +380,28 @@ function RbdPage() {
                                                         children: cell
                                                     }, `${i}-${j}`, false, {
                                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                                        lineNumber: 94,
+                                                        lineNumber: 95,
                                                         columnNumber: 67
                                                     }, this))
                                             }, i, false, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 93,
+                                                lineNumber: 94,
                                                 columnNumber: 41
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                        lineNumber: 91,
+                                        lineNumber: 92,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                lineNumber: 85,
+                                lineNumber: 86,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 84,
+                            lineNumber: 85,
                             columnNumber: 25
                         }, this);
                     }
@@ -447,17 +449,17 @@ function RbdPage() {
                                             children: h
                                         }, h, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 138,
+                                            lineNumber: 139,
                                             columnNumber: 51
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 137,
+                                    lineNumber: 138,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                lineNumber: 136,
+                                lineNumber: 137,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -467,28 +469,28 @@ function RbdPage() {
                                                 children: h === 'reject' ? String(row[h]) : !isNaN(Number(row[h])) && row[h] !== null && String(row[h]).trim() !== '' ? Number(row[h]).toFixed(2) : String(row[h])
                                             }, `${i}-${h}`, false, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 145,
+                                                lineNumber: 146,
                                                 columnNumber: 41
                                             }, this))
                                     }, i, false, {
                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                        lineNumber: 143,
+                                        lineNumber: 144,
                                         columnNumber: 33
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                lineNumber: 141,
+                                lineNumber: 142,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/rbd/page.tsx",
-                        lineNumber: 135,
+                        lineNumber: 136,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/rbd/page.tsx",
-                    lineNumber: 134,
+                    lineNumber: 135,
                     columnNumber: 17
                 }, this);
             }
@@ -510,7 +512,7 @@ function RbdPage() {
                                             className: "border border-blue-300 px-4 py-2 text-left"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 170,
+                                            lineNumber: 171,
                                             columnNumber: 33
                                         }, this),
                                         headers.map((h)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -518,18 +520,18 @@ function RbdPage() {
                                                 children: h
                                             }, h, false, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 171,
+                                                lineNumber: 172,
                                                 columnNumber: 51
                                             }, this))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 169,
+                                    lineNumber: 170,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                lineNumber: 168,
+                                lineNumber: 169,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -540,7 +542,7 @@ function RbdPage() {
                                                 children: key
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 177,
+                                                lineNumber: 178,
                                                 columnNumber: 37
                                             }, this),
                                             headers.map((h)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -548,29 +550,29 @@ function RbdPage() {
                                                     children: !isNaN(Number(parsedData[h][key])) && parsedData[h][key] !== null && String(parsedData[h][key]).trim() !== '' ? Number(parsedData[h][key]).toFixed(2) : String(parsedData[h][key])
                                                 }, `${key}-${h}`, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 178,
+                                                    lineNumber: 179,
                                                     columnNumber: 55
                                                 }, this))
                                         ]
                                     }, key, true, {
                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                        lineNumber: 176,
+                                        lineNumber: 177,
                                         columnNumber: 33
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                lineNumber: 174,
+                                lineNumber: 175,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/rbd/page.tsx",
-                        lineNumber: 167,
+                        lineNumber: 168,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/rbd/page.tsx",
-                    lineNumber: 166,
+                    lineNumber: 167,
                     columnNumber: 17
                 }, this);
             }
@@ -583,7 +585,7 @@ function RbdPage() {
                 }
             }, void 0, false, {
                 fileName: "[project]/src/app/rbd/page.tsx",
-                lineNumber: 189,
+                lineNumber: 190,
                 columnNumber: 16
             }, this);
         }
@@ -652,7 +654,7 @@ function RbdPage() {
             setData(jsonData);
             setColumnHeaders(Object.keys(jsonData[0] || {}));
         } catch (err) {
-            setError('Error processing file. Please ensure it\'s a valid Excel file.');
+            setError("Error processing file. Please ensure it\'s a valid Excel file.");
         } finally{
             setLoading(false);
         }
@@ -679,14 +681,16 @@ function RbdPage() {
             setCountdown((prev)=>prev ? prev - 1 : null);
         }, 1000);
         const formData = new FormData();
-        // Instead of appending the entire file, we'll send the filtered data as JSON
+        // Instead of appending the entire file, we\'ll send the filtered data as JSON
         formData.append('data', JSON.stringify(dataToAnalyze));
         formData.append('block_col', blockCol);
         formData.append('factor_col', factorCol);
         formData.append('response_col', responseValueCol);
-        const rbdServiceUrl = ("TURBOPACK compile-time value", "https://rbd-service-737809041422.us-central1.run.app/rbd/analyze");
-        if ("TURBOPACK compile-time falsy", 0) {
-            "TURBOPACK unreachable";
+        const rbdServiceUrl = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].env.NEXT_PUBLIC_RBD_SERVICE_URL;
+        if (!rbdServiceUrl) {
+            setRbdError('RBD service URL not configured');
+            setRbdLoading(false);
+            return;
         }
         try {
             const controller = new AbortController();
@@ -776,7 +780,7 @@ function RbdPage() {
                                     className: "h-8 w-8 text-blue-600 mr-3"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 397,
+                                    lineNumber: 398,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -784,13 +788,13 @@ function RbdPage() {
                                     children: "RCBD Analysis"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 398,
+                                    lineNumber: 399,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 396,
+                            lineNumber: 397,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -798,13 +802,13 @@ function RbdPage() {
                             children: "Upload your Excel file and perform Randomized Complete Block Design (RCBD) analysis."
                         }, void 0, false, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 400,
+                            lineNumber: 401,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/rbd/page.tsx",
-                    lineNumber: 395,
+                    lineNumber: 396,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -819,27 +823,27 @@ function RbdPage() {
                                             className: "h-5 w-5 mr-2"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 410,
+                                            lineNumber: 411,
                                             columnNumber: 15
                                         }, this),
                                         "Upload Data File"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 409,
+                                    lineNumber: 410,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Select an Excel (.xlsx) file containing your data (up to 5 MB)"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 413,
+                                    lineNumber: 414,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 408,
+                            lineNumber: 409,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -858,18 +862,18 @@ function RbdPage() {
                                                 children: "Read this to prepare your data."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 421,
+                                                lineNumber: 422,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 420,
+                                            lineNumber: 421,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 418,
+                                    lineNumber: 419,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -883,7 +887,7 @@ function RbdPage() {
                                             ref: fileInputRef
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 427,
+                                            lineNumber: 428,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -893,7 +897,7 @@ function RbdPage() {
                                             children: loading ? 'Processing...' : 'Process File'
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 434,
+                                            lineNumber: 435,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -904,13 +908,13 @@ function RbdPage() {
                                             children: "Reset"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 441,
+                                            lineNumber: 442,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 426,
+                                    lineNumber: 427,
                                     columnNumber: 13
                                 }, this),
                                 file && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -921,7 +925,7 @@ function RbdPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 452,
+                                    lineNumber: 453,
                                     columnNumber: 15
                                 }, this),
                                 error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -929,19 +933,19 @@ function RbdPage() {
                                     children: error
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 458,
+                                    lineNumber: 459,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 417,
+                            lineNumber: 418,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/rbd/page.tsx",
-                    lineNumber: 407,
+                    lineNumber: 408,
                     columnNumber: 9
                 }, this),
                 data.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -953,20 +957,20 @@ function RbdPage() {
                                     children: "Data Preview"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 469,
+                                    lineNumber: 470,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "First 5 rows of the uploaded data."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 470,
+                                    lineNumber: 471,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 468,
+                            lineNumber: 469,
                             columnNumber: 15
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -985,17 +989,17 @@ function RbdPage() {
                                                             children: key
                                                         }, key, false, {
                                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                                            lineNumber: 478,
+                                                            lineNumber: 479,
                                                             columnNumber: 27
                                                         }, this))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 476,
+                                                    lineNumber: 477,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 475,
+                                                lineNumber: 476,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1006,28 +1010,28 @@ function RbdPage() {
                                                                 children: typeof value === 'number' ? value.toFixed(2) : value?.toString()
                                                             }, colIndex, false, {
                                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                                lineNumber: 492,
+                                                                lineNumber: 493,
                                                                 columnNumber: 29
                                                             }, this))
                                                     }, rowIndex, false, {
                                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                                        lineNumber: 490,
+                                                        lineNumber: 491,
                                                         columnNumber: 25
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 488,
+                                                lineNumber: 489,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                        lineNumber: 474,
+                                        lineNumber: 475,
                                         columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 473,
+                                    lineNumber: 474,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1038,7 +1042,7 @@ function RbdPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 504,
+                                    lineNumber: 505,
                                     columnNumber: 17
                                 }, this),
                                 missingValuesCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1050,19 +1054,19 @@ function RbdPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 508,
+                                    lineNumber: 509,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 472,
+                            lineNumber: 473,
                             columnNumber: 15
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/rbd/page.tsx",
-                    lineNumber: 467,
+                    lineNumber: 468,
                     columnNumber: 13
                 }, this),
                 data.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1074,20 +1078,20 @@ function RbdPage() {
                                     children: "RCBD Analysis Setup"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 520,
+                                    lineNumber: 521,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Specify the columns for the analysis."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 521,
+                                    lineNumber: 522,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 519,
+                            lineNumber: 520,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1103,7 +1107,7 @@ function RbdPage() {
                                                     children: "Block Column (eg. replication)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 526,
+                                                    lineNumber: 527,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1116,7 +1120,7 @@ function RbdPage() {
                                                             children: "Select a column"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                                            lineNumber: 532,
+                                                            lineNumber: 533,
                                                             columnNumber: 25
                                                         }, this),
                                                         columnHeaders.map((header)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1124,19 +1128,19 @@ function RbdPage() {
                                                                 children: header
                                                             }, header, false, {
                                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                                lineNumber: 534,
+                                                                lineNumber: 535,
                                                                 columnNumber: 29
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 527,
+                                                    lineNumber: 528,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 525,
+                                            lineNumber: 526,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1146,7 +1150,7 @@ function RbdPage() {
                                                     children: "Factor Column (eg, treatment)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 539,
+                                                    lineNumber: 540,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1159,7 +1163,7 @@ function RbdPage() {
                                                             children: "Select a column"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                                            lineNumber: 545,
+                                                            lineNumber: 546,
                                                             columnNumber: 25
                                                         }, this),
                                                         columnHeaders.map((header)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1167,25 +1171,25 @@ function RbdPage() {
                                                                 children: header
                                                             }, header, false, {
                                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                                lineNumber: 547,
+                                                                lineNumber: 548,
                                                                 columnNumber: 29
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 540,
+                                                    lineNumber: 541,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 538,
+                                            lineNumber: 539,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 524,
+                                    lineNumber: 525,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1198,7 +1202,7 @@ function RbdPage() {
                                                     children: "Response Variable Column (Optional)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 554,
+                                                    lineNumber: 555,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1222,7 +1226,7 @@ function RbdPage() {
                                                             children: "Select a column for response variable"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                                            lineNumber: 569,
+                                                            lineNumber: 570,
                                                             columnNumber: 25
                                                         }, this),
                                                         columnHeaders.map((header)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1230,19 +1234,19 @@ function RbdPage() {
                                                                 children: header
                                                             }, header, false, {
                                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                                lineNumber: 571,
+                                                                lineNumber: 572,
                                                                 columnNumber: 29
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 555,
+                                                    lineNumber: 556,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 553,
+                                            lineNumber: 554,
                                             columnNumber: 21
                                         }, this),
                                         responseVariableCol && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1252,7 +1256,7 @@ function RbdPage() {
                                                     children: "Select Response Variable "
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 577,
+                                                    lineNumber: 578,
                                                     columnNumber: 27
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1265,7 +1269,7 @@ function RbdPage() {
                                                             children: "Select a variable"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                                            lineNumber: 583,
+                                                            lineNumber: 584,
                                                             columnNumber: 29
                                                         }, this),
                                                         uniqueResponseVariables.map((variable)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1273,25 +1277,25 @@ function RbdPage() {
                                                                 children: variable
                                                             }, variable, false, {
                                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                                lineNumber: 585,
+                                                                lineNumber: 586,
                                                                 columnNumber: 33
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 578,
+                                                    lineNumber: 579,
                                                     columnNumber: 27
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 576,
+                                            lineNumber: 577,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 552,
+                                    lineNumber: 553,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1303,7 +1307,7 @@ function RbdPage() {
                                                 children: "Response Value Column (eg. yield)"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 593,
+                                                lineNumber: 594,
                                                 columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1316,7 +1320,7 @@ function RbdPage() {
                                                         children: "Select a column"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                                        lineNumber: 599,
+                                                        lineNumber: 600,
                                                         columnNumber: 25
                                                     }, this),
                                                     columnHeaders.map((header)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1324,30 +1328,30 @@ function RbdPage() {
                                                             children: header
                                                         }, header, false, {
                                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                                            lineNumber: 601,
+                                                            lineNumber: 602,
                                                             columnNumber: 29
                                                         }, this))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 594,
+                                                lineNumber: 595,
                                                 columnNumber: 23
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                        lineNumber: 592,
+                                        lineNumber: 593,
                                         columnNumber: 21
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 591,
+                                    lineNumber: 592,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 523,
+                            lineNumber: 524,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1363,7 +1367,7 @@ function RbdPage() {
                                             children: rbdLoading ? `Running Analysis... (${countdown}s)` : 'Run RCBD Analysis'
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 609,
+                                            lineNumber: 610,
                                             columnNumber: 21
                                         }, this),
                                         analysisCompleted && !rbdLoading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1374,13 +1378,13 @@ function RbdPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 616,
+                                            lineNumber: 617,
                                             columnNumber: 23
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 608,
+                                    lineNumber: 609,
                                     columnNumber: 19
                                 }, this),
                                 rbdError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1388,19 +1392,19 @@ function RbdPage() {
                                     children: rbdError
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 622,
+                                    lineNumber: 623,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 607,
+                            lineNumber: 608,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/rbd/page.tsx",
-                    lineNumber: 518,
+                    lineNumber: 519,
                     columnNumber: 15
                 }, this),
                 rbdResults && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1411,12 +1415,12 @@ function RbdPage() {
                                 children: "Diagnostic Plots and Normality Test"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                lineNumber: 636,
+                                lineNumber: 637,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 635,
+                            lineNumber: 636,
                             columnNumber: 15
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1426,7 +1430,7 @@ function RbdPage() {
                                     children: "Diagnostic Plots"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 639,
+                                    lineNumber: 640,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1440,22 +1444,24 @@ function RbdPage() {
                                                     children: "Residuals vs Fitted"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 643,
+                                                    lineNumber: 644,
                                                     columnNumber: 23
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                                     src: `data:image/png;base64,${rbdResults.plots.residuals_vs_fitted}`,
                                                     alt: "Residuals vs Fitted Plot",
+                                                    width: 500,
+                                                    height: 300,
                                                     className: "w-full h-auto"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 644,
+                                                    lineNumber: 645,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 642,
+                                            lineNumber: 643,
                                             columnNumber: 21
                                         }, this),
                                         rbdResults.plots.qq_plot && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1466,28 +1472,30 @@ function RbdPage() {
                                                     children: "Normal Q-Q Plot"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 653,
+                                                    lineNumber: 656,
                                                     columnNumber: 23
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                                     src: `data:image/png;base64,${rbdResults.plots.qq_plot}`,
                                                     alt: "Normal Q-Q Plot",
+                                                    width: 500,
+                                                    height: 300,
                                                     className: "w-full h-auto"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 654,
+                                                    lineNumber: 657,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 652,
+                                            lineNumber: 655,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 640,
+                                    lineNumber: 641,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1495,7 +1503,7 @@ function RbdPage() {
                                     children: "Shapiro-Wilk Test for Normality of Residuals"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 662,
+                                    lineNumber: 667,
                                     columnNumber: 17
                                 }, this),
                                 rbdResults.shapiro && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1507,7 +1515,7 @@ function RbdPage() {
                                                     children: "Statistic:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 665,
+                                                    lineNumber: 670,
                                                     columnNumber: 24
                                                 }, this),
                                                 " ",
@@ -1515,7 +1523,7 @@ function RbdPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 665,
+                                            lineNumber: 670,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1524,7 +1532,7 @@ function RbdPage() {
                                                     children: "P-value:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 666,
+                                                    lineNumber: 671,
                                                     columnNumber: 24
                                                 }, this),
                                                 " ",
@@ -1532,7 +1540,7 @@ function RbdPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 666,
+                                            lineNumber: 671,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1540,25 +1548,25 @@ function RbdPage() {
                                             children: rbdResults.shapiro.p < 0.05 ? "Residuals are likely not normally distributed (p < 0.05)." : "Residuals appear to be normally distributed (p >= 0.05)."
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 667,
+                                            lineNumber: 672,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 664,
+                                    lineNumber: 669,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 638,
+                            lineNumber: 639,
                             columnNumber: 15
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/rbd/page.tsx",
-                    lineNumber: 634,
+                    lineNumber: 635,
                     columnNumber: 13
                 }, this),
                 rbdResults && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1571,7 +1579,7 @@ function RbdPage() {
                                     children: "RCBD Analysis Results"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 681,
+                                    lineNumber: 686,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1584,13 +1592,13 @@ function RbdPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 682,
+                                    lineNumber: 687,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 680,
+                            lineNumber: 685,
                             columnNumber: 15
                         }, this),
                         showRawJson && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1599,12 +1607,12 @@ function RbdPage() {
                                 children: JSON.stringify(rbdResults, null, 2)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                lineNumber: 688,
+                                lineNumber: 693,
                                 columnNumber: 21
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 687,
+                            lineNumber: 692,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1614,7 +1622,7 @@ function RbdPage() {
                                     children: "ANOVA Table"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 694,
+                                    lineNumber: 699,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1632,7 +1640,7 @@ function RbdPage() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 703,
+                                                    lineNumber: 708,
                                                     columnNumber: 32
                                                 }, this);
                                             }
@@ -1648,7 +1656,7 @@ function RbdPage() {
                                                                     children: "Source of error"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                                    lineNumber: 710,
+                                                                    lineNumber: 715,
                                                                     columnNumber: 31
                                                                 }, this),
                                                                 columnHeaders.map((header, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1656,7 +1664,7 @@ function RbdPage() {
                                                                         children: header
                                                                     }, index, false, {
                                                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                                                        lineNumber: 712,
+                                                                        lineNumber: 717,
                                                                         columnNumber: 33
                                                                     }, this)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1664,18 +1672,18 @@ function RbdPage() {
                                                                     children: "Significance"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                                    lineNumber: 716,
+                                                                    lineNumber: 721,
                                                                     columnNumber: 31
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                                            lineNumber: 709,
+                                                            lineNumber: 714,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                                        lineNumber: 708,
+                                                        lineNumber: 713,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1689,7 +1697,7 @@ function RbdPage() {
                                                                         children: cleanFactorName(rowIndex)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                                                        lineNumber: 726,
+                                                                        lineNumber: 731,
                                                                         columnNumber: 35
                                                                     }, this),
                                                                     columnHeaders.map((header, colIndex)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1697,7 +1705,7 @@ function RbdPage() {
                                                                             children: parsedAnovaTable[header][rowIndex]
                                                                         }, colIndex, false, {
                                                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                                                            lineNumber: 730,
+                                                                            lineNumber: 735,
                                                                             columnNumber: 37
                                                                         }, this)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1705,25 +1713,25 @@ function RbdPage() {
                                                                         children: showSignificance ? pValue < 0.05 ? 'Significant' : 'Not significant' : ''
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                                                        lineNumber: 734,
+                                                                        lineNumber: 739,
                                                                         columnNumber: 35
                                                                     }, this)
                                                                 ]
                                                             }, rowIndex, true, {
                                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                                lineNumber: 725,
+                                                                lineNumber: 730,
                                                                 columnNumber: 33
                                                             }, this);
                                                         })
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                                        lineNumber: 719,
+                                                        lineNumber: 724,
                                                         columnNumber: 27
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 707,
+                                                lineNumber: 712,
                                                 columnNumber: 25
                                             }, this);
                                         } catch (e) {
@@ -1735,14 +1743,14 @@ function RbdPage() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 745,
+                                                lineNumber: 750,
                                                 columnNumber: 30
                                             }, this);
                                         }
                                     })()
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 695,
+                                    lineNumber: 700,
                                     columnNumber: 17
                                 }, this),
                                 rbdResults.overall_cv !== null && rbdResults.overall_cv !== undefined && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1753,7 +1761,7 @@ function RbdPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 751,
+                                    lineNumber: 756,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1761,7 +1769,7 @@ function RbdPage() {
                                     children: "Tukey HSD Post-Hoc Tests"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 756,
+                                    lineNumber: 761,
                                     columnNumber: 17
                                 }, this),
                                 rbdResults.tukey_results && Object.keys(rbdResults.tukey_results).map((factor)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1775,14 +1783,14 @@ function RbdPage() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 759,
+                                                lineNumber: 764,
                                                 columnNumber: 21
                                             }, this),
                                             renderResultsTable(rbdResults.tukey_results[factor])
                                         ]
                                     }, factor, true, {
                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                        lineNumber: 758,
+                                        lineNumber: 763,
                                         columnNumber: 19
                                     }, this)),
                                 rbdResults.tukey_explanation && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1795,7 +1803,7 @@ function RbdPage() {
                                                     className: "h-4 w-4 mr-2"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 767,
+                                                    lineNumber: 772,
                                                     columnNumber: 23
                                                 }, this),
                                                 isExplanationOpen ? 'Hide' : 'Show',
@@ -1803,7 +1811,7 @@ function RbdPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 766,
+                                            lineNumber: 771,
                                             columnNumber: 21
                                         }, this),
                                         isExplanationOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1813,13 +1821,13 @@ function RbdPage() {
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 771,
+                                            lineNumber: 776,
                                             columnNumber: 23
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 765,
+                                    lineNumber: 770,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1827,7 +1835,7 @@ function RbdPage() {
                                     children: "Mean Separation Results"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 777,
+                                    lineNumber: 782,
                                     columnNumber: 17
                                 }, this),
                                 rbdResults.mean_separation_results && Object.keys(rbdResults.mean_separation_results).map((factor)=>{
@@ -1843,14 +1851,14 @@ function RbdPage() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                                lineNumber: 782,
+                                                lineNumber: 787,
                                                 columnNumber: 23
                                             }, this),
                                             renderResultsTable(rbdResults.mean_separation_results[factor], anovaSignificance[cleanedFactorName])
                                         ]
                                     }, factor, true, {
                                         fileName: "[project]/src/app/rbd/page.tsx",
-                                        lineNumber: 781,
+                                        lineNumber: 786,
                                         columnNumber: 21
                                     }, this);
                                 }),
@@ -1862,7 +1870,7 @@ function RbdPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 789,
+                                    lineNumber: 794,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1870,7 +1878,7 @@ function RbdPage() {
                                     children: "Mean Plots"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 795,
+                                    lineNumber: 800,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1884,22 +1892,24 @@ function RbdPage() {
                                                     children: "Bar Plot"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 799,
+                                                    lineNumber: 804,
                                                     columnNumber: 25
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                                     src: `data:image/png;base64,${rbdResults.plots.mean_bar_plot}`,
                                                     alt: "Bar Plot",
+                                                    width: 500,
+                                                    height: 300,
                                                     className: "w-full h-auto"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 800,
+                                                    lineNumber: 805,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 798,
+                                            lineNumber: 803,
                                             columnNumber: 23
                                         }, this),
                                         rbdResults.plots.mean_box_plot && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1910,40 +1920,42 @@ function RbdPage() {
                                                     children: "Box Plot"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 810,
+                                                    lineNumber: 817,
                                                     columnNumber: 25
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                                     src: `data:image/png;base64,${rbdResults.plots.mean_box_plot}`,
                                                     alt: "Box Plot",
+                                                    width: 500,
+                                                    height: 300,
                                                     className: "w-full h-auto"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                                    lineNumber: 811,
+                                                    lineNumber: 818,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 809,
+                                            lineNumber: 816,
                                             columnNumber: 23
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 796,
+                                    lineNumber: 801,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 693,
+                            lineNumber: 698,
                             columnNumber: 15
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/rbd/page.tsx",
-                    lineNumber: 679,
+                    lineNumber: 684,
                     columnNumber: 13
                 }, this),
                 rbdResults && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1954,12 +1966,12 @@ function RbdPage() {
                                 children: "AI-Powered Summary"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/rbd/page.tsx",
-                                lineNumber: 827,
+                                lineNumber: 836,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 826,
+                            lineNumber: 835,
                             columnNumber: 15
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1972,14 +1984,14 @@ function RbdPage() {
                                             className: "h-4 w-4 mr-2"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/rbd/page.tsx",
-                                            lineNumber: 831,
+                                            lineNumber: 840,
                                             columnNumber: 19
                                         }, this),
                                         aiSummaryLoading ? 'Generating Summary...' : 'Generate AI Summary'
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 830,
+                                    lineNumber: 839,
                                     columnNumber: 17
                                 }, this),
                                 aiSummaryError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1987,7 +1999,7 @@ function RbdPage() {
                                     children: aiSummaryError
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 835,
+                                    lineNumber: 844,
                                     columnNumber: 19
                                 }, this),
                                 aiSummary && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1997,30 +2009,30 @@ function RbdPage() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/rbd/page.tsx",
-                                    lineNumber: 840,
+                                    lineNumber: 849,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/rbd/page.tsx",
-                            lineNumber: 829,
+                            lineNumber: 838,
                             columnNumber: 15
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/rbd/page.tsx",
-                    lineNumber: 825,
+                    lineNumber: 834,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/app/rbd/page.tsx",
-            lineNumber: 393,
+            lineNumber: 394,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/app/rbd/page.tsx",
-        lineNumber: 392,
+        lineNumber: 393,
         columnNumber: 5
     }, this);
 }
