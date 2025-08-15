@@ -238,15 +238,15 @@ __turbopack_context__.s({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/client/app-dir/link.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/button.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@radix-ui/react-dialog/dist/index.mjs [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/card.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/input.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Upload$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/upload.js [app-client] (ecmascript) <export default as Upload>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$replace$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Replace$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/replace.js [app-client] (ecmascript) <export default as Replace>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$download$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Download$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/download.js [app-client] (ecmascript) <export default as Download>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chart$2d$no$2d$axes$2d$column$2d$increasing$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BarChart$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chart-no-axes-column-increasing.js [app-client] (ecmascript) <export default as BarChart>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2d$big$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-check-big.js [app-client] (ecmascript) <export default as CheckCircle>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$info$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Info$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/info.js [app-client] (ecmascript) <export default as Info>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$xlsx$2f$xlsx$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/xlsx/xlsx.mjs [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
@@ -339,60 +339,70 @@ function TranxPage() {
             setData(jsonData);
             setColumnHeaders(Object.keys(jsonData[0] || {}));
         } catch (err) {
-            setError('Error processing file. Please ensure it\'s a valid Excel file.');
+            setError("Error processing file. Please ensure it's a valid Excel file.");
         } finally{
             setLoading(false);
         }
     };
-    const handleAnalyze = async ()=>{
-        if (!data.length || !responseCol) {
-            setAnalysisError('Please process a file and select a response column.');
-            return;
-        }
-        setAnalysisLoading(true);
-        setAnalysisError('');
-        setAnalysisResult(null);
-        const analyzeServiceUrl = 'http://localhost:8080/analyze_transformations';
-        try {
-            const response = await fetch(analyzeServiceUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    data,
-                    response_col: responseCol
-                })
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Analysis failed');
+    const handleAnalyze = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "TranxPage.useCallback[handleAnalyze]": async ()=>{
+            if (!data.length || !responseCol) {
+                setAnalysisError('Please process a file and select a response column.');
+                return;
             }
-            const results = await response.json();
-            const newSkewnessData = {
-                untransformed: results.original_normality.descriptive_stats.skewness,
-                log: results.transformation_details?.normality_tests?.log?.descriptive_stats?.skewness ?? null,
-                sqrt: results.transformation_details?.normality_tests?.square_root?.descriptive_stats?.skewness ?? null,
-                boxcox: results.transformation_details?.normality_tests?.box_cox?.descriptive_stats?.skewness ?? null,
-                arcsine: results.transformation_details?.normality_tests?.arcsine?.descriptive_stats?.skewness ?? null,
-                arcsine_percentage: results.transformation_details?.normality_tests?.arcsine_percentage?.descriptive_stats?.skewness ?? null,
-                yeo_johnson: results.transformation_details?.normality_tests?.yeo_johnson?.descriptive_stats?.skewness ?? null
-            };
-            setAnalysisResult({
-                skewness: newSkewnessData,
-                suggestion: results.recommendation,
-                originalNormalityInterpretation: results.original_normality.overall_assessment.recommendation,
-                suggestedTransformationFormula: results.suggested_transformation?.formula,
-                allScores: results.all_scores,
-                original_normality: results.original_normality
-            });
-            setTransformChoice(results.recommendation || 'untransformed');
-        } catch (err) {
-            setAnalysisError(err.message || 'An unexpected error occurred during analysis');
-        } finally{
-            setAnalysisLoading(false);
+            setAnalysisLoading(true);
+            setAnalysisError('');
+            setAnalysisResult(null);
+            const analyzeServiceUrl = 'http://localhost:8080/analyze_transformations';
+            try {
+                const response = await fetch(analyzeServiceUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        data,
+                        response_col: responseCol
+                    })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Analysis failed');
+                }
+                const results = await response.json();
+                const newSkewnessData = {
+                    untransformed: results.original_normality.descriptive_stats.skewness,
+                    log: results.transformation_details?.normality_tests?.log?.descriptive_stats?.skewness ?? null,
+                    sqrt: results.transformation_details?.normality_tests?.square_root?.descriptive_stats?.skewness ?? null,
+                    boxcox: results.transformation_details?.normality_tests?.box_cox?.descriptive_stats?.skewness ?? null,
+                    arcsine: results.transformation_details?.normality_tests?.arcsine?.descriptive_stats?.skewness ?? null,
+                    arcsine_percentage: results.transformation_details?.normality_tests?.arcsine_percentage?.descriptive_stats?.skewness ?? null,
+                    yeo_johnson: results.transformation_details?.normality_tests?.yeo_johnson?.descriptive_stats?.skewness ?? null
+                };
+                setAnalysisResult({
+                    skewness: newSkewnessData,
+                    suggestion: results.recommendation,
+                    originalNormalityInterpretation: results.original_normality.overall_assessment.recommendation,
+                    suggestedTransformationFormula: results.suggested_transformation?.formula,
+                    all_scores: results.all_scores,
+                    original_normality: results.original_normality
+                });
+                const recommendationMap = {
+                    'square_root': 'sqrt',
+                    'box_cox': 'boxcox'
+                };
+                const recommendedChoice = recommendationMap[results.recommendation] || results.recommendation;
+                setTransformChoice(recommendedChoice || 'untransformed');
+            } catch (err) {
+                setAnalysisError(err.message || 'An unexpected error occurred during analysis');
+            } finally{
+                setAnalysisLoading(false);
+            }
         }
-    };
+    }["TranxPage.useCallback[handleAnalyze]"], [
+        data,
+        responseCol
+    ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "TranxPage.useEffect": ()=>{
             if (responseCol && data.length > 0) {
@@ -401,7 +411,8 @@ function TranxPage() {
         }
     }["TranxPage.useEffect"], [
         responseCol,
-        data
+        data,
+        handleAnalyze
     ]);
     const handleTransform = async ()=>{
         if (!data.length || !responseCol || !transformChoice) {
@@ -439,8 +450,8 @@ function TranxPage() {
         }
     };
     const previewData = transformedData.length > 0 && blockCol && factorCol && originalResponseCol && transformedResponseCol ? data.map((row, index)=>({
-            [factorCol]: row[factorCol],
-            [blockCol]: row[blockCol],
+            [factorCol]: row[factorCol]?.toString(),
+            [blockCol]: row[blockCol]?.toString(),
             [originalResponseCol]: row[originalResponseCol],
             [transformedResponseCol]: transformedData[index] ? transformedData[index][transformedResponseCol] : null
         })) : [];
@@ -487,7 +498,7 @@ function TranxPage() {
                                     className: "h-8 w-8 text-pink-600 mr-3"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 292,
+                                    lineNumber: 299,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -495,13 +506,13 @@ function TranxPage() {
                                     children: "Data Transformation"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 293,
+                                    lineNumber: 300,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 291,
+                            lineNumber: 298,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -509,68 +520,328 @@ function TranxPage() {
                             children: "Upload your data, analyze distributions, and apply transformations."
                         }, void 0, false, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 295,
+                            lineNumber: 302,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/tranx/page.tsx",
-                    lineNumber: 290,
+                    lineNumber: 297,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Root"], {
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Trigger"], {
+                            asChild: true,
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                variant: "outline",
+                                className: "mb-4 flex items-center",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$info$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Info$3e$__["Info"], {
+                                        className: "h-4 w-4 mr-2"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/tranx/page.tsx",
+                                        lineNumber: 310,
+                                        columnNumber: 15
+                                    }, this),
+                                    "About Data Transformations"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/app/tranx/page.tsx",
+                                lineNumber: 309,
+                                columnNumber: 13
+                            }, this)
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/tranx/page.tsx",
+                            lineNumber: 308,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Portal"], {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Overlay"], {
+                                    className: "fixed inset-0 bg-black/30"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                    lineNumber: 315,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Content"], {
+                                    className: "fixed left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-10 text-gray-900 shadow-lg",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Title"], {
+                                            className: "text-lg font-medium",
+                                            children: "About Data Transformations"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                            lineNumber: 317,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Description"], {
+                                            className: "mt-2 text-sm text-gray-600",
+                                            children: "This guide explains the different data transformations available and how the tool works."
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                            lineNumber: 318,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "grid gap-1 py-4 text-sm",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                    className: "font-semibold text-lg",
+                                                    children: "What transformations can this tool perform?"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                    lineNumber: 322,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    children: "This tool can perform several common data transformations to help normalize your data:"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                    lineNumber: 323,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
+                                                    className: "list-disc list-inside space-y-1 pl-4",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                    children: "Log Transformation:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                                    lineNumber: 325,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                " Effective for data that is right-skewed. An offset is automatically added for zero or negative values."
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                                            lineNumber: 325,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                    children: "Square Root Transformation:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                                    lineNumber: 326,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                " A gentler transformation than Log, also used for right-skewed data. An offset is added for negative values."
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                                            lineNumber: 326,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                    children: "Box-Cox Transformation:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                                    lineNumber: 327,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                " A powerful transformation that finds the best exponent to normalize data. It requires all data to be positive."
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                                            lineNumber: 327,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                    children: "Yeo-Johnson Transformation:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                                    lineNumber: 328,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                " An extension of the Box-Cox transformation that can handle both positive and negative data."
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                                            lineNumber: 328,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                    children: "Arcsine Transformation:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                                    lineNumber: 329,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                " Primarily used for proportion data where values are between 0 and 1."
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                                            lineNumber: 329,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                    lineNumber: 324,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                    className: "font-semibold text-lg mt-4",
+                                                    children: "How does the tool work?"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                    lineNumber: 331,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    children: "The tool evaluates your data against key assumptions of normality. It checks for:"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                    lineNumber: 332,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
+                                                    className: "list-disc list-inside space-y-1 pl-4",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                    children: "Normality:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                                    lineNumber: 334,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                " Using statistical tests (like Shapiro-Wilk) to see if the data follows a normal (Gaussian) distribution."
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                                            lineNumber: 334,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                    children: "Skewness:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                                    lineNumber: 335,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                " Measuring the asymmetry of the data distribution."
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                                            lineNumber: 335,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                                    children: "Kurtosis:"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                                    lineNumber: 336,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                ' Measuring the "tailedness" of the distribution.'
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                                            lineNumber: 336,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                    lineNumber: 333,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                    className: "font-semibold text-lg mt-4",
+                                                    children: "About the Recommendation Score"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                    lineNumber: 338,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    children: 'The tool applies each suitable transformation and re-evaluates the transformed data. It then calculates a "recommendation score" for each one based on how well it has corrected issues like non-normality and skewness. The transformation with the highest score is presented as the recommended option.'
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                                    lineNumber: 339,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                            lineNumber: 321,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Close"], {
+                                            asChild: true,
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                                variant: "outline",
+                                                className: "mt-4",
+                                                children: "Close"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/tranx/page.tsx",
+                                                lineNumber: 342,
+                                                columnNumber: 17
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/tranx/page.tsx",
+                                            lineNumber: 341,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/app/tranx/page.tsx",
+                                    lineNumber: 316,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/app/tranx/page.tsx",
+                            lineNumber: 314,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/src/app/tranx/page.tsx",
+                    lineNumber: 307,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
                     className: "mb-8 border border-pink-200 rounded-lg",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                    className: "flex items-center",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Upload$3e$__["Upload"], {
-                                            className: "h-5 w-5 mr-2"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 303,
-                                            columnNumber: 15
-                                        }, this),
-                                        "1. Upload Data File"
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 302,
-                                    columnNumber: 13
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
-                                    children: [
-                                        "Select an Excel (.xlsx) file. Check the required format",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                            href: "/data_arrangement",
-                                            passHref: true,
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
-                                                variant: "link",
-                                                className: "p-1 h-auto ml-1 text-pink-600 hover:underline",
-                                                children: "here"
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 309,
-                                                columnNumber: 17
-                                            }, this)
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 308,
-                                            columnNumber: 15
-                                        }, this),
-                                        "."
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 306,
-                                    columnNumber: 13
-                                }, this)
-                            ]
-                        }, void 0, true, {
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
+                                className: "flex items-center",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Upload$3e$__["Upload"], {
+                                        className: "h-5 w-5 mr-2"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/tranx/page.tsx",
+                                        lineNumber: 351,
+                                        columnNumber: 15
+                                    }, this),
+                                    "1. Upload Data File"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/app/tranx/page.tsx",
+                                lineNumber: 350,
+                                columnNumber: 13
+                            }, this)
+                        }, void 0, false, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 301,
+                            lineNumber: 349,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -587,7 +858,7 @@ function TranxPage() {
                                             ref: fileInputRef
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 315,
+                                            lineNumber: 357,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -597,7 +868,7 @@ function TranxPage() {
                                             children: loading ? 'Processing...' : 'Process File'
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 316,
+                                            lineNumber: 358,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -607,13 +878,13 @@ function TranxPage() {
                                             children: "Reset"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 319,
+                                            lineNumber: 361,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 314,
+                                    lineNumber: 356,
                                     columnNumber: 13
                                 }, this),
                                 file && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -624,7 +895,7 @@ function TranxPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 321,
+                                    lineNumber: 363,
                                     columnNumber: 22
                                 }, this),
                                 error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -632,19 +903,19 @@ function TranxPage() {
                                     children: error
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 322,
+                                    lineNumber: 364,
                                     columnNumber: 23
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 313,
+                            lineNumber: 355,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/tranx/page.tsx",
-                    lineNumber: 300,
+                    lineNumber: 348,
                     columnNumber: 8
                 }, this),
                 data.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -656,20 +927,20 @@ function TranxPage() {
                                     children: "2. Select Columns"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 329,
+                                    lineNumber: 371,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Specify columns for analysis."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 330,
+                                    lineNumber: 372,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 328,
+                            lineNumber: 370,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -682,7 +953,7 @@ function TranxPage() {
                                             children: "Block Column"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 334,
+                                            lineNumber: 376,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -695,7 +966,7 @@ function TranxPage() {
                                                     children: "Select a column"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 336,
+                                                    lineNumber: 378,
                                                     columnNumber: 19
                                                 }, this),
                                                 columnHeaders.map((header)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -703,19 +974,19 @@ function TranxPage() {
                                                         children: header
                                                     }, header, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 337,
+                                                        lineNumber: 379,
                                                         columnNumber: 48
                                                     }, this))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 335,
+                                            lineNumber: 377,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 333,
+                                    lineNumber: 375,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -725,7 +996,7 @@ function TranxPage() {
                                             children: "Factor Column"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 341,
+                                            lineNumber: 383,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -738,7 +1009,7 @@ function TranxPage() {
                                                     children: "Select a column"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 343,
+                                                    lineNumber: 385,
                                                     columnNumber: 19
                                                 }, this),
                                                 columnHeaders.map((header)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -746,19 +1017,19 @@ function TranxPage() {
                                                         children: header
                                                     }, header, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 344,
+                                                        lineNumber: 386,
                                                         columnNumber: 48
                                                     }, this))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 342,
+                                            lineNumber: 384,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 340,
+                                    lineNumber: 382,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -768,7 +1039,7 @@ function TranxPage() {
                                             children: "Response Column"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 348,
+                                            lineNumber: 390,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -781,7 +1052,7 @@ function TranxPage() {
                                                     children: "Select a column"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 350,
+                                                    lineNumber: 392,
                                                     columnNumber: 19
                                                 }, this),
                                                 columnHeaders.map((header)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -789,31 +1060,31 @@ function TranxPage() {
                                                         children: header
                                                     }, header, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 351,
+                                                        lineNumber: 393,
                                                         columnNumber: 48
                                                     }, this))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 349,
+                                            lineNumber: 391,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 347,
+                                    lineNumber: 389,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 332,
+                            lineNumber: 374,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/tranx/page.tsx",
-                    lineNumber: 327,
+                    lineNumber: 369,
                     columnNumber: 11
                 }, this),
                 analysisLoading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -821,7 +1092,7 @@ function TranxPage() {
                     children: "Analyzing transformations..."
                 }, void 0, false, {
                     fileName: "[project]/src/app/tranx/page.tsx",
-                    lineNumber: 358,
+                    lineNumber: 400,
                     columnNumber: 29
                 }, this),
                 analysisError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -829,7 +1100,7 @@ function TranxPage() {
                     children: analysisError
                 }, void 0, false, {
                     fileName: "[project]/src/app/tranx/page.tsx",
-                    lineNumber: 359,
+                    lineNumber: 401,
                     columnNumber: 27
                 }, this),
                 analysisResult && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -838,33 +1109,23 @@ function TranxPage() {
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                    className: "flex items-center",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chart$2d$no$2d$axes$2d$column$2d$increasing$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BarChart$3e$__["BarChart"], {
-                                            className: "h-5 w-5 mr-2"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 364,
-                                            columnNumber: 56
-                                        }, this),
-                                        " Original Data Assessment"
-                                    ]
-                                }, void 0, true, {
+                                    children: "3. Original Data Assessment"
+                                }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 364,
+                                    lineNumber: 406,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Normality tests for the original data."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 365,
+                                    lineNumber: 407,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 363,
+                            lineNumber: 405,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -880,7 +1141,7 @@ function TranxPage() {
                                                     children: "Test"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 371,
+                                                    lineNumber: 413,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -888,18 +1149,18 @@ function TranxPage() {
                                                     children: "Result"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 372,
+                                                    lineNumber: 414,
                                                     columnNumber: 29
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 370,
+                                            lineNumber: 412,
                                             columnNumber: 25
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                        lineNumber: 369,
+                                        lineNumber: 411,
                                         columnNumber: 21
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -912,7 +1173,7 @@ function TranxPage() {
                                                         children: analysisResult.original_normality.shapiro_wilk.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 378,
+                                                        lineNumber: 420,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -920,13 +1181,13 @@ function TranxPage() {
                                                         children: analysisResult.original_normality.shapiro_wilk.interpretation
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 379,
+                                                        lineNumber: 421,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 377,
+                                                lineNumber: 419,
                                                 columnNumber: 29
                                             }, this),
                                             analysisResult.original_normality?.dagostino_pearson && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -936,7 +1197,7 @@ function TranxPage() {
                                                         children: analysisResult.original_normality.dagostino_pearson.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 384,
+                                                        lineNumber: 426,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -944,13 +1205,13 @@ function TranxPage() {
                                                         children: analysisResult.original_normality.dagostino_pearson.interpretation
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 385,
+                                                        lineNumber: 427,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 383,
+                                                lineNumber: 425,
                                                 columnNumber: 29
                                             }, this),
                                             analysisResult.original_normality?.kolmogorov_smirnov && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -960,7 +1221,7 @@ function TranxPage() {
                                                         children: analysisResult.original_normality.kolmogorov_smirnov.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 390,
+                                                        lineNumber: 432,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -968,13 +1229,13 @@ function TranxPage() {
                                                         children: analysisResult.original_normality.kolmogorov_smirnov.interpretation
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 391,
+                                                        lineNumber: 433,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 389,
+                                                lineNumber: 431,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -984,7 +1245,7 @@ function TranxPage() {
                                                         children: "Skewness"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 395,
+                                                        lineNumber: 437,
                                                         columnNumber: 29
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -992,13 +1253,13 @@ function TranxPage() {
                                                         children: analysisResult.original_normality?.descriptive_stats?.skewness_interpretation
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 396,
+                                                        lineNumber: 438,
                                                         columnNumber: 29
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 394,
+                                                lineNumber: 436,
                                                 columnNumber: 25
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -1008,7 +1269,7 @@ function TranxPage() {
                                                         children: "Kurtosis"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 399,
+                                                        lineNumber: 441,
                                                         columnNumber: 29
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1016,23 +1277,24 @@ function TranxPage() {
                                                         children: analysisResult.original_normality?.descriptive_stats?.kurtosis_interpretation
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 400,
+                                                        lineNumber: 442,
                                                         columnNumber: 29
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 398,
+                                                lineNumber: 440,
                                                 columnNumber: 25
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                className: "bg-gray-100 font-bold",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900",
+                                                        className: "px-6 py-4 whitespace-nowrap text-sm text-black-900",
                                                         children: "Overall Assessment"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 403,
+                                                        lineNumber: 445,
                                                         columnNumber: 29
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1040,71 +1302,61 @@ function TranxPage() {
                                                         children: analysisResult.original_normality?.overall_assessment?.recommendation
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 404,
+                                                        lineNumber: 446,
                                                         columnNumber: 29
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 402,
+                                                lineNumber: 444,
                                                 columnNumber: 25
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                        lineNumber: 375,
+                                        lineNumber: 417,
                                         columnNumber: 21
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                lineNumber: 368,
+                                lineNumber: 410,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 367,
+                            lineNumber: 409,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/tranx/page.tsx",
-                    lineNumber: 362,
+                    lineNumber: 404,
                     columnNumber: 11
                 }, this),
-                analysisResult && analysisResult.allScores && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
+                analysisResult && analysisResult.all_scores && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
                     className: "mb-8 border border-pink-200 rounded-lg",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                    className: "flex items-center",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chart$2d$no$2d$axes$2d$column$2d$increasing$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BarChart$3e$__["BarChart"], {
-                                            className: "h-5 w-5 mr-2"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 415,
-                                            columnNumber: 56
-                                        }, this),
-                                        " Transformation Scores"
-                                    ]
-                                }, void 0, true, {
+                                    children: "4. Transformation Scores"
+                                }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 415,
+                                    lineNumber: 457,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Scores for different transformations. Higher score is better."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 416,
+                                    lineNumber: 458,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 414,
+                            lineNumber: 456,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1120,7 +1372,7 @@ function TranxPage() {
                                                     children: "Transformation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 422,
+                                                    lineNumber: 464,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1128,7 +1380,7 @@ function TranxPage() {
                                                     children: "Score"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 423,
+                                                    lineNumber: 465,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1136,38 +1388,38 @@ function TranxPage() {
                                                     children: "Recommendation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 424,
+                                                    lineNumber: 466,
                                                     columnNumber: 29
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 421,
+                                            lineNumber: 463,
                                             columnNumber: 25
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                        lineNumber: 420,
+                                        lineNumber: 462,
                                         columnNumber: 21
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
                                         className: "bg-white divide-y divide-pink-200",
-                                        children: Object.entries(analysisResult.allScores).map(([key, value])=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                        children: Object.entries(analysisResult.all_scores).map(([key, value])=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                         className: "px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900 capitalize",
                                                         children: key.replace('_', ' ')
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 430,
+                                                        lineNumber: 472,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                         className: "px-6 py-4 whitespace-nowrap text-sm text-black-500",
-                                                        children: value.toFixed(3)
+                                                        children: value.toFixed(2)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 431,
+                                                        lineNumber: 473,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1176,40 +1428,40 @@ function TranxPage() {
                                                             className: "h-5 w-5 text-green-600"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                                            lineNumber: 433,
+                                                            lineNumber: 475,
                                                             columnNumber: 75
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 432,
+                                                        lineNumber: 474,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, key, true, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 429,
+                                                lineNumber: 471,
                                                 columnNumber: 29
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                        lineNumber: 427,
+                                        lineNumber: 469,
                                         columnNumber: 21
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                lineNumber: 419,
+                                lineNumber: 461,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 418,
+                            lineNumber: 460,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/tranx/page.tsx",
-                    lineNumber: 413,
+                    lineNumber: 455,
                     columnNumber: 11
                 }, this),
                 analysisResult && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1218,23 +1470,23 @@ function TranxPage() {
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                    children: "4. Apply Transformation"
+                                    children: "5. Apply Transformation"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 446,
+                                    lineNumber: 488,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Choose a transformation and apply it to your data."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 447,
+                                    lineNumber: 489,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 445,
+                            lineNumber: 487,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1247,7 +1499,7 @@ function TranxPage() {
                                             children: "Transformation Type"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 451,
+                                            lineNumber: 493,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1260,7 +1512,7 @@ function TranxPage() {
                                                     children: "No Transformation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 453,
+                                                    lineNumber: 495,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1268,7 +1520,7 @@ function TranxPage() {
                                                     children: "Log Transformation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 454,
+                                                    lineNumber: 496,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1276,7 +1528,7 @@ function TranxPage() {
                                                     children: "Square Root Transformation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 455,
+                                                    lineNumber: 497,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1284,7 +1536,7 @@ function TranxPage() {
                                                     children: "Box-Cox Transformation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 456,
+                                                    lineNumber: 498,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1292,7 +1544,7 @@ function TranxPage() {
                                                     children: "Yeo-Johnson Transformation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 457,
+                                                    lineNumber: 499,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1300,19 +1552,19 @@ function TranxPage() {
                                                     children: "Arcsine Transformation"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 458,
+                                                    lineNumber: 500,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                            lineNumber: 452,
+                                            lineNumber: 494,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 450,
+                                    lineNumber: 492,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1321,7 +1573,7 @@ function TranxPage() {
                                     children: transformLoading ? 'Transforming...' : 'Run Transformation'
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 461,
+                                    lineNumber: 503,
                                     columnNumber: 15
                                 }, this),
                                 transformError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1329,19 +1581,19 @@ function TranxPage() {
                                     children: transformError
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 464,
+                                    lineNumber: 506,
                                     columnNumber: 34
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 449,
+                            lineNumber: 491,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/tranx/page.tsx",
-                    lineNumber: 444,
+                    lineNumber: 486,
                     columnNumber: 11
                 }, this),
                 previewData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1350,23 +1602,23 @@ function TranxPage() {
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardHeader"], {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
-                                    children: "5. Transformed Data Preview"
+                                    children: "6. Transformed Data Preview"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 472,
+                                    lineNumber: 514,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Showing factor, block, original, and transformed values."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 473,
+                                    lineNumber: 515,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 471,
+                            lineNumber: 513,
                             columnNumber: 15
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1384,17 +1636,17 @@ function TranxPage() {
                                                             children: key
                                                         }, key, false, {
                                                             fileName: "[project]/src/app/tranx/page.tsx",
-                                                            lineNumber: 480,
+                                                            lineNumber: 522,
                                                             columnNumber: 71
                                                         }, this))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                                    lineNumber: 479,
+                                                    lineNumber: 521,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 478,
+                                                lineNumber: 520,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1402,31 +1654,31 @@ function TranxPage() {
                                                 children: previewData.slice(0, 5).map((row, rowIndex)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                                         children: Object.values(row).map((value, colIndex)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                                 className: "px-6 py-4 whitespace-nowrap text-sm text-gray-900",
-                                                                children: typeof value === 'number' ? value.toFixed(4) : value?.toString()
+                                                                children: typeof value === 'number' ? value.toFixed(2) : value?.toString()
                                                             }, colIndex, false, {
                                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                                lineNumber: 487,
+                                                                lineNumber: 529,
                                                                 columnNumber: 29
                                                             }, this))
                                                     }, rowIndex, false, {
                                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                                        lineNumber: 485,
+                                                        lineNumber: 527,
                                                         columnNumber: 25
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 483,
+                                                lineNumber: 525,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                        lineNumber: 477,
+                                        lineNumber: 519,
                                         columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 476,
+                                    lineNumber: 518,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1437,7 +1689,7 @@ function TranxPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 496,
+                                    lineNumber: 538,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1450,46 +1702,46 @@ function TranxPage() {
                                                 className: "h-4 w-4 mr-2"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/tranx/page.tsx",
-                                                lineNumber: 499,
+                                                lineNumber: 541,
                                                 columnNumber: 21
                                             }, this),
                                             "Export as CSV"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/tranx/page.tsx",
-                                        lineNumber: 498,
+                                        lineNumber: 540,
                                         columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tranx/page.tsx",
-                                    lineNumber: 497,
+                                    lineNumber: 539,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tranx/page.tsx",
-                            lineNumber: 475,
+                            lineNumber: 517,
                             columnNumber: 15
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/tranx/page.tsx",
-                    lineNumber: 470,
+                    lineNumber: 512,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/app/tranx/page.tsx",
-            lineNumber: 289,
+            lineNumber: 296,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/app/tranx/page.tsx",
-        lineNumber: 288,
+        lineNumber: 295,
         columnNumber: 5
     }, this);
 }
-_s(TranxPage, "6XibDCuHX/qVjlO2TW71umphgJQ=");
+_s(TranxPage, "VrT+0eWT3piNqSmla61b7bEOBBo=");
 _c = TranxPage;
 var _c;
 __turbopack_context__.k.register(_c, "TranxPage");

@@ -101,12 +101,34 @@ class NormalityTester:
         transformations = {}
         
         # Log transformation
-        log_data = np.log(data) if np.all(data > 0) else np.log(data - np.min(data) + 1)
-        transformations['log'] = {'data': log_data, 'normality_tests': self.test_normality(log_data), 'applicable': True}
+        if np.all(data > 0):
+            log_data = np.log(data)
+            transformations['log'] = {'data': log_data, 'normality_tests': self.test_normality(log_data), 'applicable': True}
+        else:
+            offset = abs(np.min(data)) + 1
+            log_data = np.log(data + offset)
+            transformations['log'] = {
+                'data': log_data,
+                'formula': f'log(x + {offset})',
+                'applicable': True,
+                'offset': offset,
+                'normality_tests': self.test_normality(log_data)
+            }
 
         # Square root transformation
-        sqrt_data = np.sqrt(data) if np.all(data >= 0) else np.sqrt(data - np.min(data))
-        transformations['square_root'] = {'data': sqrt_data, 'normality_tests': self.test_normality(sqrt_data), 'applicable': True}
+        if np.all(data >= 0):
+            sqrt_data = np.sqrt(data)
+            transformations['square_root'] = {'data': sqrt_data, 'normality_tests': self.test_normality(sqrt_data), 'applicable': True}
+        else:
+            offset = abs(np.min(data)) + 1
+            sqrt_data = np.sqrt(data + offset)
+            transformations['square_root'] = {
+                'data': sqrt_data,
+                'formula': f'sqrt(x + {offset})',
+                'applicable': True,
+                'offset': offset,
+                'normality_tests': self.test_normality(sqrt_data)
+            }
 
         # Arcsine transformation
         if np.all((data >= 0) & (data <= 1)):
@@ -116,11 +138,11 @@ class NormalityTester:
         # Box-Cox transformation
         if np.all(data > 0):
             boxcox_data, lambda_param = stats.boxcox(data)
-            transformations['box_cox'] = {'data': boxcox_data, 'lambda': lambda_param, 'normality_tests': self.test_normality(boxcox_data), 'applicable': True}
+            transformations['boxcox'] = {'data': boxcox_data, 'lambda': lambda_param, 'normality_tests': self.test_normality(boxcox_data), 'applicable': True}
 
         # Yeo-Johnson transformation
         yeojohnson_data, lambda_param = stats.yeojohnson(data)
-        transformations['yeo_johnson'] = {'data': yeojohnson_data, 'lambda': lambda_param, 'normality_tests': self.test_normality(yeojohnson_data), 'applicable': True}
+        transformations['yeojohnson'] = {'data': yeojohnson_data, 'lambda': lambda_param, 'normality_tests': self.test_normality(yeojohnson_data), 'applicable': True}
         
         self.transformations = transformations
         return transformations
@@ -257,7 +279,11 @@ def transform_data():
 
     if transform_choice == 'log':
         try:
-            df_transformed[response_col] = df_transformed[response_col].apply(lambda x: np.log1p(x) if x >= 0 else np.log1p(-x))
+            if (df_transformed[response_col] <= 0).any():
+                offset = abs(df_transformed[response_col].min()) + 1
+                df_transformed[response_col] = np.log(df_transformed[response_col] + offset)
+            else:
+                df_transformed[response_col] = np.log(df_transformed[response_col])
             new_response_col_name = f"Log_{original_response_col}"
             df_transformed.rename(columns={response_col: new_response_col_name}, inplace=True)
         except Exception as e:
@@ -266,8 +292,10 @@ def transform_data():
     elif transform_choice == 'sqrt':
         try:
             if (df_transformed[response_col] < 0).any():
-                return jsonify({"error": "Square root transformation cannot be applied to negative values."}), 400
-            df_transformed[response_col] = np.sqrt(df_transformed[response_col])
+                offset = abs(df_transformed[response_col].min()) + 1
+                df_transformed[response_col] = np.sqrt(df_transformed[response_col] + offset)
+            else:
+                df_transformed[response_col] = np.sqrt(df_transformed[response_col])
             new_response_col_name = f"Sqrt_{original_response_col}"
             df_transformed.rename(columns={response_col: new_response_col_name}, inplace=True)
         except Exception as e:

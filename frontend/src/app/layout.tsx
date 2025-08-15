@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { IBM_Plex_Sans } from 'next/font/google'
 import './globals.css'
 import Link from "next/link";
+import Script from 'next/script';
 import { FaHome, FaBook} from "react-icons/fa";
 import { FaRepeat } from "react-icons/fa6";
 
@@ -23,15 +24,15 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/assets/favicon2.png" />
         {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MC16GF6L4C"></script>
-        <script>
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-MC16GF6L4C"></Script>
+        <Script id="google-analytics">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'G-MC16GF6L4C');
           `}
-        </script>
+        </Script>
       </head>
       <body className={`${ibmPlexSans.className} flex flex-col min-h-screen`}>
         <header className="sticky top-0 z-50 bg-white text-left p-4 text-2xl font-bold flex justify-between items-center">
@@ -60,4 +61,4 @@ export default function RootLayout({
       </body>
     </html>
   )
-} 
+}

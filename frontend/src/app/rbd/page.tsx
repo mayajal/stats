@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -50,7 +51,7 @@ export default function RbdPage() {
  // Helper function to clean factor names
  const cleanFactorName = (name: string) => {
   // Extracts content from Q('...') or Q("...")
-  const qMatches = [...name.matchAll(/Q\(['"]([^\'\"]*)['\"]\)/g)];
+  const qMatches = [...name.matchAll(/Q\(['"]([^\'\"]*)['"]\)/g)];
   if (qMatches.length > 0) {
     const factors = qMatches.map(m => m[1]);
     return [...new Set(factors)].join(':');
@@ -67,7 +68,7 @@ export default function RbdPage() {
 
   const renderResultsTable = (data: string, isSignificant?: boolean) => {
     try {
-        // First, try to see if it's HTML content with a table
+        // First, try to see if it\'s HTML content with a table
         if (typeof data === 'string' && data.includes('<table')) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(data, 'text/html');
@@ -259,7 +260,7 @@ export default function RbdPage() {
       setData(jsonData);
       setColumnHeaders(Object.keys(jsonData[0] || {}));
     } catch (err) {
-      setError('Error processing file. Please ensure it\'s a valid Excel file.');
+      setError("Error processing file. Please ensure it\'s a valid Excel file.");
     } finally {
       setLoading(false);
     }
@@ -292,7 +293,7 @@ export default function RbdPage() {
     }, 1000);
 
     const formData = new FormData();
-    // Instead of appending the entire file, we'll send the filtered data as JSON
+    // Instead of appending the entire file, we\'ll send the filtered data as JSON
     formData.append('data', JSON.stringify(dataToAnalyze));
     formData.append('block_col', blockCol);
     formData.append('factor_col', factorCol);
@@ -641,9 +642,11 @@ export default function RbdPage() {
                   {rbdResults.plots.residuals_vs_fitted && (
                     <div className="border p-2 rounded-md">
                       <h4 className="text-md font-medium mb-1">Residuals vs Fitted</h4>
-                      <img
+                      <Image
                         src={`data:image/png;base64,${rbdResults.plots.residuals_vs_fitted}`}
                         alt="Residuals vs Fitted Plot"
+                        width={500}
+                        height={300}
                         className="w-full h-auto"
                       />
                     </div>
@@ -651,9 +654,11 @@ export default function RbdPage() {
                   {rbdResults.plots.qq_plot && (
                     <div className="border p-2 rounded-md">
                       <h4 className="text-md font-medium mb-1">Normal Q-Q Plot</h4>
-                      <img
+                      <Image
                         src={`data:image/png;base64,${rbdResults.plots.qq_plot}`}
                         alt="Normal Q-Q Plot"
+                        width={500}
+                        height={300}
                         className="w-full h-auto"
                       />
                     </div>
@@ -797,9 +802,11 @@ export default function RbdPage() {
                     {rbdResults.plots.mean_bar_plot && (
                       <div className="border p-2 rounded-md">
                         <h4 className="text-md font-medium mb-1">Bar Plot</h4>
-                        <img
+                        <Image
                           src={`data:image/png;base64,${rbdResults.plots.mean_bar_plot}`}
                           alt="Bar Plot"
+                          width={500}
+                          height={300}
                           className="w-full h-auto"
                         />
                       </div>
@@ -808,9 +815,11 @@ export default function RbdPage() {
                     {rbdResults.plots.mean_box_plot && (
                       <div className="border p-2 rounded-md">
                         <h4 className="text-md font-medium mb-1">Box Plot</h4>
-                        <img
+                        <Image
                           src={`data:image/png;base64,${rbdResults.plots.mean_box_plot}`}
                           alt="Box Plot"
+                          width={500}
+                          height={300}
                           className="w-full h-auto"
                         />
                       </div>

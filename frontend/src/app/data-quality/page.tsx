@@ -168,7 +168,7 @@ export default function AnalysisPage() {
 
       setData(jsonData);
     } catch (err) {
-      setError('Error processing file. Please ensure it\'s a valid Excel file.');
+      setError("Error processing file. Please ensure it&apos;s a valid Excel file.");
     } finally {
       setLoading(false);
     }
@@ -437,7 +437,7 @@ export default function AnalysisPage() {
             <Button onClick={() => setShowHistogram(true)}>Show Distribution</Button>
             <Button onClick={handleKSTest}>Normality Test (KS)</Button>
             {groupColumn && (
-              <Button onClick={handleLeveneTest}>Heterogeneity Test (Levene's)</Button>
+              <Button onClick={handleLeveneTest}>Heterogeneity Test (Levene&apos;s)</Button>
             )}
           </div>
         )}
@@ -564,10 +564,10 @@ export default function AnalysisPage() {
         {leveneResult && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Heterogeneity of Variance (Levene's Test)</CardTitle>
+              <CardTitle>Heterogeneity of Variance (Levene&apos;s Test)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div>Levene's W: {leveneResult.W.toFixed(4)}</div>
+              <div>Levene&apos;s W: {leveneResult.W.toFixed(4)}</div>
               <div>
                 {leveneResult.pValue !== undefined && !isNaN(leveneResult.pValue)
                   ? `p-value: ${leveneResult.pValue.toExponential(2)}`

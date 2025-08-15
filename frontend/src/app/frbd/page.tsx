@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,7 +48,7 @@ export default function FrbdPage() {
   // Helper function to clean factor names
   const cleanFactorName = (name: string) => {
     // Extracts content from Q('...') or Q("...")
-    const qMatches = [...name.matchAll(/Q\(['"]([^\'\"]*)['\"]\)/g)];
+    const qMatches = [...name.matchAll(/Q\(['"]([^'\"]*)['"]\)/g)];
     if (qMatches.length > 0) {
       const factors = qMatches.map(m => m[1]);
       return [...new Set(factors)].join(':');
@@ -259,7 +260,7 @@ export default function FrbdPage() {
       setColumnHeaders(headers);
       console.log('Column Headers:', headers);
     } catch (err) {
-      setError('Error processing file. Please ensure it\'s a valid Excel file.');
+      setError("Error processing file. Please ensure it's a valid Excel file.");
     } finally {
       setLoading(false);
     }
@@ -599,28 +600,24 @@ export default function FrbdPage() {
                   {frbdResults.plots.residuals_vs_fitted && isValidBase64Image(frbdResults.plots.residuals_vs_fitted) && (
                     <div className="border p-2 rounded-md">
                       <h4 className="text-md font-medium mb-1">Residuals vs Fitted</h4>
-                      <img
+                      <Image
                         src={`data:image/png;base64,${frbdResults.plots.residuals_vs_fitted}`}
                         alt="Residuals vs Fitted Plot"
+                        width={500}
+                        height={300}
                         className="w-full h-auto"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.insertAdjacentHTML('afterend', '<p class="text-red-500">Failed to load plot</p>');
-                        }}
                       />
                     </div>
                   )}
                   {frbdResults.plots.qq_plot && isValidBase64Image(frbdResults.plots.qq_plot) && (
                     <div className="border p-2 rounded-md">
                       <h4 className="text-md font-medium mb-1">Normal Q-Q Plot</h4>
-                      <img
+                      <Image
                         src={`data:image/png;base64,${frbdResults.plots.qq_plot}`}
                         alt="Normal Q-Q Plot"
+                        width={500}
+                        height={300}
                         className="w-full h-auto"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.insertAdjacentHTML('afterend', '<p class="text-red-500">Failed to load plot</p>');
-                        }}
                       />
                     </div>
                   )}
@@ -751,14 +748,12 @@ export default function FrbdPage() {
                       frbdResults.plots[`mean_bar_plot_${factor}`] && isValidBase64Image(frbdResults.plots[`mean_bar_plot_${factor}`]) && (
                         <div key={`bar-plot-${factor}`} className="border p-2 rounded-md">
                           <h4 className="text-md font-medium mb-1">Bar Plot for {factor}</h4>
-                          <img
+                          <Image
                             src={`data:image/png;base64,${frbdResults.plots[`mean_bar_plot_${factor}`]}`}
                             alt={`Bar Plot for ${factor}`}
+                            width={500}
+                            height={300}
                             className="w-full h-auto"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                              e.currentTarget.insertAdjacentHTML('afterend', '<p class="text-red-500">Failed to load plot</p>');
-                            }}
                           />
                         </div>
                       )
@@ -767,14 +762,12 @@ export default function FrbdPage() {
                       frbdResults.plots[`mean_box_plot_${factor}`] && isValidBase64Image(frbdResults.plots[`mean_box_plot_${factor}`]) && (
                         <div key={`box-plot-${factor}`} className="border p-2 rounded-md">
                           <h4 className="text-md font-medium mb-1">Box Plot for {factor}</h4>
-                          <img
+                          <Image
                             src={`data:image/png;base64,${frbdResults.plots[`mean_box_plot_${factor}`]}`}
                             alt={`Box Plot for ${factor}`}
+                            width={500}
+                            height={300}
                             className="w-full h-auto"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                              e.currentTarget.insertAdjacentHTML('afterend', '<p class="text-red-500">Failed to load plot</p>');
-                            }}
                           />
                         </div>
                       )

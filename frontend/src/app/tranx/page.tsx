@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
+import * as Dialog from "@radix-ui/react-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Upload, Replace, Download, BarChart, CheckCircle } from "lucide-react";
+import { Upload, Replace, Download, CheckCircle, Info } from "lucide-react";
 import * as XLSX from 'xlsx';
 
 interface SkewnessData {
@@ -23,7 +24,7 @@ interface AnalysisResult {
     suggestion: string;
     originalNormalityInterpretation?: string;
     suggestedTransformationFormula?: string;
-    allScores?: { [key: string]: number };
+    all_scores?: { [key: string]: number };
     original_normality: {
         shapiro_wilk?: { name: string; interpretation: string; };
         dagostino_pearson?: { name: string; interpretation: string; };
@@ -149,13 +150,13 @@ export default function TranxPage() {
       setData(jsonData);
       setColumnHeaders(Object.keys(jsonData[0] || {}));
     } catch (err) {
-      setError('Error processing file. Please ensure it\'s a valid Excel file.');
+      setError("Error processing file. Please ensure it's a valid Excel file.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = useCallback(async () => {
     if (!data.length || !responseCol) {
       setAnalysisError('Please process a file and select a response column.');
       return;
@@ -198,23 +199,29 @@ export default function TranxPage() {
           suggestion: results.recommendation,
           originalNormalityInterpretation: results.original_normality.overall_assessment.recommendation,
           suggestedTransformationFormula: results.suggested_transformation?.formula,
-          allScores: results.all_scores,
+          all_scores: results.all_scores,
           original_normality: results.original_normality,
       });
-      setTransformChoice(results.recommendation || 'untransformed');
+      
+      const recommendationMap: { [key: string]: string } = {
+        'square_root': 'sqrt',
+        'box_cox': 'boxcox',
+      };
+      const recommendedChoice = recommendationMap[results.recommendation] || results.recommendation;
+      setTransformChoice(recommendedChoice || 'untransformed');
 
     } catch (err: any) {
       setAnalysisError(err.message || 'An unexpected error occurred during analysis');
     } finally {
       setAnalysisLoading(false);
     }
-  };
+  }, [data, responseCol]);
 
   useEffect(() => {
     if (responseCol && data.length > 0) {
       handleAnalyze();
     }
-  }, [responseCol, data]);
+  }, [responseCol, data, handleAnalyze]);
 
   const handleTransform = async () => {
     if (!data.length || !responseCol || !transformChoice) {
@@ -256,8 +263,8 @@ export default function TranxPage() {
 
   const previewData = transformedData.length > 0 && blockCol && factorCol && originalResponseCol && transformedResponseCol ? 
     data.map((row, index) => ({
-      [factorCol]: row[factorCol],
-      [blockCol]: row[blockCol],
+      [factorCol]: row[factorCol]?.toString(),
+      [blockCol]: row[blockCol]?.toString(),
       [originalResponseCol]: row[originalResponseCol],
       [transformedResponseCol]: transformedData[index] ? transformedData[index][transformedResponseCol] : null,
     })) : [];
@@ -297,18 +304,53 @@ export default function TranxPage() {
           </p>
         </div>
 
+        <Dialog.Root>
+          <Dialog.Trigger asChild>
+            <Button variant="outline" className="mb-4 flex items-center">
+              <Info className="h-4 w-4 mr-2" />
+              About Data Transformations
+            </Button>
+          </Dialog.Trigger>
+          <Dialog.Portal>
+            <Dialog.Overlay className="fixed inset-0 bg-black/30" />
+            <Dialog.Content className="fixed left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-10 text-gray-900 shadow-lg">
+              <Dialog.Title className="text-lg font-medium">About Data Transformations</Dialog.Title>
+              <Dialog.Description className="mt-2 text-sm text-gray-600">
+                This guide explains the different data transformations available and how the tool works.
+              </Dialog.Description>
+              <div className="grid gap-1 py-4 text-sm">
+                <h3 className="font-semibold text-lg">What transformations can this tool perform?</h3>
+                <p>This tool can perform several common data transformations to help normalize your data:</p>
+                <ul className="list-disc list-inside space-y-1 pl-4">
+                  <li><strong>Log Transformation:</strong> Effective for data that is right-skewed. An offset is automatically added for zero or negative values.</li>
+                  <li><strong>Square Root Transformation:</strong> A gentler transformation than Log, also used for right-skewed data. An offset is added for negative values.</li>
+                  <li><strong>Box-Cox Transformation:</strong> A powerful transformation that finds the best exponent to normalize data. It requires all data to be positive.</li>
+                  <li><strong>Yeo-Johnson Transformation:</strong> An extension of the Box-Cox transformation that can handle both positive and negative data.</li>
+                  <li><strong>Arcsine Transformation:</strong> Primarily used for proportion data where values are between 0 and 1.</li>
+                </ul>
+                <h3 className="font-semibold text-lg mt-4">How does the tool work?</h3>
+                <p>The tool evaluates your data against key assumptions of normality. It checks for:</p>
+                <ul className="list-disc list-inside space-y-1 pl-4">
+                  <li><strong>Normality:</strong> Using statistical tests (like Shapiro-Wilk) to see if the data follows a normal (Gaussian) distribution.</li>
+                  <li><strong>Skewness:</strong> Measuring the asymmetry of the data distribution.</li>
+                  <li><strong>Kurtosis:</strong> Measuring the &quot;tailedness&quot; of the distribution.</li>
+                </ul>
+                <h3 className="font-semibold text-lg mt-4">About the Recommendation Score</h3>
+                <p>The tool applies each suitable transformation and re-evaluates the transformed data. It then calculates a &quot;recommendation score&quot; for each one based on how well it has corrected issues like non-normality and skewness. The transformation with the highest score is presented as the recommended option.</p>
+              </div>
+              <Dialog.Close asChild>
+                <Button variant="outline" className="mt-4">Close</Button>
+              </Dialog.Close>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+
        <Card className="mb-8 border border-pink-200 rounded-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Upload className="h-5 w-5 mr-2" />
               1. Upload Data File
             </CardTitle>
-            <CardDescription>
-              Select an Excel (.xlsx) file. Check the required format 
-              <Link href="/data_arrangement" passHref>
-                <Button variant="link" className="p-1 h-auto ml-1 text-pink-600 hover:underline">here</Button>
-              </Link>.
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-4">
@@ -361,7 +403,7 @@ export default function TranxPage() {
         {analysisResult && (
           <Card className="mb-8 border border-pink-200 rounded-lg">
             <CardHeader>
-              <CardTitle className="flex items-center"><BarChart className="h-5 w-5 mr-2" /> Original Data Assessment</CardTitle>
+              <CardTitle>3. Original Data Assessment</CardTitle>
               <CardDescription>Normality tests for the original data.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -399,8 +441,8 @@ export default function TranxPage() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">Kurtosis</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality?.descriptive_stats?.kurtosis_interpretation}</td>
                         </tr>
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">Overall Assessment</td>
+                        <tr className="bg-gray-100 font-bold">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black-900">Overall Assessment</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality?.overall_assessment?.recommendation}</td>
                         </tr>
                     </tbody>
@@ -409,10 +451,10 @@ export default function TranxPage() {
           </Card>
         )}
 
-        {analysisResult && analysisResult.allScores && (
+        {analysisResult && analysisResult.all_scores && (
           <Card className="mb-8 border border-pink-200 rounded-lg">
             <CardHeader>
-              <CardTitle className="flex items-center"><BarChart className="h-5 w-5 mr-2" /> Transformation Scores</CardTitle>
+              <CardTitle>4. Transformation Scores</CardTitle>
               <CardDescription>Scores for different transformations. Higher score is better.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -425,10 +467,10 @@ export default function TranxPage() {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-pink-200">
-                        {Object.entries(analysisResult.allScores).map(([key, value]) => (
+                        {Object.entries(analysisResult.all_scores).map(([key, value]) => (
                             <tr key={key}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900 capitalize">{key.replace('_', ' ')}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{value.toFixed(3)}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{value.toFixed(2)}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">
                                     {key === analysisResult.suggestion && <CheckCircle className="h-5 w-5 text-green-600"/>}
                                 </td>
@@ -443,7 +485,7 @@ export default function TranxPage() {
         {analysisResult && (
           <Card className="mb-8 border border-pink-200 rounded-lg">
             <CardHeader>
-              <CardTitle>4. Apply Transformation</CardTitle>
+              <CardTitle>5. Apply Transformation</CardTitle>
               <CardDescription>Choose a transformation and apply it to your data.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -469,7 +511,7 @@ export default function TranxPage() {
         {previewData.length > 0 && (
             <Card className="border border-pink-200 rounded-lg">
               <CardHeader>
-                <CardTitle>5. Transformed Data Preview</CardTitle>
+                <CardTitle>6. Transformed Data Preview</CardTitle>
                 <CardDescription>Showing factor, block, original, and transformed values.</CardDescription>
               </CardHeader>
               <CardContent>
@@ -485,7 +527,7 @@ export default function TranxPage() {
                         <tr key={rowIndex}>
                           {Object.values(row).map((value: any, colIndex) => (
                             <td key={colIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {typeof value === 'number' ? value.toFixed(4) : value?.toString()}
+                              {typeof value === 'number' ? value.toFixed(2) : value?.toString()}
                             </td>
                           ))}
                         </tr>

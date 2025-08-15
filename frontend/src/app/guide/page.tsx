@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -70,7 +69,7 @@ export default function GuidePage() {
           <h1 className="mt-2 font-headline text-3xl font-bold tracking-tight">Statistical Guide</h1>
         </div>
         <p className="text-muted-foreground text-lg max-w-2xl">Ask me anything about which statistical test to use!</p>
-        <p className="text-muted-foreground text-lg max-w-2xl">For example: "When should I use ANOVA?"</p>
+        <p className="text-muted-foreground text-lg max-w-2xl">For example: &quot;When should I use ANOVA?&quot;</p>
         <p className="text-muted-foreground text-lg max-w-2xl mb-4"> </p>
       <main className="w-full max-w-2xl flex-grow flex flex-col">
         <Card className="flex-grow flex flex-col">
@@ -89,7 +88,7 @@ export default function GuidePage() {
                       </Avatar>
                     )}
                     <div className={`rounded-lg px-3 py-2 max-w-sm ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                      <p className="text-sm" dangerouslySetInnerHTML={{ __html: message.content.replace(/\\n/g, '<br />') }}/>
+                      <p className="text-sm" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }}/>
                     </div>
                     {message.role === 'user' && (
                        <Avatar className="h-8 w-8">
