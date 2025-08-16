@@ -329,10 +329,10 @@ export default function TranxPage() {
                 <ul className="list-disc list-inside space-y-1 pl-4">
                   <li><strong>Normality:</strong> Using statistical tests (like Shapiro-Wilk) to see if the data follows a normal (Gaussian) distribution.</li>
                   <li><strong>Skewness:</strong> Measuring the asymmetry of the data distribution.</li>
-                  <li><strong>Kurtosis:</strong> Measuring the "tailedness" of the distribution.</li>
+                  <li><strong>Kurtosis:</strong> Measuring the &quot;tailedness&quot; of the distribution.</li>
                 </ul>
                 <h3 className="font-semibold text-lg mt-4">About the Recommendation Score</h3>
-                <p>The tool applies each suitable transformation and re-evaluates the transformed data. It then calculates a "recommendation score" for each one based on how well it has corrected issues like non-normality and skewness. The transformation with the highest score is presented as the recommended option.</p>
+                <p>The tool applies each suitable transformation and re-evaluates the transformed data. It then calculates a &quot;recommendation score&quot; for each one based on how well it has corrected issues like non-normality and skewness. The transformation with the highest score is presented as the recommended option.</p>
               </div>
               <Dialog.Close asChild>
                 <Button variant="outline" className="mt-4">Close</Button>
