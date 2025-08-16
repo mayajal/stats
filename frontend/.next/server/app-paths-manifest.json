@@ -1,3 +1,11 @@
 {
-  "/frbd/page": "app/frbd/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/analysis/page": "app/analysis/page.js",
+  "/data_arrangement/page": "app/data_arrangement/page.js",
+  "/data-quality/page": "app/data-quality/page.js",
+  "/guide/page": "app/guide/page.js",
+  "/page": "app/page.js",
+  "/frbd/page": "app/frbd/page.js",
+  "/rbd/page": "app/rbd/page.js",
+  "/tranx/page": "app/tranx/page.js"
 }

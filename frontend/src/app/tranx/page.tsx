@@ -175,7 +175,7 @@ export default function TranxPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ data, response_col: responseCol }),
+        body: JSON.stringify({ data, response_col: responseCol, transform_choice: transformChoice }),
       });
 
       if (!response.ok) {
@@ -210,7 +210,7 @@ export default function TranxPage() {
     } finally {
       setAnalysisLoading(false);
     }
-  }, [data, responseCol]);
+  }, [data, responseCol, transformChoice]);
 
   useEffect(() => {
     if (responseCol && data.length > 0) {

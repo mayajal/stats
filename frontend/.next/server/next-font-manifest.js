@@ -1,1 +1,1 @@
-self.__NEXT_FONT_MANIFEST="{\n  \"app\": {\n    \"[project]/src/app/frbd/page\": [\n      \"static/media/zYXzKVElMYYaJe8bpLHnCwDKr932_G7dytD_Dmu1syxeKYbSB4Zh-s.p.6bd55bd1.woff2\"\n    ]\n  },\n  \"appUsingSizeAdjust\": true,\n  \"pages\": {},\n  \"pagesUsingSizeAdjust\": false\n}"
+self.__NEXT_FONT_MANIFEST='{"pages":{},"app":{"/Users/gajendrababubaktavachalam/WebApps/statviz/stats/frontend/src/app/layout":["static/media/26d4368bf94c0ec4-s.p.woff2"]},"appUsingSizeAdjust":true,"pagesUsingSizeAdjust":false}';

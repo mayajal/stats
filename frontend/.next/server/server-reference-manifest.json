@@ -1,17 +1,1 @@
-{
-  "node": {
-    "4011919ebe37fa6602b98b03f349784ba52001ff52": {
-      "workers": {
-        "app/frbd/page": {
-          "moduleId": "[project]/.next-internal/server/app/frbd/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": true
-        }
-      },
-      "layer": {
-        "app/frbd/page": "action-browser"
-      }
-    }
-  },
-  "edge": {},
-  "encryptionKey": "/AtgseQJPHiMNOlxGnYpzRwMedwGntNgkL2qxa5OLxo="
-}
+{"node":{"40c7152bd6c23c0b531971957f8d402f80c45d003f":{"workers":{"app/guide/page":{"moduleId":"8953","async":true},"app/frbd/page":{"moduleId":"8953","async":true},"app/rbd/page":{"moduleId":"8953","async":true}},"layer":{"app/guide/page":"action-browser","app/frbd/page":"action-browser","app/rbd/page":"action-browser"}},"40c97768726835eb6303c93fb3edc7bea7f930e73f":{"workers":{"app/guide/page":{"moduleId":"8953","async":true},"app/frbd/page":{"moduleId":"8953","async":true},"app/rbd/page":{"moduleId":"8953","async":true}},"layer":{"app/guide/page":"action-browser","app/frbd/page":"action-browser","app/rbd/page":"action-browser"}},"40ef146b262430372e00e489675a858cd70768c14f":{"workers":{"app/guide/page":{"moduleId":"8953","async":true},"app/frbd/page":{"moduleId":"8953","async":true},"app/rbd/page":{"moduleId":"8953","async":true}},"layer":{"app/guide/page":"action-browser","app/frbd/page":"action-browser","app/rbd/page":"action-browser"}}},"edge":{},"encryptionKey":"/AtgseQJPHiMNOlxGnYpzRwMedwGntNgkL2qxa5OLxo="}
