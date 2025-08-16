@@ -80,7 +80,8 @@ export default function TranxPage() {
   const [analysisError, setAnalysisError] = useState<string>('');
 
   // State for transformation
-  const [transformChoice, setTransformChoice] = useState<string>('untransformed');
+  // State for transformation
+  const [transformChoice, setTransformChoice] = useState<string>('');
   const [transformedData, setTransformedData] = useState<any[]>([]);
   const [transformError, setTransformError] = useState<string>('');
   const [transformLoading, setTransformLoading] = useState(false);
@@ -108,7 +109,7 @@ export default function TranxPage() {
     setAnalysisResult(null);
     setAnalysisLoading(false);
     setAnalysisError('');
-    setTransformChoice('untransformed');
+    setTransformChoice('');
     setTransformedData([]);
     setTransformError('');
     setTransformLoading(false);
@@ -203,7 +204,7 @@ export default function TranxPage() {
           original_normality: results.original_normality,
       });
       
-      setTransformChoice(results.recommendation || 'untransformed');
+      setTransformChoice(results.recommendation || '');
 
     } catch (err: any) {
       setAnalysisError(err.message || 'An unexpected error occurred during analysis');
@@ -328,10 +329,10 @@ export default function TranxPage() {
                 <ul className="list-disc list-inside space-y-1 pl-4">
                   <li><strong>Normality:</strong> Using statistical tests (like Shapiro-Wilk) to see if the data follows a normal (Gaussian) distribution.</li>
                   <li><strong>Skewness:</strong> Measuring the asymmetry of the data distribution.</li>
-                  <li><strong>Kurtosis:</strong> Measuring the &quot;tailedness&quot; of the distribution.</li>
+                  <li><strong>Kurtosis:</strong> Measuring the "tailedness" of the distribution.</li>
                 </ul>
                 <h3 className="font-semibold text-lg mt-4">About the Recommendation Score</h3>
-                <p>The tool applies each suitable transformation and re-evaluates the transformed data. It then calculates a &quot;recommendation score&quot; for each one based on how well it has corrected issues like non-normality and skewness. The transformation with the highest score is presented as the recommended option.</p>
+                <p>The tool applies each suitable transformation and re-evaluates the transformed data. It then calculates a "recommendation score" for each one based on how well it has corrected issues like non-normality and skewness. The transformation with the highest score is presented as the recommended option.</p>
               </div>
               <Dialog.Close asChild>
                 <Button variant="outline" className="mt-4">Close</Button>
@@ -487,6 +488,7 @@ export default function TranxPage() {
               <div>
                 <label className="block mb-1 font-medium">Transformation Type</label>
                 <select value={transformChoice} onChange={e => setTransformChoice(e.target.value)} className="block w-full p-2 border border-pink-300 rounded-md shadow-sm">
+                  <option value="">Select Transformation</option>
                   <option value="untransformed">No Transformation</option>
                   <option value="log">Log Transformation</option>
                   <option value="sqrt">Square Root Transformation</option>

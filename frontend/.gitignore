@@ -2,7 +2,7 @@
 
 # dependencies
 /node_modules
-.next
+.next/
 
 # production
 /build
