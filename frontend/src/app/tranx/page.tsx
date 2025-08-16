@@ -187,7 +187,7 @@ export default function TranxPage() {
       const results: BackendAnalysisResult = await response.json();
 
       const newSkewnessData: SkewnessData = {
-          untransformed: results.original_normality.descriptive_stats.skewness,
+          untransformed: results.original_normality?.descriptive_stats?.skewness ?? null,
           log: results.transformation_details?.log?.normality_tests?.descriptive_stats?.skewness ?? null,
           sqrt: results.transformation_details?.sqrt?.normality_tests?.descriptive_stats?.skewness ?? null,
           boxcox: results.transformation_details?.boxcox?.normality_tests?.descriptive_stats?.skewness ?? null,
@@ -198,7 +198,7 @@ export default function TranxPage() {
       setAnalysisResult({
           skewness: newSkewnessData,
           suggestion: results.recommendation,
-          originalNormalityInterpretation: results.original_normality.overall_assessment.recommendation,
+          originalNormalityInterpretation: results.original_normality?.overall_assessment?.recommendation,
           suggestedTransformationFormula: results.suggested_transformation?.formula,
           all_scores: results.all_scores,
           original_normality: results.original_normality,
