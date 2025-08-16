@@ -547,3 +547,4 @@ export default function TranxPage() {
     </div>
   );
 }
+// This file is part of the Tranx page in a Next.js application.
