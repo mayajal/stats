@@ -855,8 +855,9 @@ export default function RbdPage() {
                 </Button>
               </CardContent>
             </Card>
-          )
+          )}
       </div>
     </div>
   );
 }
+
