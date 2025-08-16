@@ -718,7 +718,7 @@ export default function RbdPage() {
                                   {header}
                                 </th>
                               ))}
-                              <th className="border border-blue-300 px-4 py-2 text-left">Significance</th>
+                              <th className="border border-blue-300 px-4 py-2 text-left">Significance (alpha=0.05)</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -849,8 +849,13 @@ export default function RbdPage() {
                   <div className="prose prose-sm max-w-none mt-4" dangerouslySetInnerHTML={{ __html: aiSummary.replace(/\n/g, '<br />') }} />
                 )}
               </CardContent>
+              <CardContent>
+                <Button disabled>
+                  Generate Report
+                </Button>
+              </CardContent>
             </Card>
-          )}
+          )
       </div>
     </div>
   );

@@ -13,8 +13,11 @@ import warnings
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 warnings.filterwarnings('ignore')
 
+# Initialize Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://localhost:9002","https://vita.chloropy.com","https://vita-zur5dejluq-uc.a.run.app", "http://localhost:9002", "https://vita--statviz-j3txi.us-central1.hosted.app"]}})
+
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://localhost:9002","https://vita.chloropy.com","https://vita-zur5dejluq-uc.a.run.app", "https://statviz-j3txi.web.app"]}})
+
 
 class NormalityTester:
     """
@@ -118,11 +121,11 @@ class NormalityTester:
         # Square root transformation
         if np.all(data >= 0):
             sqrt_data = np.sqrt(data)
-            transformations['square_root'] = {'data': sqrt_data, 'normality_tests': self.test_normality(sqrt_data), 'applicable': True}
+            transformations['sqrt'] = {'data': sqrt_data, 'normality_tests': self.test_normality(sqrt_data), 'applicable': True}
         else:
             offset = abs(np.min(data)) + 1
             sqrt_data = np.sqrt(data + offset)
-            transformations['square_root'] = {
+            transformations['sqrt'] = {
                 'data': sqrt_data,
                 'formula': f'sqrt(x + {offset})',
                 'applicable': True,
@@ -216,7 +219,7 @@ def _convert_numpy_types_to_python_types(obj):
 def health():
     return "OK", 200
 
-@app.route('/analyze_transformations', methods=['POST'])
+@app.route('/tranx/analyze_transformations', methods=['POST'])
 def analyze_transformations():
     data = request.get_json()
     if not data:
@@ -248,24 +251,31 @@ def analyze_transformations():
     return jsonify(recommendation)
 
 
-@app.route('/transform', methods=['POST'])
+@app.route('/tranx/transform', methods=['POST'])
 def transform_data():
     data = request.get_json()
     if not data:
-        logging.error("No data provided")
+        logging.error("No data provided to /tranx/transform endpoint.")
         return jsonify({"error": "No data provided"}), 400
+
+    # Log the entire incoming data payload
+    logging.info(f"Received data for /tranx/transform: {data}")
 
     try:
         df = pd.DataFrame(data['data'])
-        logging.info("Successfully processed incoming data.")
+        logging.info("Successfully processed incoming data for transformation.")
     except Exception as e:
-        logging.error(f"Error processing data: {str(e)}")
+        logging.error(f"Error processing data for transformation: {str(e)}")
         return jsonify({"error": f"Error processing data: {str(e)}"}), 400
 
     response_col = data.get('response_col')
     transform_choice = data.get('transform_choice')
 
+    # Log the extracted values
+    logging.info(f"Extracted response_col: {response_col}, transform_choice: {transform_choice}")
+
     if not all([response_col, transform_choice]):
+        logging.error(f"Missing one or more required fields: response_col={response_col}, transform_choice={transform_choice}")
         return jsonify({"error": "Missing one or more required fields: response_col, transform_choice"}), 400
 
     if response_col not in df.columns:

@@ -1667,7 +1667,7 @@ function RbdPage() {
                                                                     }, this)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
                                                                     className: "border border-blue-300 px-4 py-2 text-left",
-                                                                    children: "Significance"
+                                                                    children: "Significance (alpha=0.05)"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/rbd/page.tsx",
                                                                     lineNumber: 721,

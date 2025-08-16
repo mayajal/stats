@@ -15,8 +15,7 @@ interface SkewnessData {
     sqrt: number | null;
     boxcox: number | null;
     arcsine?: number | null;
-    arcsine_percentage?: number | null;
-    yeo_johnson?: number | null;
+    yeojohnson?: number | null;
 }
 
 interface AnalysisResult {
@@ -46,10 +45,12 @@ interface BackendAnalysisResult {
         overall_assessment: { likely_normal: boolean; recommendation: string; };
     };
     transformation_details?: {
-        data: number[];
-        formula: string;
-        applicable: boolean;
-        normality_tests: any;
+        [key: string]: {
+            data: number[];
+            formula?: string;
+            applicable: boolean;
+            normality_tests: any;
+        }
     };
     all_scores?: { [key: string]: number };
     suggested_transformation?: {
@@ -166,7 +167,7 @@ export default function TranxPage() {
     setAnalysisError('');
     setAnalysisResult(null);
 
-    const analyzeServiceUrl = process.env.NEXT_PUBLIC_TRANX_SERVICE_URL;
+    const analyzeServiceUrl = `${process.env.NEXT_PUBLIC_TRANX_SERVICE_URL}/analyze_transformations`;
 
     try {
       const response = await fetch(analyzeServiceUrl, {
@@ -186,12 +187,11 @@ export default function TranxPage() {
 
       const newSkewnessData: SkewnessData = {
           untransformed: results.original_normality.descriptive_stats.skewness,
-          log: results.transformation_details?.normality_tests?.log?.descriptive_stats?.skewness ?? null,
-          sqrt: results.transformation_details?.normality_tests?.square_root?.descriptive_stats?.skewness ?? null,
-          boxcox: results.transformation_details?.normality_tests?.box_cox?.descriptive_stats?.skewness ?? null,
-          arcsine: results.transformation_details?.normality_tests?.arcsine?.descriptive_stats?.skewness ?? null,
-          arcsine_percentage: results.transformation_details?.normality_tests?.arcsine_percentage?.descriptive_stats?.skewness ?? null,
-          yeo_johnson: results.transformation_details?.normality_tests?.yeo_johnson?.descriptive_stats?.skewness ?? null,
+          log: results.transformation_details?.log?.normality_tests?.descriptive_stats?.skewness ?? null,
+          sqrt: results.transformation_details?.sqrt?.normality_tests?.descriptive_stats?.skewness ?? null,
+          boxcox: results.transformation_details?.boxcox?.normality_tests?.descriptive_stats?.skewness ?? null,
+          arcsine: results.transformation_details?.arcsine?.normality_tests?.descriptive_stats?.skewness ?? null,
+          yeojohnson: results.transformation_details?.yeojohnson?.normality_tests?.descriptive_stats?.skewness ?? null,
       };
 
       setAnalysisResult({
@@ -203,12 +203,7 @@ export default function TranxPage() {
           original_normality: results.original_normality,
       });
       
-      const recommendationMap: { [key: string]: string } = {
-        'square_root': 'sqrt',
-        'box_cox': 'boxcox',
-      };
-      const recommendedChoice = recommendationMap[results.recommendation] || results.recommendation;
-      setTransformChoice(recommendedChoice || 'untransformed');
+      setTransformChoice(results.recommendation || 'untransformed');
 
     } catch (err: any) {
       setAnalysisError(err.message || 'An unexpected error occurred during analysis');
@@ -228,12 +223,12 @@ export default function TranxPage() {
       setTransformError('Please process a file, select a response column, and a transformation type.');
       return;
     }
-
+ 
     setTransformLoading(true);
     setTransformError('');
     setTransformedData([]);
 
-    const tranxServiceUrl = 'http://localhost:8080/transform';
+    const tranxServiceUrl = `${process.env.NEXT_PUBLIC_TRANX_SERVICE_URL}/transform`;
 
     try {
       const response = await fetch(tranxServiceUrl, {
@@ -496,11 +491,11 @@ export default function TranxPage() {
                   <option value="log">Log Transformation</option>
                   <option value="sqrt">Square Root Transformation</option>
                   <option value="boxcox">Box-Cox Transformation</option>
-                  <option value="yeo_johnson">Yeo-Johnson Transformation</option>
+                  <option value="yeojohnson">Yeo-Johnson Transformation</option>
                   <option value="arcsine">Arcsine Transformation</option>
                 </select>
               </div>
-              <Button onClick={handleTransform} disabled={transformLoading || !responseCol}>
+              <Button onClick={handleTransform} disabled={transformLoading || !responseCol || !transformChoice}>
                 {transformLoading ? 'Transforming...' : 'Run Transformation'}
               </Button>
               {transformError && <div className="text-red-600 text-sm bg-red-50 p-3 rounded mt-4">{transformError}</div>}
@@ -519,7 +514,7 @@ export default function TranxPage() {
                   <table className="min-w-full divide-y divide-pink-200">
                     <thead className="bg-pink-50">
                       <tr>
-                        {Object.keys(previewData[0] || {}).map(key => <th key={key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{key}</th>)}
+                        {Object.keys(previewData[0] || {}).map(key => <th key={key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{key}</th>) }
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-pink-200">

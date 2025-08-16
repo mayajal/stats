@@ -99,4 +99,4 @@ This will immediately terminate the container.
 
 docker build -t tranx-service .
 
-docker run -p 8080:8080 tranx-service:latest python3 tranx.py
+docker run -d -p 8080:8080 tranx-service:latest python3 tranx.py

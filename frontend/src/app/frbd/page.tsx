@@ -676,7 +676,7 @@ export default function FrbdPage() {
                                   {header}
                                 </th>
                               ))}
-                              <th className="border border-green-300 px-4 py-2 text-left">Significance</th>
+                              <th className="border border-green-300 px-4 py-2 text-left">Significance (alpha=0.05)</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -796,6 +796,11 @@ export default function FrbdPage() {
                 {aiSummary && (
                   <div className="prose prose-sm max-w-none mt-4" dangerouslySetInnerHTML={{ __html: aiSummary.replace(/\n/g, '<br />') }} />
                 )}
+              </CardContent>
+              <CardContent>
+                <Button disabled>
+                  Generate Report
+                </Button>
               </CardContent>
             </Card>
           )}
