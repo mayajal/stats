@@ -20,8 +20,13 @@ env:
     availability:
       - BUILD
       - RUNTIME
-  - variable: NEXT_PUBLIC_TRANX_SERVICE_URL
-    value: https://tranx-service-737809041422.us-central1.run.app/tranx
+  - variable: NEXT_PUBLIC_TRANX1_SERVICE_URL
+    value: https://tranx-service-737809041422.us-central1.run.app/tranx/analyze_transformations
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_TRANX2_SERVICE_URL
+    value: https://tranx-service-737809041422.us-central1.run.app/tranx/transform
     availability:
       - BUILD
       - RUNTIME

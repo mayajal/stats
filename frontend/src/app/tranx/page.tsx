@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Upload, Replace, CheckCircle, Info, Loader2, Download } from "lucide-react";
 
 
-const analyzeServiceUrl = `${process.env.NEXT_PUBLIC_TRANX_SERVICE_URL}/analyze_transformations`;
-const tranxServiceUrl = `${process.env.NEXT_PUBLIC_TRANX_SERVICE_URL}/transform`;
+const analyzeServiceUrl = process.env.NEXT_PUBLIC_TRANX1_SERVICE_URL;
+const tranxServiceUrl = process.env.NEXT_PUBLIC_TRANX2_SERVICE_URL;
 
 function getNumericalColumns(data) {
   if (!data || data.length === 0) return [];
