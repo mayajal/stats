@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Upload, Replace, Download, CheckCircle, Info } from "lucide-react";
 import * as XLSX from 'xlsx';
@@ -158,7 +158,7 @@ export default function TranxPage() {
     }
   };
 
-  const handleAnalyze = useCallback(async () => {
+  const handleAnalyze = async () => {
     if (!data.length || !responseCol) {
       setAnalysisError('Please process a file and select a response column.');
       return;
@@ -211,13 +211,7 @@ export default function TranxPage() {
     } finally {
       setAnalysisLoading(false);
     }
-  }, [data, responseCol, transformChoice]);
-
-  useEffect(() => {
-    if (responseCol && data.length > 0) {
-      handleAnalyze();
-    }
-  }, [responseCol, data, handleAnalyze]);
+  };
 
   const handleTransform = async () => {
     if (!data.length || !responseCol || !transformChoice) {
@@ -390,6 +384,11 @@ export default function TranxPage() {
                 </select>
               </div>
             </CardContent>
+            <CardFooter>
+              <Button onClick={handleAnalyze} disabled={!blockCol || !factorCol || !responseCol || analysisLoading}>
+                {analysisLoading ? 'Analyzing...' : 'Perform Normality Tests'}
+              </Button>
+            </CardFooter>
           </Card>
         )}
 
