@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Upload, Replace, CheckCircle, Info, Loader2 } from "lucide-react";
+import { Upload, Replace, CheckCircle, Info, Loader2, Download } from "lucide-react";
 
 
 const analyzeServiceUrl = `${process.env.NEXT_PUBLIC_TRANX_SERVICE_URL}/analyze_transformations`;
@@ -206,6 +206,40 @@ export default function Page() {
     setIsTransforming(false);
   };
 
+  const handleExport = () => {
+    if (transformedData.length === 0) {
+      alert("No data to export.");
+      return;
+    }
+
+    const originalColName = selectedColumns[0];
+    const transformedCol = transformedColName;
+
+    const dataToExport = transformedData.map((row, i) => {
+      const originalValue = rawData[i]?.[originalColName];
+      const transformedValue = row[transformedCol];
+      return {
+        [originalColName]: originalValue,
+        [transformedCol]: transformedValue,
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const csvOutput = XLSX.utils.sheet_to_csv(worksheet);
+
+    const blob = new Blob([csvOutput], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.href) {
+      URL.revokeObjectURL(link.href);
+    }
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', 'transformed_data.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const anyLoading = isProcessing || isAnalyzing || isTransforming;
 
   return (
@@ -261,7 +295,7 @@ export default function Page() {
           </Dialog.Portal>
         </Dialog.Root>
 
-        <Card>
+        <Card className="border border-pink-500">
           <CardHeader>
             <CardTitle>
               <Upload className="inline mr-2" size={20} />
@@ -289,7 +323,7 @@ export default function Page() {
         </Card>
 
         {columns.length > 0 && (
-          <Card>
+          <Card className="border border-pink-500">
             <CardHeader>
               <CardTitle>
                 <Info className="inline mr-2" size={20} />
@@ -329,7 +363,7 @@ export default function Page() {
         )}
 
         {normalityResults.length > 0 && (
-          <Card>
+          <Card className="border border-pink-500">
             <CardHeader>
               <CardTitle>
                 <Info className="inline mr-2" size={20} />
@@ -352,7 +386,7 @@ export default function Page() {
                       <td className="border p-2">{value}</td>
                     </tr>
                   ))}
-                  <tr>
+                  <tr className="bg-yellow-100">
                     <td className="border p-2 font-medium">Transform</td>
                     <td className="border p-2">
                       {normalityResults.length > 0 && transformRecommendations[normalityResults[0].column] ? (
@@ -360,7 +394,7 @@ export default function Page() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleTransform(normalityResults[0].column, transformRecommendations[normalityResults[0].column].type)}
-                          disabled={loading}
+                          disabled={anyLoading}
                         >
                           <Replace className="inline mr-1 text-pink-500" size={15} />
                           {transformRecommendations[normalityResults[0].column].type}
@@ -375,7 +409,7 @@ export default function Page() {
         )}
 
         {transformedData.length > 0 && (
-          <Card>
+          <Card className="border border-pink-500">
             <CardHeader>
               <CardTitle>4. Transformed Data</CardTitle>
               <CardDescription>Comparing original and transformed values.</CardDescription>
@@ -414,6 +448,14 @@ export default function Page() {
                 </tbody>
               </table>
             </CardContent>
+            <CardFooter>
+                <div className="mt-4">
+                  <Button onClick={handleExport} disabled={transformedData.length === 0}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export as CSV
+                  </Button>
+                </div>
+            </CardFooter>
           </Card>
         )}
       </div>
