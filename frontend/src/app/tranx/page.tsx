@@ -1,289 +1,216 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import * as XLSX from 'xlsx';
+
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Upload, Replace, Download, CheckCircle, Info } from "lucide-react";
-import * as XLSX from 'xlsx';
+import { Upload, Replace, CheckCircle, Info, Loader2 } from "lucide-react";
 
-interface SkewnessData {
-    untransformed: number | null;
-    log: number | null;
-    sqrt: number | null;
-    boxcox: number | null;
-    arcsine?: number | null;
-    yeojohnson?: number | null;
+
+const analyzeServiceUrl = `${process.env.NEXT_PUBLIC_TRANX_SERVICE_URL}/analyze_transformations`;
+const tranxServiceUrl = `${process.env.NEXT_PUBLIC_TRANX_SERVICE_URL}/transform`;
+
+function getNumericalColumns(data) {
+  if (!data || data.length === 0) return [];
+  const sample = data[0];
+  return Object.keys(sample).filter(
+    key => typeof sample[key] === 'number' || !isNaN(Number(sample[key]))
+  );
 }
 
-interface AnalysisResult {
-    skewness: SkewnessData;
-    suggestion: string;
-    originalNormalityInterpretation?: string;
-    suggestedTransformationFormula?: string;
-    all_scores?: { [key: string]: number };
-    original_normality: {
-        shapiro_wilk?: { name: string; interpretation: string; };
-        dagostino_pearson?: { name: string; interpretation: string; };
-        kolmogorov_smirnov: { name: string; interpretation: string; };
-        descriptive_stats: { skewness_interpretation: string; kurtosis_interpretation: string; };
-        overall_assessment: { recommendation: string; };
-    };
+interface NormalityResult {
+  column: string;
+  shapiro_wilk: string;
+  dagostino_pearson: string;
+  kolmogorov_smirnov: string;
+  skewness: string;
+  kurtosis: string;
+  recommendation: string;
 }
 
-interface BackendAnalysisResult {
-    recommendation: string;
-    score: number;
-    reason: string;
-    original_normality: {
-        shapiro_wilk?: { name: string; statistic: number; p_value: number; is_normal: boolean; interpretation: string; };
-        dagostino_pearson?: { name: string; statistic: number; p_value: number; is_normal: boolean; interpretation: string; };
-        kolmogorov_smirnov: { name: string; statistic: number; p_value: number; is_normal: boolean; interpretation: string; };
-        descriptive_stats: { skewness: number; kurtosis: number; skewness_interpretation: string; kurtosis_interpretation: string; };
-        overall_assessment: { likely_normal: boolean; recommendation: string; };
-    };
-    transformation_details?: {
-        [key: string]: {
-            data: number[];
-            formula?: string;
-            applicable: boolean;
-            normality_tests: any;
+export default function Page() {
+  const [file, setFile] = useState(null);
+  const [rawData, setRawData] = useState([]);
+  const [columns, setColumns] = useState([]);
+  const [selectedColumns, setSelectedColumns] = useState([]);
+  const [normalityResults, setNormalityResults] = useState<NormalityResult[]>([]);
+  const [transformRecommendations, setTransformRecommendations] = useState({});
+  const [transformedData, setTransformedData] = useState([]);
+  const [transformedColName, setTransformedColName] = useState('');
+  const [error, setError] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isTransforming, setIsTransforming] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileUpload = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+        setFile(selectedFile);
+        setError(''); // Clear previous errors
+    }
+  };
+
+  const processFile = () => {
+    if (!file) {
+        setError('Please select a file first');
+        return;
+    }
+    setIsProcessing(true);
+    setError('');
+    
+    // Reset previous results
+    setRawData([]);
+    setColumns([]);
+    setSelectedColumns([]);
+    setNormalityResults([]);
+    setTransformRecommendations({});
+    setTransformedData([]);
+    setTransformedColName('');
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        try {
+            const result = evt.target?.result;
+            if (!(result instanceof ArrayBuffer)) {
+              throw new Error("File could not be read as an ArrayBuffer.");
+            }
+            const data = new Uint8Array(result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+
+            if (jsonData.length === 0) {
+                setError('No data found in the file.');
+            } else {
+                setRawData(jsonData);
+                setColumns(getNumericalColumns(jsonData));
+            }
+        } catch (err) {
+            setError("Error processing file. Please ensure it's a valid Excel file.");
+        } finally {
+            setIsProcessing(false);
         }
     };
-    all_scores?: { [key: string]: number };
-    suggested_transformation?: {
-        data: number[];
-        formula: string;
-        applicable: boolean;
-        normality_tests: any;
+    reader.onerror = () => {
+        setError('Failed to read file.');
+        setIsProcessing(false);
     };
-}
-
-export default function TranxPage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
-  const [columnHeaders, setColumnHeaders] = useState<string[]>([]);
-  const [missingValuesCount, setMissingValuesCount] = useState<number>(0);
-
-  // State for column selection
-  const [blockCol, setBlockCol] = useState<string>('');
-  const [factorCol, setFactorCol] = useState<string>('');
-  const [responseCol, setResponseCol] = useState<string>('');
-
-  // State for analysis
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [analysisLoading, setAnalysisLoading] = useState(false);
-  const [analysisError, setAnalysisError] = useState<string>('');
-
-  // State for transformation
-  // State for transformation
-  const [transformChoice, setTransformChoice] = useState<string>('');
-  const [transformedData, setTransformedData] = useState<any[]>([]);
-  const [transformError, setTransformError] = useState<string>('');
-  const [transformLoading, setTransformLoading] = useState(false);
-  const [originalResponseCol, setOriginalResponseCol] = useState<string>('');
-  const [transformedResponseCol, setTransformedResponseCol] = useState<string>('');
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFile = event.target.files?.[0];
-    if (uploadedFile) {
-      setFile(uploadedFile);
-    }
+    reader.readAsArrayBuffer(file);
   };
 
   const handleReset = () => {
     setFile(null);
-    setData([]);
-    setError('');
-    setColumnHeaders([]);
-    setMissingValuesCount(0);
-    setBlockCol('');
-    setFactorCol('');
-    setResponseCol('');
-    setAnalysisResult(null);
-    setAnalysisLoading(false);
-    setAnalysisError('');
-    setTransformChoice('');
+    setRawData([]);
+    setColumns([]);
+    setSelectedColumns([]);
+    setNormalityResults([]);
+    setTransformRecommendations({});
     setTransformedData([]);
-    setTransformError('');
-    setTransformLoading(false);
+    setTransformedColName('');
+    setError('');
+    setIsProcessing(false);
+    setIsAnalyzing(false);
+    setIsTransforming(false);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+        fileInputRef.current.value = '';
     }
   };
 
-  const processFile = async () => {
-    if (!file) {
-      setError('Please select a file first');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const workbook = XLSX.read(arrayBuffer);
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: null });
-
-      if (jsonData.length === 0) {
-        setError('No data found in the file');
-        return;
-      }
-      
-      let missingCount = 0;
-      jsonData.forEach(row => {
-        Object.values(row).forEach(value => {
-          if (value === null || value === undefined || value === '') {
-            missingCount++;
-          }
-        });
-      });
-      setMissingValuesCount(missingCount);
-
-      setData(jsonData);
-      setColumnHeaders(Object.keys(jsonData[0] || {}));
-    } catch (err) {
-      setError("Error processing file. Please ensure it's a valid Excel file.");
-    } finally {
-      setLoading(false);
-    }
+  const handleColumnSelect = (col) => {
+    setSelectedColumns((prev) =>
+      prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]
+    );
+    setNormalityResults([]);
+    setTransformRecommendations({});
+    setTransformedData([]);
+    setTransformedColName('');
   };
 
   const handleAnalyze = async () => {
-    if (!data.length || !responseCol) {
-      setAnalysisError('Please process a file and select a response column.');
-      return;
-    }
-
-    setAnalysisLoading(true);
-    setAnalysisError('');
-    setAnalysisResult(null);
-
-    const analyzeServiceUrl = `${process.env.NEXT_PUBLIC_TRANX_SERVICE_URL}/analyze_transformations`;
-
+    setIsAnalyzing(true);
     try {
+      if (selectedColumns.length === 0) {
+        alert('Please select at least one column to analyze.');
+        setIsAnalyzing(false);
+        return;
+      }
+      const response_col = selectedColumns[0]; // analyze only first selected column per backend requirement
+      
       const response = await fetch(analyzeServiceUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ data, response_col: responseCol, transform_choice: transformChoice }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: rawData, response_col })
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Analysis failed');
+      if (!response.ok) throw new Error('Analysis failed');
+      const result = await response.json();
+
+      setNormalityResults([{
+        column: response_col,
+        shapiro_wilk: result.original_normality?.shapiro_wilk?.interpretation || "-",
+        dagostino_pearson: result.original_normality?.dagostino_pearson?.interpretation || "-",
+        kolmogorov_smirnov: result.original_normality?.kolmogorov_smirnov?.interpretation || "-",
+        skewness: result.original_normality?.descriptive_stats?.skewness_interpretation || "-",
+        kurtosis: result.original_normality?.descriptive_stats?.kurtosis_interpretation || "-",
+        recommendation: result.recommendation || "-"
+      }]);
+
+      if (result.recommendation && result.recommendation !== "No transformation needed") {
+        setTransformRecommendations({
+          [response_col]: { type: result.recommendation, score: result.score || 0 }
+        });
+      } else {
+        setTransformRecommendations({});
       }
 
-      const results: BackendAnalysisResult = await response.json();
-
-      const newSkewnessData: SkewnessData = {
-          untransformed: results.original_normality?.descriptive_stats?.skewness ?? null,
-          log: results.transformation_details?.log?.normality_tests?.descriptive_stats?.skewness ?? null,
-          sqrt: results.transformation_details?.sqrt?.normality_tests?.descriptive_stats?.skewness ?? null,
-          boxcox: results.transformation_details?.boxcox?.normality_tests?.descriptive_stats?.skewness ?? null,
-          arcsine: results.transformation_details?.arcsine?.normality_tests?.descriptive_stats?.skewness ?? null,
-          yeojohnson: results.transformation_details?.yeojohnson?.normality_tests?.descriptive_stats?.skewness ?? null,
-      };
-
-      setAnalysisResult({
-          skewness: newSkewnessData,
-          suggestion: results.recommendation,
-          originalNormalityInterpretation: results.original_normality?.overall_assessment?.recommendation,
-          suggestedTransformationFormula: results.suggested_transformation?.formula,
-          all_scores: results.all_scores,
-          original_normality: results.original_normality,
-      });
-      
-      setTransformChoice(results.recommendation || '');
-
-    } catch (err: any) {
-      setAnalysisError(err.message || 'An unexpected error occurred during analysis');
-    } finally {
-      setAnalysisLoading(false);
+      setTransformedData([]);
+      setTransformedColName('');
+    } catch (error) {
+      alert(error.message);
     }
+    setIsAnalyzing(false);
   };
 
-  const handleTransform = async () => {
-    if (!data.length || !responseCol || !transformChoice) {
-      setTransformError('Please process a file, select a response column, and a transformation type.');
-      return;
-    }
- 
-    setTransformLoading(true);
-    setTransformError('');
-    setTransformedData([]);
-
-    const tranxServiceUrl = `${process.env.NEXT_PUBLIC_TRANX_SERVICE_URL}/transform`;
-
+  const handleTransform = async (colName, transformType) => {
+    setIsTransforming(true);
     try {
       const response = await fetch(tranxServiceUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ data, response_col: responseCol, transform_choice: transformChoice }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          data: rawData,
+          response_col: colName,
+          transform_choice: transformType
+        })
       });
+      if (!response.ok) throw new Error('Transformation failed');
+      const result = await response.json();
+      alert(`Applied ${transformType} transformation on ${colName}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Transformation failed');
+      if (result.transformed_data && result.transformed_response_col) {
+        const td = JSON.parse(result.transformed_data);
+        setTransformedData(td);
+        setTransformedColName(result.transformed_response_col);
+      } else {
+        setTransformedData([]);
+        setTransformedColName('');
       }
-
-      const results = await response.json();
-      setTransformedData(JSON.parse(results.transformed_data));
-      setOriginalResponseCol(results.original_response_col);
-      setTransformedResponseCol(results.transformed_response_col);
-
-    } catch (err: any) {
-      setTransformError(err.message || 'An unexpected error occurred');
-    } finally {
-      setTransformLoading(false);
+    } catch (error) {
+      alert(error.message);
     }
+    setIsTransforming(false);
   };
 
-  const previewData = transformedData.length > 0 && blockCol && factorCol && originalResponseCol && transformedResponseCol ? 
-    data.map((row, index) => ({
-      [factorCol]: row[factorCol]?.toString(),
-      [blockCol]: row[blockCol]?.toString(),
-      [originalResponseCol]: row[originalResponseCol],
-      [transformedResponseCol]: transformedData[index] ? transformedData[index][transformedResponseCol] : null,
-    })) : [];
-
-  const handleExport = () => {
-    if (previewData.length === 0) {
-      return;
-    }
-
-    const headers = [factorCol, blockCol, originalResponseCol, transformedResponseCol];
-    const csvContent = [
-      headers.join(','),
-      ...previewData.map(row => headers.map(header => row[header]).join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'transformed_data.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const anyLoading = isProcessing || isAnalyzing || isTransforming;
 
   return (
     <div className="min-h-screen bg-background p-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto py-8 space-y-8">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <Replace className="h-8 w-8 text-pink-600 mr-3" />
@@ -293,17 +220,16 @@ export default function TranxPage() {
             Upload your data, analyze distributions, and apply transformations.
           </p>
         </div>
-
         <Dialog.Root>
           <Dialog.Trigger asChild>
-            <Button variant="outline" className="mb-4 flex items-center">
+            <Button variant="outline" className="mb-2 flex items-center">
               <Info className="h-4 w-4 mr-2" />
               About Data Transformations
             </Button>
           </Dialog.Trigger>
           <Dialog.Portal>
             <Dialog.Overlay className="fixed inset-0 bg-black/30" />
-            <Dialog.Content className="fixed left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-10 text-gray-900 shadow-lg">
+            <Dialog.Content className="fixed left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-10 text-pink-900 shadow-lg">
               <Dialog.Title className="text-lg font-medium">About Data Transformations</Dialog.Title>
               <Dialog.Description className="mt-2 text-sm text-gray-600">
                 This guide explains the different data transformations available and how the tool works.
@@ -335,18 +261,25 @@ export default function TranxPage() {
           </Dialog.Portal>
         </Dialog.Root>
 
-       <Card className="mb-8 border border-pink-200 rounded-lg">
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Upload className="h-5 w-5 mr-2" />
-              1. Upload Data File
+            <CardTitle>
+              <Upload className="inline mr-2" size={20} />
+              1. Upload Excel Data (.xlsx)
             </CardTitle>
+            <CardDescription>
+              Start by uploading your worksheet. Only numeric columns will be shown for analysis.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-4">
               <Input type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="flex-1 bg-pink-50" ref={fileInputRef} />
-              <Button onClick={processFile} disabled={!file || loading} className="min-w-[120px]">
-                {loading ? 'Processing...' : 'Process File'}
+              <Button onClick={processFile} disabled={!file || anyLoading} className="min-w-[120px]">
+                {isProcessing ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
+                ) : (
+                  'Process File'
+                )}
               </Button>
               <Button onClick={handleReset} variant="outline" className="min-w-[120px]">Reset</Button>
             </div>
@@ -355,195 +288,135 @@ export default function TranxPage() {
           </CardContent>
         </Card>
 
-        {data.length > 0 && (
-          <Card className="mb-8 border border-pink-200 rounded-lg">
+        {columns.length > 0 && (
+          <Card>
             <CardHeader>
-              <CardTitle>2. Select Columns</CardTitle>
-              <CardDescription>Specify columns for analysis.</CardDescription>
+              <CardTitle>
+                <Info className="inline mr-2" size={20} />
+                2. Select Numeric Columns
+              </CardTitle>
+              <CardDescription>Select one or more numeric columns for normality analysis (only first is analyzed).</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block mb-1 font-medium">Block Column</label>
-                <select value={blockCol} onChange={e => setBlockCol(e.target.value)} className="block w-full p-2 border border-pink-300 rounded-md shadow-sm">
-                  <option value="">Select a column</option>
-                  {columnHeaders.map(header => <option key={header} value={header}>{header}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block mb-1 font-medium">Factor Column</label>
-                <select value={factorCol} onChange={e => setFactorCol(e.target.value)} className="block w-full p-2 border border-pink-300 rounded-md shadow-sm">
-                  <option value="">Select a column</option>
-                  {columnHeaders.map(header => <option key={header} value={header}>{header}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block mb-1 font-medium">Response Column</label>
-                <select value={responseCol} onChange={e => setResponseCol(e.target.value)} className="block w-full p-2 border border-pink-300 rounded-md shadow-sm">
-                  <option value="">Select a column</option>
-                  {columnHeaders.map(header => <option key={header} value={header}>{header}</option>)}
-                </select>
+            <CardContent>
+              <div className="flex flex-wrap gap-3">
+                {columns.map(col => (
+                  <Button
+                    key={col}
+                    variant={selectedColumns.includes(col) ? "outline" : "ghost"}
+                    onClick={() => handleColumnSelect(col)}
+                    size="sm"
+                  >
+                    {selectedColumns.includes(col) && <CheckCircle size={14} className="text-green-500 mr-1" />}
+                    {col}
+                  </Button>
+                ))}
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleAnalyze} disabled={!blockCol || !factorCol || !responseCol || analysisLoading}>
-                {analysisLoading ? 'Analyzing...' : 'Perform Normality Tests'}
+              <Button
+                onClick={handleAnalyze}
+                disabled={selectedColumns.length === 0 || anyLoading}
+                className="mt-2"
+              >
+                {isAnalyzing ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...</>
+                ) : (
+                  "Analyze Normality"
+                )}
               </Button>
             </CardFooter>
           </Card>
         )}
 
-        {analysisLoading && <div className="text-center">Analyzing transformations...</div>}
-        {analysisError && <div className="text-red-600 text-sm bg-red-50 p-3 rounded mb-8">{analysisError}</div>}
-
-        {analysisResult && (
-          <Card className="mb-8 border border-pink-200 rounded-lg">
+        {normalityResults.length > 0 && (
+          <Card>
             <CardHeader>
-              <CardTitle>3. Original Data Assessment</CardTitle>
-              <CardDescription>Normality tests for the original data.</CardDescription>
+              <CardTitle>
+                <Info className="inline mr-2" size={20} />
+                3. Normality Results & Transformation Recommendation
+              </CardTitle>
+              <CardDescription>Review analysis and apply recommended transformation.</CardDescription>
             </CardHeader>
             <CardContent>
-                <table className="min-w-full divide-y divide-pink-200">
-                    <thead className="bg-pink-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Test</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Result</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-pink-200">
-                        {analysisResult.original_normality?.shapiro_wilk && (
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">{analysisResult.original_normality.shapiro_wilk.name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality.shapiro_wilk.interpretation}</td>
-                            </tr>
-                        )}
-                        {analysisResult.original_normality?.dagostino_pearson && (
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">{analysisResult.original_normality.dagostino_pearson.name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality.dagostino_pearson.interpretation}</td>
-                            </tr>
-                        )}
-                        {analysisResult.original_normality?.kolmogorov_smirnov && (
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">{analysisResult.original_normality.kolmogorov_smirnov.name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality.kolmogorov_smirnov.interpretation}</td>
-                            </tr>
-                        )}
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">Skewness</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality?.descriptive_stats?.skewness_interpretation}</td>
-                        </tr>
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900">Kurtosis</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality?.descriptive_stats?.kurtosis_interpretation}</td>
-                        </tr>
-                        <tr className="bg-gray-100 font-bold">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black-900">Overall Assessment</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{analysisResult.original_normality?.overall_assessment?.recommendation}</td>
-                        </tr>
-                    </tbody>
-                </table>
+              <table className="w-full table-auto mt-4 border text-sm">
+                <thead>
+                  <tr>
+                    <th className="border p-2 bg-pink-50 font-medium">Test</th>
+                    <th className="border p-2 bg-pink-50 font-medium">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {normalityResults.length > 0 && Object.entries(normalityResults[0]).map(([key, value]) => (
+                    <tr key={key}>
+                      <td className="border p-2 font-medium capitalize">{key.replace(/_/g, ' ')}</td>
+                      <td className="border p-2">{value}</td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td className="border p-2 font-medium">Transform</td>
+                    <td className="border p-2">
+                      {normalityResults.length > 0 && transformRecommendations[normalityResults[0].column] ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleTransform(normalityResults[0].column, transformRecommendations[normalityResults[0].column].type)}
+                          disabled={loading}
+                        >
+                          <Replace className="inline mr-1 text-pink-500" size={15} />
+                          {transformRecommendations[normalityResults[0].column].type}
+                        </Button>
+                      ) : '-'}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </CardContent>
           </Card>
         )}
 
-        {analysisResult && analysisResult.all_scores && (
-          <Card className="mb-8 border border-pink-200 rounded-lg">
+        {transformedData.length > 0 && (
+          <Card>
             <CardHeader>
-              <CardTitle>4. Transformation Scores</CardTitle>
-              <CardDescription>Scores for different transformations. Higher score is better.</CardDescription>
+              <CardTitle>4. Transformed Data</CardTitle>
+              <CardDescription>Comparing original and transformed values.</CardDescription>
             </CardHeader>
             <CardContent>
-                <table className="min-w-full divide-y divide-pink-200">
-                    <thead className="bg-pink-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Transformation</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Score</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Recommendation</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-pink-200">
-                        {Object.entries(analysisResult.all_scores).map(([key, value]) => (
-                            <tr key={key}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black-900 capitalize">{key.replace('_', ' ')}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">{value.toFixed(2)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-black-500">
-                                    {key === analysisResult.suggestion && <CheckCircle className="h-5 w-5 text-green-600"/>}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+              <table className="w-full table-auto border text-sm">
+                <thead>
+                  <tr>
+                    <th className="border p-2">{selectedColumns[0]} (Original)</th>
+                    <th className="border p-2">{transformedColName} (Transformed)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transformedData.map((row, i) => (
+                    <tr key={i}>
+                      <td className="border p-2">
+                        {(() => {
+                          const val = rawData[i]?.[selectedColumns[0]];
+                          if (val === null || val === undefined || val === '') return '';
+                          const num = Number(val);
+                          if (isNaN(num)) {
+                            return val;
+                          }
+                          return num.toFixed(4);
+                        })()}
+                      </td>
+                      <td className="border p-2">
+                        {row[transformedColName] !== undefined
+                          ? (typeof row[transformedColName] === 'number'
+                            ? row[transformedColName].toFixed(4)
+                            : row[transformedColName])
+                          : ''}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </CardContent>
           </Card>
         )}
-
-        {analysisResult && (
-          <Card className="mb-8 border border-pink-200 rounded-lg">
-            <CardHeader>
-              <CardTitle>5. Apply Transformation</CardTitle>
-              <CardDescription>Choose a transformation and apply it to your data.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block mb-1 font-medium">Transformation Type</label>
-                <select value={transformChoice} onChange={e => setTransformChoice(e.target.value)} className="block w-full p-2 border border-pink-300 rounded-md shadow-sm">
-                  <option value="">Select Transformation</option>
-                  <option value="untransformed">No Transformation</option>
-                  <option value="log">Log Transformation</option>
-                  <option value="sqrt">Square Root Transformation</option>
-                  <option value="boxcox">Box-Cox Transformation</option>
-                  <option value="yeojohnson">Yeo-Johnson Transformation</option>
-                  <option value="arcsine">Arcsine Transformation</option>
-                </select>
-              </div>
-              <Button onClick={handleTransform} disabled={transformLoading || !responseCol || !transformChoice}>
-                {transformLoading ? 'Transforming...' : 'Run Transformation'}
-              </Button>
-              {transformError && <div className="text-red-600 text-sm bg-red-50 p-3 rounded mt-4">{transformError}</div>}
-            </CardContent>
-          </Card>
-        )}
-
-        {previewData.length > 0 && (
-            <Card className="border border-pink-200 rounded-lg">
-              <CardHeader>
-                <CardTitle>6. Transformed Data Preview</CardTitle>
-                <CardDescription>Showing factor, block, original, and transformed values.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-pink-200">
-                    <thead className="bg-pink-50">
-                      <tr>
-                        {Object.keys(previewData[0] || {}).map(key => <th key={key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{key}</th>) }
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-pink-200">
-                      {previewData.slice(0, 5).map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                          {Object.values(row).map((value: any, colIndex) => (
-                            <td key={colIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {typeof value === 'number' ? value.toFixed(2) : value?.toString()}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mt-4 text-sm text-muted-foreground">Total rows: {previewData.length}</div>
-                <div className="mt-4">
-                  <Button onClick={handleExport} disabled={previewData.length === 0}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Export as CSV
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-        )}
-
       </div>
     </div>
   );
 }
-// This file is part of the Tranx page in a Next.js application.
