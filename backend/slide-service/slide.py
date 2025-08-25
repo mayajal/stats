@@ -10,6 +10,7 @@ from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 import logging
 import json
+import re # Import re module
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -46,6 +47,13 @@ def add_table_to_slide(slide, df, left, top, width, height):
         for cell in row.cells:
             for paragraph in cell.text_frame.paragraphs:
                 paragraph.font.size = Pt(10)
+
+# Helper function to clean factor names
+def clean_factor_name(name):
+    q_matches = re.findall(r"Q\([\'\"]([^\'\"]*)[\'\"]\)", name)
+    if q_matches:
+        return ":".join(sorted(list(set(q_matches))))
+    return name
 
 @app.route('/slide/generate', methods=['POST'])
 def generate_slide():
@@ -100,9 +108,9 @@ def generate_slide():
 
         normality_shape = slide.shapes.add_textbox(left_panel_left, Inches(1.0), left_panel_width, Inches(0.7))
         normality_shape.text_frame.text = normality_text
-        normality_shape.text_frame.paragraphs[0].font.size = Pt(12)
+        normality_shape.text_frame.paragraphs[0].font.size = Pt(10)
 
-        logging.info("Processing ANOVA table.")
+                logging.info("Processing ANOVA table.")
         # ANOVA Table
         anova_table_json = data.get('anova_table')
         if anova_table_json:
@@ -125,7 +133,50 @@ def generate_slide():
             anova_df.reset_index(inplace=True)
             anova_df.rename(columns={'index': 'Source of Error'}, inplace=True)
 
-            add_table_to_slide(slide, anova_df, left_panel_left, Inches(1.7), left_panel_width, Inches(1.5))
+            # Apply cleaning to 'Source of Error' column
+            anova_df['Source of Error'] = anova_df['Source of Error'].apply(clean_factor_name)
+
+            # Add interpretation column
+            if 'PR(>F)' in anova_df.columns and not anova_df['PR(>F)'].isnull().all():
+                anova_df['Interpretation'] = anova_df['PR(>F)'].apply(lambda x: 'Significant' if x <= 0.05 else 'Non-significant')
+
+            add_table_to_slide(slide, anova_df, left_panel_left, Inches(2.0), left_panel_width, Inches(1.5)) # Adjusted top position
+
+        logging.info("Processing mean separation results.")
+        # Mean Separation Results
+        mean_sep_key = None
+        mean_separation_results = data.get('mean_separation_results')
+        if mean_separation_results and isinstance(mean_separation_results, dict) and mean_separation_results.keys():
+            # Add title for Mean Separation table
+            mean_sep_title_shape = slide.shapes.add_textbox(left_panel_left, Inches(3.6), left_panel_width, Inches(0.2)) # Adjusted top position
+            mean_sep_title_shape.text_frame.text = "Mean Separation Table"
+            p = mean_sep_title_shape.text_frame.paragraphs[0]
+            p.font.bold = True
+            p.font.size = Pt(12)
+            p.alignment = PP_ALIGN.LEFT
+
+            mean_sep_key = list(mean_separation_results.keys())[0]
+            mean_sep_df = pd.read_json(mean_separation_results[mean_sep_key], orient='records')
+            add_table_to_slide(slide, mean_sep_df, left_panel_left, Inches(3.8), left_panel_width, Inches(2.5)) # Adjusted top position
+
+
+        logging.info("Processing CV and CD values.")
+        # CV and CD values
+        cv_value = data.get('overall_cv')
+        cd_value = data.get('cd_value')
+        cv_text = f"{cv_value:.2f}%" if isinstance(cv_value, (int, float)) else "N/A"
+        cd_text = f"{cd_value:.4f}" if isinstance(cd_value, (int, float)) else "N/A"
+        footnote_text = f"CV: {cv_text}, CD: {cd_text}"
+        footnote_shape = slide.shapes.add_textbox(left_panel_left, Inches(6.2), left_panel_width, Inches(0.5))
+        footnote_shape.text_frame.text = footnote_text
+        footnote_shape.text_frame.paragraphs[0].font.size = Pt(10)
+
+        # Add footer
+        footer_text = "Generated using https://vita.chloropy.com"
+        footer_shape = slide.shapes.add_textbox(Inches(0.5), Inches(7.0), Inches(12.33), Inches(0.3)) # Full width, bottom
+        footer_shape.text_frame.text = footer_text
+        footer_shape.text_frame.paragraphs[0].font.size = Pt(10)
+        footer_shape.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
 
         logging.info("Processing mean separation results.")
         # Mean Separation Results
