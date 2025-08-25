@@ -389,6 +389,50 @@ export default function RbdPage() {
     }
   };
 
+  const [pptxLoading, setPptxLoading] = useState(false);
+
+  const handleGeneratePptx = async () => {
+    if (!rbdResults) return;
+
+    setPptxLoading(true);
+
+    const formData = new FormData();
+    formData.append('analysis_title', 'RCBD Analysis Results');
+    formData.append('json_data', JSON.stringify(rbdResults));
+
+    const slideServiceUrl = process.env.NEXT_PUBLIC_SLIDE_SERVICE_URL;
+    if (!slideServiceUrl) {
+        console.error('Slide service URL not configured');
+        setPptxLoading(false);
+        return;
+    }
+
+    try {
+        const response = await fetch(slideServiceUrl, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to generate slide');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'rbd_analysis_results.pptx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+    } catch (error) {
+        console.error('Error generating PPTX:', error);
+    } finally {
+        setPptxLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-4xl mx-auto">
@@ -850,8 +894,8 @@ export default function RbdPage() {
                 )}
               </CardContent>
               <CardContent>
-                <Button disabled>
-                  Generate Report
+                <Button onClick={handleGeneratePptx} disabled={pptxLoading}>
+                  {pptxLoading ? 'Generating Slide...' : 'Generate PPTX Slide'}
                 </Button>
               </CardContent>
             </Card>

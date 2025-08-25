@@ -213,7 +213,8 @@ Here's why:</p>
         fig, ax = plt.subplots()
         # Sort mean_separation_df by 'Treatment' (factor name) in ascending order for plotting
         plot_data = mean_separation_df.sort_values(by='Treatment', ascending=True).reset_index(drop=True)
-        ax.bar(plot_data['Treatment'], plot_data['Mean'].astype(float), yerr=plot_data['SEM'].astype(float), capsize=5)
+        colors = sns.color_palette('viridis', n_colors=len(plot_data['Treatment']))
+        ax.bar(plot_data['Treatment'], plot_data['Mean'].astype(float), yerr=plot_data['SEM'].astype(float), capsize=5, color=colors)
         ax.set_xlabel(factor_col)
         ax.set_ylabel(f"Mean of {response_col}")
         ax.set_title("Mean of each Factor Level with Standard Error")
@@ -228,7 +229,7 @@ Here's why:</p>
         # Box plot of means (NO SORTING)
         fig, ax = plt.subplots()
         # Do not specify the 'order' argument
-        sns.boxplot(x=factor_col, y=response_col, data=df_processed, ax=ax)
+        sns.boxplot(x=factor_col, y=response_col, data=df_processed, ax=ax, palette='viridis')
         ax.set_xlabel(factor_col)
         ax.set_ylabel(response_col)
         ax.set_title("Box Plot of each Factor Level")
@@ -263,3 +264,7 @@ Here's why:</p>
         "overall_cv": overall_cv,
         "cd_value": cd_value if cd_value is not None else None
     })
+
+if __name__ == "__main__":
+    debug_mode = os.environ.get("FLASK_ENV", "production") == "development"
+    app.run(debug=debug_mode, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
