@@ -97,6 +97,9 @@ This will immediately terminate the container.
 <docker stop -container_id->
 
 
+docker build -t rbd-service .
+docker run -d -p 8080:8080 rbd-service:latest
+
 docker build -t tranx-service .
 
 docker run -d -p 8080:8080 tranx-service:latest python3 tranx.py

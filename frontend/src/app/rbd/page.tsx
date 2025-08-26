@@ -874,32 +874,35 @@ export default function RbdPage() {
             </Card>
           )}
       
+
       {rbdResults && (
-            <Card className="mb-8 border border-blue-200 rounded-lg">
-              <CardHeader>
-                <CardTitle>AI-Powered Summary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Button onClick={handleGenerateAiSummary} disabled={aiSummaryLoading}>
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  {aiSummaryLoading ? 'Generating Summary...' : 'Generate AI Summary'}
-                </Button>
-                {aiSummaryError && (
-                  <div className="text-red-600 text-sm bg-red-50 p-3 rounded mt-4">
-                    {aiSummaryError}
-                  </div>
-                )}
-                {aiSummary && (
-                  <div className="prose prose-sm max-w-none mt-4" dangerouslySetInnerHTML={{ __html: aiSummary.replace(/\n/g, '<br />') }} />
-                )}
-              </CardContent>
-              <CardContent>
-                <Button onClick={handleGeneratePptx} disabled={pptxLoading}>
-                  {pptxLoading ? 'Generating Slide...' : 'Generate PPTX Slide'}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+        <>
+          <Card className="mb-8 border border-blue-200 rounded-lg">
+            <CardHeader>
+              <CardTitle>AI-Powered Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={handleGenerateAiSummary} disabled={aiSummaryLoading}>
+                <Sparkles className="h-4 w-4 mr-2" />
+                {aiSummaryLoading ? 'Generating Summary...' : 'Generate AI Summary'}
+              </Button>
+              {aiSummaryError && (
+                <div className="text-red-600 text-sm bg-red-50 p-3 rounded mt-4">
+                  {aiSummaryError}
+                </div>
+              )}
+              {aiSummary && (
+                <div className="prose prose-sm max-w-none mt-4" dangerouslySetInnerHTML={{ __html: aiSummary.replace(/\n/g, '<br />') }} />
+              )}
+            </CardContent>
+          </Card>
+          <div className="mb-8 flex justify-end">
+            <Button onClick={handleGeneratePptx} disabled={pptxLoading}>
+              {pptxLoading ? 'Generating Slide...' : 'Generate PPTX Slide'}
+            </Button>
+          </div>
+        </>
+      )}
       </div>
     </div>
   );

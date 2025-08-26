@@ -211,13 +211,13 @@ Here's why:</p>
 
         # Bar plot of means with SEM (Sorted by factor name in ascending order)
         fig, ax = plt.subplots()
-        # Sort mean_separation_df by 'Treatment' (factor name) in ascending order for plotting
         plot_data = mean_separation_df.sort_values(by='Treatment', ascending=True).reset_index(drop=True)
-        colors = sns.color_palette('viridis', n_colors=len(plot_data['Treatment']))
-        ax.bar(plot_data['Treatment'], plot_data['Mean'].astype(float), yerr=plot_data['SEM'].astype(float), capsize=5, color=colors)
+        # Use a solid, professional color palette
+        solid_colors = sns.color_palette('tab10', n_colors=len(plot_data['Treatment']))
+        ax.bar(plot_data['Treatment'], plot_data['Mean'].astype(float), yerr=plot_data['SEM'].astype(float), capsize=5, color=solid_colors)
         ax.set_xlabel(factor_col)
         ax.set_ylabel(f"Mean of {response_col}")
-        ax.set_title("Mean of each Factor Level with Standard Error")
+        ax.set_title(f"Mean {response_col} with Std Error of Mean")
         plt.xticks(rotation=0, ha='right')
         plt.tight_layout()
         img_io = io.BytesIO()
@@ -226,13 +226,16 @@ Here's why:</p>
         plt.close(fig)
         logging.info("Generated Bar plot.")
 
-        # Box plot of means (NO SORTING)
+        # Box plot of means 
         fig, ax = plt.subplots()
-        # Do not specify the 'order' argument
-        sns.boxplot(x=factor_col, y=response_col, data=df_processed, ax=ax, palette='viridis')
+        unique_levels = df_processed[factor_col].unique()
+        # Use Set2 palette for professional solid colors
+        set2_palette = sns.color_palette('tab10', n_colors=len(unique_levels))
+        palette_dict = dict(zip(unique_levels, set2_palette))
+        sns.boxplot(x=factor_col, y=response_col, data=df_processed, ax=ax, palette=palette_dict)
         ax.set_xlabel(factor_col)
         ax.set_ylabel(response_col)
-        ax.set_title("Box Plot of each Factor Level")
+        ax.set_title(f"Box Plot of {response_col}")
         plt.xticks(rotation=0, ha='right')
         plt.tight_layout()
         img_io = io.BytesIO()
@@ -240,7 +243,6 @@ Here's why:</p>
         plots['mean_box_plot'] = base64.b64encode(img_io.getvalue()).decode('utf-8')
         plt.close(fig)
         logging.info("Generated Box plot.")
-       
 
     except Exception as e:
         logging.error(f"Error generating plots: {str(e)}")
