@@ -38,17 +38,13 @@ export default function FrbdPage() {
   const [aiSummary, setAiSummary] = useState<string>('');
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
   const [aiSummaryError, setAiSummaryError] = useState<string>('');
+  const [pptxLoading, setPptxLoading] = useState(false);
 
-  useEffect(() => {
-    if (frbdResults && frbdResults.plots) {
-      console.log('frbdResults.plots:', frbdResults.plots);
-    }
-  }, [frbdResults]);
 
   // Helper function to clean factor names
   const cleanFactorName = (name: string) => {
     // Extracts content from Q('...') or Q("...")
-    const qMatches = [...name.matchAll(/Q\(['"]([^'\"]*)['"]\)/g)];
+    const qMatches = [...name.matchAll(/Q\(['"]([^'"']*)['"]\)/g)];
     if (qMatches.length > 0) {
       const factors = qMatches.map(m => m[1]);
       return [...new Set(factors)].join(':');
@@ -87,16 +83,16 @@ export default function FrbdPage() {
                 if (headers.length > 0 || rows.length > 0) {
                     return (
                         <div className="overflow-x-auto mb-6">
-                            <table className="w-full border-collapse border border-green-300">
-                                <thead className="bg-green-50">
-                                    <tr className="bg-green-50">
-                                        {headers.map((h, i) => <th key={`${h}-${i}`} className="border border-green-300 px-4 py-2 text-left">{h}</th>)}
+                            <table className="w-full border-collapse border border-blue-300">
+                                <thead className="bg-blue-50">
+                                    <tr className="bg-blue-50">
+                                        {headers.map((h, i) => <th key={`${h}-${i}`} className="border border-blue-300 px-4 py-2 text-left">{h}</th>)}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {rows.map((row, i) => (
                                         <tr key={i}>
-                                            {row.map((cell, j) => <td key={`${i}-${j}`} className="border border-green-300 px-4 py-2">{cell}</td>)}
+                                            {row.map((cell, j) => <td key={`${i}-${j}`} className="border border-blue-300 px-4 py-2">{cell}</td>)}
                                         </tr>
                                     ))}
                                 </tbody>
@@ -137,17 +133,17 @@ export default function FrbdPage() {
 
             return (
                 <div className="overflow-x-auto mb-6">
-                    <table className="w-full border-collapse border border-green-300">
-                        <thead className="bg-green-50">
-                            <tr className="bg-green-50">
-                                {headers.map(h => <th key={h} className="border border-green-300 px-4 py-2 text-left">{h}</th>)}
+                    <table className="w-full border-collapse border border-blue-300">
+                        <thead className="bg-blue-50">
+                            <tr className="bg-blue-50">
+                                {headers.map(h => <th key={h} className="border border-blue-300 px-4 py-2 text-left">{h}</th>)}
                             </tr>
                         </thead>
                         <tbody>
                             {sortedData.map((row, i) => (
                                 <tr key={i}>
                                     {headers.map(h => (
-                                        <td key={`${i}-${h}`} className="border border-green-300 px-4 py-2">
+                                        <td key={`${i}-${h}`} className="border border-blue-300 px-4 py-2">
                                             {h === 'reject'
                                                 ? String(row[h])
                                                 : (!isNaN(Number(row[h])) && row[h] !== null && String(row[h]).trim() !== ''
@@ -169,18 +165,18 @@ export default function FrbdPage() {
             const rowKeys = Object.keys(parsedData[headers[0]]);
             return (
                 <div className="overflow-x-auto mb-6">
-                    <table className="w-full border-collapse border border-green-300">
-                        <thead className="bg-green-50">
-                            <tr className="bg-green-50">
-                                <th className="border border-green-300 px-4 py-2 text-left"></th>
-                                {headers.map(h => <th key={h} className="border border-green-300 px-4 py-2 text-left">{h}</th>)}
+                    <table className="w-full border-collapse border border-blue-300">
+                        <thead className="bg-blue-50">
+                            <tr className="bg-blue-50">
+                                <th className="border border-blue-300 px-4 py-2 text-left"></th>
+                                {headers.map(h => <th key={h} className="border border-blue-300 px-4 py-2 text-left">{h}</th>)}
                             </tr>
                         </thead>
                         <tbody>
                             {rowKeys.map(key => (
                                 <tr key={key}>
-                                    <td className="border border-green-300 px-4 py-2 font-medium">{key}</td>
-                                    {headers.map(h => <td key={`${key}-${h}`} className="border border-green-300 px-4 py-2">{!isNaN(Number(parsedData[h][key])) && parsedData[h][key] !== null && String(parsedData[h][key]).trim() !== '' ? Number(parsedData[h][key]).toFixed(2) : String(parsedData[h][key])}</td>)}
+                                    <td className="border border-blue-300 px-4 py-2 font-medium">{key}</td>
+                                    {headers.map(h => <td key={`${key}-${h}`} className="border border-blue-300 px-4 py-2">{!isNaN(Number(parsedData[h][key])) && parsedData[h][key] !== null && String(parsedData[h][key]).trim() !== '' ? Number(parsedData[h][key]).toFixed(2) : String(parsedData[h][key])}</td>)}
                                 </tr>
                             ))}
                         </tbody>
@@ -191,7 +187,7 @@ export default function FrbdPage() {
 
         throw new Error("JSON data is not in a recognized table format.");
     } catch (e) {
-        return <div className="overflow-x-auto bg-green-50 p-4 rounded-md mb-6" dangerouslySetInnerHTML={{ __html: data }} />;
+        return <div className="overflow-x-auto bg-blue-50 p-4 rounded-md mb-6" dangerouslySetInnerHTML={{ __html: data }} />;
     }
   };
 
@@ -258,7 +254,6 @@ export default function FrbdPage() {
       setData(jsonData);
       const headers = Object.keys(jsonData[0] || {});
       setColumnHeaders(headers);
-      console.log('Column Headers:', headers);
     } catch (err) {
       setError("Error processing file. Please ensure it's a valid Excel file.");
     } finally {
@@ -376,6 +371,48 @@ export default function FrbdPage() {
     }
   };
 
+  const handleGeneratePptx = async () => {
+    if (!frbdResults) return;
+
+    setPptxLoading(true);
+
+    const formData = new FormData();
+    formData.append('analysis_title', 'FRBD Analysis Results');
+    formData.append('json_data', JSON.stringify(frbdResults));
+
+    const slideServiceUrl = process.env.NEXT_PUBLIC_SLIDE_SERVICE_URL;
+    if (!slideServiceUrl) {
+        console.error('Slide service URL not configured');
+        setPptxLoading(false);
+        return;
+    }
+
+    try {
+        const response = await fetch(slideServiceUrl, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to generate slide');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'frbd_analysis_results.pptx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+    } catch (error) {
+        console.error('Error generating PPTX:', error);
+    } finally {
+        setPptxLoading(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-background p-4">
@@ -383,7 +420,7 @@ export default function FrbdPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <BarChart3 className="h-8 w-8 text-green-600 mr-3" />
+            <BarChart3 className="h-8 w-8 text-blue-600 mr-3" />
             <h1 className="text-3xl font-bold">FRBD Analysis</h1>
           </div>
           <p className="text-muted-foreground">
@@ -394,7 +431,7 @@ export default function FrbdPage() {
 
 
         {/* File Upload Card */}
-        <Card className="mb-8 border border-green-200 rounded-lg">
+        <Card className="mb-8 border border-blue-200 rounded-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Upload className="h-5 w-5 mr-2" />
@@ -419,7 +456,7 @@ export default function FrbdPage() {
                 type="file"
                 accept=".xlsx,.xls"
                 onChange={handleFileUpload}
-                className="flex-1 bg-green-50"
+                className="flex-1 bg-blue-50"
                 ref={fileInputRef}
               />
               <Button 
@@ -455,15 +492,15 @@ export default function FrbdPage() {
 
         {/* Data Preview */}
         {data.length > 0 && (
-            <Card className="mb-8 border border-green-200 rounded-lg">
+            <Card className="mb-8 border border-blue-200 rounded-lg">
               <CardHeader>
                 <CardTitle>Data Preview</CardTitle>
                 <CardDescription>First 5 rows of the uploaded data.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-green-200">
-                    <thead className="bg-green-50">
+                  <table className="min-w-full divide-y divide-blue-200">
+                    <thead className="bg-blue-50">
                       <tr>
                         {Object.keys(data[0] || {}).map((key) => (
                           <th
@@ -476,7 +513,7 @@ export default function FrbdPage() {
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-green-200">
+                    <tbody className="bg-white divide-y divide-blue-200">
                       {data.slice(0, 5).map((row, rowIndex) => (
                         <tr key={rowIndex}>
                           {Object.values(row).map((value: any, colIndex) => (
@@ -504,7 +541,7 @@ export default function FrbdPage() {
             </Card>
         )}
 
-          <Card className="mb-8 border border-green-200 rounded-lg">
+          <Card className="mb-8 border border-blue-200 rounded-lg">
             <CardHeader>
               <CardTitle>FRBD Analysis Setup</CardTitle>
               <CardDescription>Specify the columns for the analysis.</CardDescription>
@@ -516,7 +553,7 @@ export default function FrbdPage() {
                   <select
                       value={blockCol}
                       onChange={e => setBlockCol(e.target.value)}
-                      className="block w-full p-2 border border-green-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                      className="block w-full p-2 border border-blue-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   >
                     <option value="">Select a column</option>
                     {columnHeaders.map(header => (
@@ -529,7 +566,7 @@ export default function FrbdPage() {
                   <select
                       value={responseCol}
                       onChange={e => setResponseCol(e.target.value)}
-                      className="block w-full p-2 border border-green-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                      className="block w-full p-2 border border-blue-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   >
                     <option value="">Select a column</option>
                     {columnHeaders.map(header => (
@@ -544,7 +581,7 @@ export default function FrbdPage() {
                   <select
                       value={factor1Col}
                       onChange={e => setFactor1Col(e.target.value)}
-                      className="block w-full p-2 border border-green-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                      className="block w-full p-2 border border-blue-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   >
                     <option value="">Select a column</option>
                     {columnHeaders.map(header => (
@@ -557,7 +594,7 @@ export default function FrbdPage() {
                   <select
                       value={factor2Col}
                       onChange={e => setFactor2Col(e.target.value)}
-                      className="block w-full p-2 border border-green-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                      className="block w-full p-2 border border-blue-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   >
                     <option value="">Select a column</option>
                     {columnHeaders.map(header => (
@@ -576,7 +613,7 @@ export default function FrbdPage() {
                   {frbdLoading ? `Running Analysis... (${countdown}s)` : 'Run FRBD Analysis'}
                 </Button>
                 {analysisCompleted && !frbdLoading && (
-                  <div className="text-green-600 text-sm bg-green-50 p-3 rounded"> {/* Removed mt-4 */}
+                  <div className="text-blue-600 text-sm bg-blue-50 p-3 rounded"> {/* Removed mt-4 */}
                     Analysis over. Results are below.
                   </div>
                 )}
@@ -590,7 +627,7 @@ export default function FrbdPage() {
           </Card>
 
           {frbdResults && (
-            <Card className="mb-8 border border-green-200 rounded-lg">
+            <Card className="mb-8 border border-blue-200 rounded-lg">
               <CardHeader>
                 <CardTitle>Diagnostic Plots and Normality Test</CardTitle>
               </CardHeader>
@@ -624,7 +661,7 @@ export default function FrbdPage() {
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Shapiro-Wilk Test for Normality of Residuals</h3>
                 {frbdResults.shapiro && (
-                  <div className="bg-green-50 p-4 rounded-md mb-6">
+                  <div className="bg-blue-50 p-4 rounded-md mb-6">
                     <p><strong>Statistic:</strong> {frbdResults.shapiro.stat.toFixed(4)}</p>
                     <p><strong>P-value:</strong> {frbdResults.shapiro.p.toFixed(4)}</p>
                     <p className="text-sm text-muted-foreground mt-2">
@@ -639,7 +676,7 @@ export default function FrbdPage() {
           )}
 
           {frbdResults && (
-            <Card className="mb-8 border border-green-200 rounded-lg">
+            <Card className="mb-8 border border-blue-200 rounded-lg">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>FRBD Analysis Results</CardTitle>
                 <Button variant="outline" size="sm" onClick={() => setShowRawJson(!showRawJson)}>
@@ -667,16 +704,16 @@ export default function FrbdPage() {
                       }
 
                       return (
-                        <table className="w-full border-collapse border border-green-300">
+                        <table className="w-full border-collapse border border-blue-300">
                           <thead>
-                            <tr className="bg-green-50">
-                              <th className="border border-green-300 px-4 py-2 text-left">Source of error</th>
+                            <tr className="bg-blue-50">
+                              <th className="border border-blue-300 px-4 py-2 text-left">Source of error</th>
                               {columnHeaders.map((header, index) => (
-                                <th key={index} className="border border-green-300 px-4 py-2 text-left">
+                                <th key={index} className="border border-blue-300 px-4 py-2 text-left">
                                   {header}
                                 </th>
                               ))}
-                              <th className="border border-green-300 px-4 py-2 text-left">Significance (alpha=0.05)</th>
+                              <th className="border border-blue-300 px-4 py-2 text-left">Significance (alpha=0.05)</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -686,15 +723,15 @@ export default function FrbdPage() {
 
                               return (
                                 <tr key={rowIndex}>
-                                  <td className="border border-green-300 px-4 py-2 font-medium">
+                                  <td className="border border-blue-300 px-4 py-2 font-medium">
                                     {cleanFactorName(rowIndex)}
                                   </td>
                                   {columnHeaders.map((header, colIndex) => (
-                                    <td key={colIndex} className="border border-green-300 px-4 py-2">
+                                    <td key={colIndex} className="border border-blue-300 px-4 py-2">
                                       {parsedAnovaTable[header][rowIndex]}
                                     </td>
                                   ))}
-                                  <td className="border border-green-300 px-4 py-2">
+                                  <td className="border border-blue-300 px-4 py-2">
                                     {showSignificance ? (pValue < 0.05 ? 'Significant' : 'Not significant') : ''}
                                   </td>
                                 </tr>
@@ -710,11 +747,7 @@ export default function FrbdPage() {
                   })()}
                 </div>
 
-                {frbdResults.overall_cv !== null && frbdResults.overall_cv !== undefined && (
-                    <div className="text-left text-sm text-muted-foreground mb-5">
-                        Overall CV (%): {frbdResults.overall_cv.toFixed(2)}
-                    </div>
-                )}
+
 
                 <h3 className="text-lg font-semibold mb-2">Tukey HSD Post-Hoc Tests</h3>
                 {frbdResults.tukey_results && Object.keys(frbdResults.tukey_results).map((factor) => (
@@ -735,6 +768,12 @@ export default function FrbdPage() {
                   )
                 })}
 
+                {frbdResults.overall_cv !== null && frbdResults.overall_cv !== undefined && (
+                    <div className="text-left text-sm text-muted-foreground mb-5">
+                        Overall CV (%): {frbdResults.overall_cv.toFixed(2)}
+                    </div>
+                )}
+                
                 {frbdResults.cd_value !== null && frbdResults.cd_value !== undefined && (
                     <div className="text-left text-sm text-muted-foreground mb-5">
                         Critical Difference (CD): {frbdResults.cd_value.toFixed(2)}
@@ -779,7 +818,8 @@ export default function FrbdPage() {
           )}
 
           {frbdResults && (
-            <Card className="mb-8 border border-green-200 rounded-lg">
+            <>
+            <Card className="mb-8 border border-blue-200 rounded-lg">
               <CardHeader>
                 <CardTitle>AI-Powered Summary</CardTitle>
               </CardHeader>
@@ -797,12 +837,16 @@ export default function FrbdPage() {
                   <div className="prose prose-sm max-w-none mt-4" dangerouslySetInnerHTML={{ __html: aiSummary.replace(/\n/g, '<br />') }} />
                 )}
               </CardContent>
-              <CardContent>
-                <Button disabled>
-                  Generate Report
-                </Button>
-              </CardContent>
             </Card>
+            <div className="mb-8 flex justify-end space-x-4">
+              <Button onClick={handleGeneratePptx} disabled={pptxLoading}>
+                {pptxLoading ? 'Generating Slide...' : 'Generate PPTX Slide'}
+              </Button>
+              <Button variant="outline" disabled>
+                Export Report
+              </Button>
+            </div>
+          </>
           )}
       </div>
     </div>

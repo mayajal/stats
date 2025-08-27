@@ -42,11 +42,6 @@ export default function RbdPage() {
   const [countdown, setCountdown] = useState<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    if (rbdResults && rbdResults.plots) {
-      console.log('rbdResults.plots:', rbdResults.plots);
-    }
-  }, [rbdResults]);
 
  // Helper function to clean factor names
  const cleanFactorName = (name: string) => {
@@ -716,7 +711,8 @@ export default function RbdPage() {
                     <p className="text-sm text-muted-foreground mt-2">
                       {rbdResults.shapiro.p < 0.05
                         ? "Residuals are likely not normally distributed (p < 0.05)."
-                        : "Residuals appear to be normally distributed (p >= 0.05)."}
+                        : "Residuals appear to be normally distributed (p >= 0.05)."
+                    }
                     </p>
                   </div>
                 )}
@@ -796,11 +792,7 @@ export default function RbdPage() {
                   })()}
                 </div>
 
-                {rbdResults.overall_cv !== null && rbdResults.overall_cv !== undefined && (
-                    <div className="text-left text-sm text-muted-foreground mb-5">
-                        Overall CV (%): {rbdResults.overall_cv.toFixed(2)}
-                    </div>
-                )}
+
 
                 <h3 className="text-lg font-semibold mb-2">Tukey HSD Post-Hoc Tests</h3>
                 {rbdResults.tukey_results && Object.keys(rbdResults.tukey_results).map((factor) => (
@@ -833,6 +825,11 @@ export default function RbdPage() {
                     </div>
                   )
                 })}
+                {rbdResults.overall_cv !== null && rbdResults.overall_cv !== undefined && (
+                    <div className="text-left text-sm text-muted-foreground mb-5">
+                        Overall CV (%): {rbdResults.overall_cv.toFixed(2)}
+                    </div>
+                )}
 
                 {rbdResults.cd_value !== null && rbdResults.cd_value !== undefined && (
                     <div className="text-left text-sm text-muted-foreground mb-5">
@@ -896,9 +893,12 @@ export default function RbdPage() {
               )}
             </CardContent>
           </Card>
-          <div className="mb-8 flex justify-end">
+          <div className="mb-8 flex justify-end space-x-4">
             <Button onClick={handleGeneratePptx} disabled={pptxLoading}>
               {pptxLoading ? 'Generating Slide...' : 'Generate PPTX Slide'}
+            </Button>
+            <Button variant="outline" disabled>
+              Export Report
             </Button>
           </div>
         </>
@@ -907,4 +907,3 @@ export default function RbdPage() {
     </div>
   );
 }
-
