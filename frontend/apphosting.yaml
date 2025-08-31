@@ -30,6 +30,11 @@ env:
     availability:
       - BUILD
       - RUNTIME
+  - variable: NEXT_PUBLIC_SLIDE_SERVICE_URL
+    value: https://slide-service-zur5dejluq-uc.a.run.app/slide/generate
+    availability:
+      - BUILD
+      - RUNTIME
 
   - variable: FIREBASE_CONFIG
     value: '{"apiKey": "AIzaSyDlBQSqy5zwe43cZ6Wb7mfqKjVa03bxA9c",
