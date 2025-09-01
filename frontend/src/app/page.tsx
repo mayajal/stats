@@ -30,6 +30,12 @@ const features = [
     link: "/frbd",
   },
   {
+    icon: <FaBoxes className="text-2xl text-teal-600" />,
+    title: "Non-Parametric Tests",
+    button: "Start Analysis",
+    link: "/non-parametric",
+  },
+  {
     icon: <FaLayerGroup className="text-2xl" style={{ color: "#edb83dff" }} />,
     title: "Split Plot Analysis",
     text: "Coming Soon",

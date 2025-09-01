@@ -10,13 +10,12 @@ runConfig:
 env:
   - variable: NEXT_PUBLIC_FRBD_SERVICE_URL
     value: https://frbd-service-737809041422.us-central1.run.app/frbd/analyze
-    # Since this is NEXT_PUBLIC_, it's likely needed for both build and runtime
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_RBD_SERVICE_URL
     value: https://rbd-service-737809041422.us-central1.run.app/rbd/analyze
-    # Since this is NEXT_PUBLIC_, it's likely needed for both build and runtime
+    
     availability:
       - BUILD
       - RUNTIME
@@ -32,6 +31,11 @@ env:
       - RUNTIME
   - variable: NEXT_PUBLIC_SLIDE_SERVICE_URL
     value: https://slide-service-zur5dejluq-uc.a.run.app/slide/generate
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_NONP_SERVICE_URL
+    value: https://nonp-service-zur5dejluq-uc.a.run.app/nonp/analyze
     availability:
       - BUILD
       - RUNTIME

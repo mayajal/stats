@@ -107,3 +107,7 @@ docker run -d -p 8080:8080 tranx-service:latest python3 tranx.py
 
 docker build -t slide-service .
 docker run -d -p 9006:9006 slide-service:latest
+
+docker build -t nonp-service .
+docker run -d -p 8080:8080 nonp-service:latest
+

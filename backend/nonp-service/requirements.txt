@@ -1,0 +1,6 @@
+Flask
+pandas
+scipy
+statsmodels
+gunicorn
+flask_cors
