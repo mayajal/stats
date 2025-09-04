@@ -45,9 +45,8 @@ const features = [
   {
     icon: <FaBug className="text-2xl" style={{ color: "#e719ddff" }} />,
     title: "Probit Analysis",
-    text: "Coming Soon",
     button: "Start Analysis",
-    link: "#",
+    link: "/probit",
   },
 ];
 

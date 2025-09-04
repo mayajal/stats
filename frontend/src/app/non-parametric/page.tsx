@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Terminal, BarChart3, Upload, PlayCircle, FileText, Info, RotateCcw } from "lucide-react";
+import { Terminal, BarChart3, Upload, PlayCircle, FileText, Info, RotateCcw, ChevronDown } from "lucide-react";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -28,6 +28,7 @@ export default function NonParametricTestTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDataTypesVisible, setIsDataTypesVisible] = useState(false);
 
   const decisionTree: { [key: string]: string } = {
     '1--nominal': 'Chi-square goodness of fit',
@@ -301,6 +302,53 @@ export default function NonParametricTestTool() {
             A step-by-step guide to help you choose and run the right non-parametric test.
           </p>
         </div>
+
+        <Card className="mb-8 border border-blue-200 rounded-lg">
+          <CardHeader className="cursor-pointer" onClick={() => setIsDataTypesVisible(!isDataTypesVisible)}>
+            <div className="flex justify-between items-center">
+                <div>
+                    <CardTitle>Understanding Data Types</CardTitle>
+                    <CardDescription>Click to expand and learn about data types.</CardDescription>
+                </div>
+                <ChevronDown className={`h-5 w-5 transform transition-transform ${isDataTypesVisible ? 'rotate-180' : ''}`} />
+            </div>
+          </CardHeader>
+          {isDataTypesVisible && (
+            <CardContent>
+              <table className="w-full text-sm text-left">
+                <thead className="border-b">
+                  <tr>
+                    <th className="pb-2 font-semibold">Data Type</th>
+                    <th className="pb-2 font-semibold">What it is</th>
+                    <th className="pb-2 font-semibold">Examples</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="py-2 align-top font-bold">Continuous</td>
+                    <td className="py-2 align-top text-muted-foreground pr-4">Data that can take any numeric value within a range. It's measured, not counted.</td>
+                    <td className="py-2 align-top">Crop yield (tons/hectare), soil pH, plant height.</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-2 align-top font-bold">Ordinal</td>
+                    <td className="py-2 align-top text-muted-foreground pr-4">Categorical data with a clear order or ranking. The intervals between ranks aren't necessarily equal.</td>
+                    <td className="py-2 align-top">Disease severity ("Low", "Medium", "High"), soil quality.</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-2 align-top font-bold">Nominal</td>
+                    <td className="py-2 align-top text-muted-foreground pr-4">Categorical data with no intrinsic order or ranking.</td>
+                    <td className="py-2 align-top">Crop type ("Wheat", "Corn"), soil type, treatment group.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 align-top font-bold">Count (Discrete)</td>
+                    <td className="py-2 align-top text-muted-foreground pr-4">Data representing whole-number counts of an event. For this tool, treat it as Ordinal (to compare counts) or Nominal (if counts are categories).</td>
+                    <td className="py-2 align-top">Number of fruits per plant, pest count, germinated seeds.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </CardContent>
+          )}
+        </Card>
 
         {error && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
         
