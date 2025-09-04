@@ -6,44 +6,44 @@ import { FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxe
 
 const features = [
   {
-    icon: <FaRobot className="text-2xl text-blue-600" />, 
+    icon: <FaRobot style={{ fontSize: "1.5rem", color: "#2563eb" }} />, 
     title: "AI Statistical Guide",
     button: "Start Chatting",
     link: "/guide",
   },
   {
-    icon: <FaCheckCircle className="text-2xl text-green-600" />,
+    icon: <FaCheckCircle style={{ fontSize: "1.5rem", color: "#22c55e" }} />,
     title: "Data Quality Check",
     button: "Start Analysis",
     link: "/data-quality",
   },
   {
-    icon: <FaThLarge className="text-2xl text-purple-600" />,
+    icon: <FaThLarge style={{ fontSize: "1.5rem", color: "#a21caf" }} />,
     title: "RCBD Analysis",
     button: "Start RCBD Analysis",
     link: "/rbd",
   },
   {
-    icon: <FaClone className="text-2xl text-pink-600" />,
+    icon: <FaClone style={{ fontSize: "1.5rem", color: "#ec4899" }} />,
     title: "FRBD Analysis",
     button: "Start FRBD Analysis",
     link: "/frbd",
   },
   {
-    icon: <FaBoxes className="text-2xl text-teal-600" />,
+    icon: <FaBoxes style={{ fontSize: "1.5rem", color: "#14b8a6" }} />,
     title: "Non-Parametric Tests",
     button: "Start Analysis",
     link: "/non-parametric",
   },
   {
-    icon: <FaLayerGroup className="text-2xl" style={{ color: "#edb83dff" }} />,
+    icon: <FaLayerGroup style={{ fontSize: "1.5rem", color: "#edb83dff" }} />,
     title: "Split Plot Analysis",
     text: "Coming Soon",
     button: "Start Analysis",
     link: "#",
   },
   {
-    icon: <FaBug className="text-2xl" style={{ color: "#e719ddff" }} />,
+    icon: <FaBug style={{ fontSize: "1.5rem", color: "#e719ddff" }} />,
     title: "Probit Analysis",
     button: "Start Analysis",
     link: "/probit",

@@ -5,7 +5,7 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Upload, BarChart3 } from "lucide-react";
+import { FaBug, FaUpload } from "react-icons/fa";
 import Image from 'next/image';
 import { IBM_Plex_Sans } from 'next/font/google';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
@@ -182,7 +182,7 @@ export default function ProbitPage() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <BarChart3 className="h-8 w-8 text-blue-600 mr-3" />
+            <FaBug style={{ height: '2rem', width: '2rem', color: '#2563eb', marginRight: '0.75rem' }} />
             <h1 className="text-3xl font-bold">Probit Analysis</h1>
           </div>
           <p className="text-muted-foreground">
@@ -193,7 +193,9 @@ export default function ProbitPage() {
         <Card className="mb-8 border border-blue-200 rounded-lg">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Upload className="h-5 w-5 mr-2" />
+              <span style={{ marginRight: '8px', display: 'inline-flex', alignItems: 'center' }}>
+                <FaUpload size={20} color="#2563eb" />
+              </span>
               Upload .CSV File
             </CardTitle>
             <CardDescription>
