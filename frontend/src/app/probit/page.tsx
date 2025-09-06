@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, ReactNode } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,12 +14,39 @@ const ibmPlexSans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '700'] }
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
+const RegressionCard = ({ title, details }: { title: string, details: any }) => {
+  if (!details) return null;
+
+  let content;
+  if (Array.isArray(details)) {
+    content = details.map((line, index) => <p key={index}>{line}</p>);
+  } else {
+    content = (
+      <>
+        {details.equation && <p>{details.equation}</p>}
+        {details.intercept && <p>{details.intercept}</p>}
+        {details.slope && <p>{details.slope}</p>}
+      </>
+    );
+  }
+
+  return (
+    <div className="bg-gray-100 border border-blue-200 rounded-lg p-4 my-4 text-sm">
+      <p className="font-bold">{title}</p>
+      <div className="ml-4 mt-2">
+        {content}
+      </div>
+    </div>
+  );
+};
+
 export default function ProbitPage() {
   const [file, setFile] = useState<File | null>(null);
   const [data, setData] = useState<any[]>([]);
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [showFinneySummary, setShowFinneySummary] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,6 +167,8 @@ export default function ProbitPage() {
   const getSummaryDetails = (methodResults: any) =>
     methodResults ? parseSummary(methodResults.model_summary) : null;
 
+  const finneySummaryDetails = getSummaryDetails(results?.finney);
+
   // Goodness-of-fit parsing helper
   const renderGoodnessOfFit = (gof: any) => {
     if (!gof) return null;
@@ -151,7 +180,7 @@ export default function ProbitPage() {
       if (pNum < 0.05) {
         interpretation = "The chi-squared test is significant (p < 0.05): the observed and predicted values do not agree (lack of fit). It's not recommended to use this method for your data.";
       } else {
-        interpretation = "The chi-squared test is not significant (p ≥ 0.05): the observed and predicted values are considered homogeneous (good fit). Choose this method that passes the goodness-of-fit test for your data.";
+        interpretation = "The chi-squared test is not significant (p ≥ 0.05): the observed and predicted values are considered homogeneous (good fit). This method passes the goodness-of-fit test for your data.";
       }
     }
     return (
@@ -199,7 +228,7 @@ export default function ProbitPage() {
               Upload .CSV File
             </CardTitle>
             <CardDescription>
-              The .csv file should have columns named exactly <b>DOSE</b>, <b>TOTAL</b>, and <b>RESPONSE</b>. If control group (DOSE = 0) has RESPONSE counts, corrected mortality is automatically calculated for non-control groups using Abbott's formula.
+              The .csv file should have columns named exactly as <b>DOSE</b>, <b>RESPONSE</b>, and <b>TOTAL</b>. If control group (DOSE = 0) has RESPONSE counts, corrected mortality will be automatically calculated for non-control groups using Abbott's formula.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -283,18 +312,24 @@ export default function ProbitPage() {
             <Tabs.Content value="finney">
               <Card className="border border-blue-200 rounded-lg">
                 <CardHeader>
-                  <CardTitle>Analysis Results: Finney's Method</CardTitle>
+                  <CardTitle className="text-3xl font-bold">Analysis Results: Finney's Method</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <h3 className="text-lg font-semibold mb-2">Weighted Least Squares Regression Model Summary</h3>
-                  <pre className="bg-gray-50 p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">{results.finney?.model_summary?.join('\n')}</pre>
-                  {getSummaryDetails(results.finney) && (
-                    <div className="bg-gray-100 border border-blue-200 rounded-lg p-4 my-4 text-sm">
-                      <p><b>Regression Equation (log10 scale):</b> {getSummaryDetails(results.finney).equation}</p>
-                      <p>{getSummaryDetails(results.finney).intercept}</p>
-                      <p>{getSummaryDetails(results.finney).slope}</p>
-                    </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold">Weighted Least Squares Regression Model Summary</h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowFinneySummary((prev) => !prev)}
+                      className="ml-2"
+                    >
+                      {showFinneySummary ? "Hide" : "Show"}
+                    </Button>
+                  </div>
+                  {showFinneySummary && (
+                    <pre className="bg-gray-50 p-4 rounded-lg overflow-x-auto whitespace-pre-wrap text-sm">{results.finney?.model_summary?.join('\n')}</pre>
                   )}
+                  <RegressionCard title="Regression Equation (log10 scale):" details={finneySummaryDetails} />
                   {results.finney?.goodness_of_fit && renderGoodnessOfFit(results.finney.goodness_of_fit)}
                   <h3 className="text-lg font-semibold mt-4 mb-2">Calculated LD values and 95% Confidence Intervals (Fieller's Theorem):</h3>
                   <div className="overflow-x-auto border border-blue-200 rounded-lg">
@@ -338,20 +373,13 @@ export default function ProbitPage() {
             <Tabs.Content value="profile">
               <Card className="border border-blue-200 rounded-lg">
                 <CardHeader>
-                  <CardTitle>Analysis Results: Profile Likelihood Method</CardTitle>
+                  <CardTitle className="text-3xl font-bold">Analysis Results: Profile Likelihood Method</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {results.profile_likelihood ? (
                     <>
                       <h3 className="text-lg font-semibold mb-2">Profile Likelihood Regression Model Summary</h3>
-                      <pre className="bg-gray-50 p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">{results.profile_likelihood.model_summary?.join('\n')}</pre>
-                      {getSummaryDetails(results.profile_likelihood) && (
-                        <div className="bg-gray-100 border border-blue-200 rounded-lg p-4 my-4 text-sm">
-                          <p><b>Regression Equation (log10 scale):</b> {getSummaryDetails(results.profile_likelihood).equation}</p>
-                          <p>{getSummaryDetails(results.profile_likelihood).intercept}</p>
-                          <p>{getSummaryDetails(results.profile_likelihood).slope}</p>
-                        </div>
-                      )}
+                      <RegressionCard title="Regression Equation (log10 scale):" details={results.profile_likelihood.model_summary} />
                       {results.profile_likelihood.goodness_of_fit && renderGoodnessOfFit(results.profile_likelihood.goodness_of_fit)}
                       <h3 className="text-lg font-semibold mt-4 mb-2">Calculated LD values and 95% Confidence Intervals (Profile Likelihood):</h3>
                       <div className="overflow-x-auto border border-blue-200 rounded-lg">

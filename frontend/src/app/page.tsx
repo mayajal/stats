@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link"; // Changed from "react-router-dom"
-import { FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxes } from "react-icons/fa";
+import { FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxes,FaAsterisk } from "react-icons/fa";
 
 const features = [
   {
@@ -47,6 +47,12 @@ const features = [
     title: "Probit Analysis",
     button: "Start Analysis",
     link: "/probit",
+  },
+  {
+    icon: <FaAsterisk style={{ fontSize: "1.5rem", color: "#ef4444" }} />,
+    title: "Survival Analysis",
+    button: "Start Analysis",
+    link: "/survival",
   },
 ];
 
