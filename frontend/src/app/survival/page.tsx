@@ -309,7 +309,7 @@ export default function SurvivalPage() {
           </div>
           <p className="text-muted-foreground">
             Analyze time-to-event data using Kaplan-Meier curves and Cox Proportional Hazards models. 
-            These are a set of statistical tools for estimating the time it takes for an event of interest to happen. This 'event' can be anything from the death of insects or plants, lifespan of a patient to the failure of a mechanical part.
+            These are a set of statistical tools for estimating the time it takes for an event of interest to happen. This &apos;event&apos; can be anything from the death of insects or plants, lifespan of a patient to the failure of a mechanical part.
           </p>
         </div>
 
@@ -475,7 +475,7 @@ export default function SurvivalPage() {
                             <div className="mt-8">
                               <h3 className="text-lg font-normal mb-2 inline-flex items-center">
                                 Adjusted Survival Curves
-                                <InfoIcon text="This plot shows the probability that an individual will survive past a certain point in time. The curve starts at 1 (100% survival) and decreases over time as events (e.g., deaths) occur. It answers the question: 'What is the chance of surviving longer than time t?'" />
+                                <InfoIcon text="This plot shows the probability that an individual will survive past a certain point in time. The curve starts at 1 (100% survival) and decreases over time as events (e.g., deaths) occur. It answers the question: &apos;What is the chance of surviving longer than time t?&apos;" />
                               </h3>
                               <Image
                                 src={`data:image/png;base64,${results.cox_regression.adjusted_survival_plot}`}
@@ -492,7 +492,7 @@ export default function SurvivalPage() {
                             <div className="mt-8">
                               <h3 className="text-lg font-normal mb-2 inline-flex items-center">
                                 Cumulative Hazard by Group
-                                <InfoIcon text="This plot shows the accumulated risk of an event occurring up to a certain point in time. It starts at 0 and increases over time. A steeper slope on this curve indicates a higher risk of the event happening during that period. It answers the question: 'What is the total accumulated risk of the event happening by time t?'" />
+                                <InfoIcon text="This plot shows the accumulated risk of an event occurring up to a certain point in time. It starts at 0 and increases over time. A steeper slope on this curve indicates a higher risk of the event happening during that period. It answers the question: &apos;What is the total accumulated risk of the event happening by time t?&apos;" />
                               </h3>
                               <Image
                                 src={`data:image/png;base64,${results.cox_regression.cumulative_hazard_plot}`}

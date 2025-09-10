@@ -326,18 +326,18 @@ export default function NonParametricTestTool() {
                 <tbody>
                   <tr className="border-b">
                     <td className="py-2 align-top font-bold">Continuous</td>
-                    <td className="py-2 align-top text-muted-foreground pr-4">Data that can take any numeric value within a range. It's measured, not counted.</td>
+                    <td className="py-2 align-top text-muted-foreground pr-4">Data that can take any numeric value within a range. It&apos;s measured, not counted.</td>
                     <td className="py-2 align-top">Crop yield (tons/hectare), soil pH, plant height.</td>
                   </tr>
                   <tr className="border-b">
                     <td className="py-2 align-top font-bold">Ordinal</td>
-                    <td className="py-2 align-top text-muted-foreground pr-4">Categorical data with a clear order or ranking. The intervals between ranks aren't necessarily equal.</td>
-                    <td className="py-2 align-top">Disease severity ("Low", "Medium", "High"), soil quality.</td>
+                    <td className="py-2 align-top text-muted-foreground pr-4">Categorical data with a clear order or ranking. The intervals between ranks aren&apos;t necessarily equal.</td>
+                    <td className="py-2 align-top">Disease severity (&quot;Low&quot;, &quot;Medium&quot;, &quot;High&quot;), soil quality.</td>
                   </tr>
                   <tr className="border-b">
                     <td className="py-2 align-top font-bold">Nominal</td>
                     <td className="py-2 align-top text-muted-foreground pr-4">Categorical data with no intrinsic order or ranking.</td>
-                    <td className="py-2 align-top">Crop type ("Wheat", "Corn"), soil type, treatment group.</td>
+                    <td className="py-2 align-top">Crop type (&quot;Wheat&quot;, &quot;Corn&quot;), soil type, treatment group.</td>
                   </tr>
                   <tr>
                     <td className="py-2 align-top font-bold">Count (Discrete)</td>

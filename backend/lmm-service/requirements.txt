@@ -1,0 +1,11 @@
+Flask
+pandas
+scipy
+statsmodels
+gunicorn
+Flask-Cors
+matplotlib
+seaborn
+numpy
+lxml
+networkx

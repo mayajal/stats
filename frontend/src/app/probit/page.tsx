@@ -178,7 +178,7 @@ export default function ProbitPage() {
     let interpretation = '';
     if (!isNaN(pNum)) {
       if (pNum < 0.05) {
-        interpretation = "The chi-squared test is significant (p < 0.05): the observed and predicted values do not agree (lack of fit). It's not recommended to use this method for your data.";
+        interpretation = "The chi-squared test is significant (p < 0.05): the observed and predicted values do not agree (lack of fit). It&apos;s not recommended to use this method for your data.";
       } else {
         interpretation = "The chi-squared test is not significant (p ≥ 0.05): the observed and predicted values are considered homogeneous (good fit). This method passes the goodness-of-fit test for your data.";
       }
@@ -228,7 +228,7 @@ export default function ProbitPage() {
               Upload .CSV File
             </CardTitle>
             <CardDescription>
-              The .csv file should have columns named exactly as <b>DOSE</b>, <b>RESPONSE</b>, and <b>TOTAL</b>. If control group (DOSE = 0) has RESPONSE counts, corrected mortality will be automatically calculated for non-control groups using Abbott's formula.
+              The .csv file should have columns named exactly as <b>DOSE</b>, <b>RESPONSE</b>, and <b>TOTAL</b>. If control group (DOSE = 0) has RESPONSE counts, corrected mortality will be automatically calculated for non-control groups using Abbott&apos;s formula.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -305,14 +305,14 @@ export default function ProbitPage() {
         {results && (
           <Tabs.Root defaultValue="finney" className="mb-8">
             <Tabs.List className="flex border-b border-blue-200 mb-4">
-              <Tabs.Trigger value="finney" className="px-4 py-2 font-semibold text-blue-700 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 focus:outline-none cursor-pointer">Finney's Method</Tabs.Trigger>
+              <Tabs.Trigger value="finney" className="px-4 py-2 font-semibold text-blue-700 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 focus:outline-none cursor-pointer">Finney&apos;s Method</Tabs.Trigger>
               <Tabs.Trigger value="profile" className="px-4 py-2 font-semibold text-blue-700 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 focus:outline-none cursor-pointer">Profile Likelihood Method</Tabs.Trigger>
             </Tabs.List>
             {/* Finney's Method Tab */}
             <Tabs.Content value="finney">
               <Card className="border border-blue-200 rounded-lg">
                 <CardHeader>
-                  <CardTitle className="text-3xl font-bold">Analysis Results: Finney's Method</CardTitle>
+                  <CardTitle className="text-3xl font-bold">Analysis Results: Finney&apos;s Method</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between mb-2">
@@ -331,7 +331,7 @@ export default function ProbitPage() {
                   )}
                   <RegressionCard title="Regression Equation (log10 scale):" details={finneySummaryDetails} />
                   {results.finney?.goodness_of_fit && renderGoodnessOfFit(results.finney.goodness_of_fit)}
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Calculated LD values and 95% Confidence Intervals (Fieller's Theorem):</h3>
+                  <h3 className="text-lg font-semibold mt-4 mb-2">Calculated LD values and 95% Confidence Intervals (Fieller&apos;s Theorem):</h3>
                   <div className="overflow-x-auto border border-blue-200 rounded-lg">
                     <table className="min-w-full divide-y divide-blue-200">
                       <thead className="bg-blue-100">

@@ -30,6 +30,12 @@ const features = [
     link: "/frbd",
   },
   {
+    icon: <FaLayerGroup style={{ fontSize: "1.5rem", color: "#f97316" }} />,
+    title: "Linear Mixed Models (LMM)",
+    button: "Start Analysis",
+    link: "/lmm",
+  },
+  {
     icon: <FaBoxes style={{ fontSize: "1.5rem", color: "#14b8a6" }} />,
     title: "Non-Parametric Tests",
     button: "Start Analysis",

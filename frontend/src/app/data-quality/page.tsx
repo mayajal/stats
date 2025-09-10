@@ -159,15 +159,40 @@ export default function AnalysisPage() {
       const workbook = XLSX.read(arrayBuffer);
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      // This will produce an array of arrays, which is better for cleaning
+      const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      if (jsonData.length === 0) {
-        setError('No data found in the file');
+      if (jsonData.length < 2) { // We need at least a header and one data row
+        setError('No data found or file is empty.');
+        setData([]);
         return;
       }
 
-      setData(jsonData);
+      // The first row is the header, but we skip the first column (the index)
+      const headers = jsonData[0].slice(1);
+      
+      // The rest of the data, skipping the first row (headers)
+      const cleanedData = jsonData.slice(1).map(rowArray => {
+        const rowObject: { [key: string]: any } = {};
+        // We iterate over the headers to build the object
+        headers.forEach((header, index) => {
+          // We read from the row array, offsetting by 1 to skip the index column
+          rowObject[header] = rowArray[index + 1];
+        });
+        return rowObject;
+      })
+      // Filter out any potentially empty rows that might result from the cleaning
+      .filter(obj => Object.values(obj).some(val => val !== undefined && val !== null && val !== ''));
+
+      if (cleanedData.length === 0) {
+        setError('No valid data to display after cleaning.');
+        setData([]);
+        return;
+      }
+
+      setData(cleanedData);
     } catch (err) {
+      console.error(err); // It's good practice to log the actual error
       setError("Error processing file. Please ensure it&apos;s a valid Excel file.");
     } finally {
       setLoading(false);
@@ -352,7 +377,7 @@ export default function AnalysisPage() {
             <CardHeader>
               <CardTitle>Data Preview</CardTitle>
               <CardDescription>
-                First 5 rows of your uploaded data
+                Your uploaded data
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -368,7 +393,7 @@ export default function AnalysisPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.slice(0, 5).map((row, rowIndex) => (
+                    {data.map((row, rowIndex) => (
                       <tr key={rowIndex}>
                         {Object.values(row).map((value, colIndex) => (
                           <td key={colIndex} className="border border-gray-300 px-4 py-2">

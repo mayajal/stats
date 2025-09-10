@@ -116,3 +116,7 @@ docker run -d -p 8080:8080 probit-service:latest
 
 docker build -t survival-service .
 docker run -d -p 8080:8080 survival-service:latest
+
+docker build -t lmm-service .
+docker run -d -p 8080:8080 lmm-service:latest
+

@@ -39,6 +39,21 @@ env:
     availability:
       - BUILD
       - RUNTIME
+  - variable: NEXT_PUBLIC_PROBIT_SERVICE_URL
+    value: https://probit-service-zur5dejluq-uc.a.run.app/probit
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_SURVIVAL_SERVICE_URL
+    value: https://survival-service-zur5dejluq-uc.a.run.app/survival
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_LLM_SERVICE_URL
+    value: https://lmm-service-zur5dejluq-uc.a.run.app/lmm
+    availability:
+      - BUILD
+      - RUNTIME
 
   - variable: FIREBASE_CONFIG
     value: '{"apiKey": "AIzaSyDlBQSqy5zwe43cZ6Wb7mfqKjVa03bxA9c",
