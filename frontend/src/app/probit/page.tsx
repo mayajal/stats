@@ -5,10 +5,12 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { FaBug, FaUpload } from "react-icons/fa";
+import { FaBug } from "react-icons/fa";
+import { Upload } from 'lucide-react';
 import Image from 'next/image';
 import { IBM_Plex_Sans } from 'next/font/google';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import * as XLSX from 'xlsx';
 
 const ibmPlexSans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '700'] });
 
@@ -43,18 +45,110 @@ const RegressionCard = ({ title, details }: { title: string, details: any }) => 
 export default function ProbitPage() {
   const [file, setFile] = useState<File | null>(null);
   const [data, setData] = useState<any[]>([]);
+  const [dataPreview, setDataPreview] = useState<any[]>([]);
+  const [columnHeaders, setColumnHeaders] = useState<string[]>([]);
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [showFinneySummary, setShowFinneySummary] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [availableSheets, setAvailableSheets] = useState<string[]>([]);
+  const [selectedSheet, setSelectedSheet] = useState<string>("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFile(e.target.files[0]);
+      const f = e.target.files[0];
+      setFile(f);
       setError("");
       setData([]);
+      setDataPreview([]);
+      setColumnHeaders([]);
       setResults(null);
+      setAvailableSheets([]);
+      setSelectedSheet("");
+
+      const name = f.name.toLowerCase();
+      const isXlsx = name.endsWith('.xlsx') || name.endsWith('.xls');
+      if (isXlsx) {
+        if (f.size > 1024 * 1024) {
+          setError("XLSX file too large. Max allowed size is 1 MB.");
+          setFile(null);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const wb = XLSX.read(new Uint8Array(evt.target?.result as ArrayBuffer), { type: 'array' });
+            const sheets = wb.SheetNames || [];
+            setAvailableSheets(sheets);
+            if (sheets.length > 0) setSelectedSheet(sheets[0]);
+            // Prefill headers for preview UI
+            if (sheets.length > 0) {
+              const sheet = wb.Sheets[sheets[0]];
+              const json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" }) as any[];
+              const headers = Array.isArray(json[0]) ? (json[0] as any[]).map((h) => String(h).trim()) : [];
+              setColumnHeaders(headers);
+            }
+          } catch (er) {
+            setError("Failed to read XLSX file. Ensure it is a valid spreadsheet.");
+          }
+        };
+        reader.readAsArrayBuffer(f);
+      } else {
+        // CSV: set headers quickly for preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target?.result;
+          if (typeof text === "string") {
+            const rows = text.split("\n");
+            const headers = rows[0].split(",").map(h => h.trim());
+            setColumnHeaders(headers);
+          }
+        };
+        reader.readAsText(f);
+      }
+    }
+  };
+
+  const handleProcessFile = async () => {
+    if (!file) {
+      setError("Please select a file first.");
+      return;
+    }
+    const name = file.name.toLowerCase();
+    const isXlsx = name.endsWith('.xlsx') || name.endsWith('.xls');
+    try {
+      if (isXlsx) {
+        if (!selectedSheet) {
+          setError("Please select a sheet to preview.");
+          return;
+        }
+        const arrayBuffer = await file.arrayBuffer();
+        const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+        const sheet = wb.Sheets[selectedSheet];
+        if (!sheet) throw new Error("Selected sheet not found");
+        const json = XLSX.utils.sheet_to_json(sheet, { defval: "" }) as any[];
+        const preview = json.slice(0, 5);
+        setDataPreview(preview);
+        setColumnHeaders(Object.keys(json[0] || {}));
+      } else {
+        const text = await file.text();
+        const parsed = text.split("\n").map((row) => row.split(","));
+        const headers = parsed[0] || [];
+        const body = parsed.slice(1).filter(row => row.join("").trim() !== "");
+        const formatted = body.map((row) => {
+          const rowData: any = {};
+          headers.forEach((header, i) => {
+            rowData[String(header).trim()] = row[i];
+          });
+          return rowData;
+        });
+        setDataPreview(formatted.slice(0, 5));
+        setColumnHeaders(headers.map(h => String(h).trim()))
+      }
+    } catch (er: any) {
+      setError(er.message || "Failed to process file preview");
     }
   };
 
@@ -67,8 +161,33 @@ export default function ProbitPage() {
     setLoading(true);
     setError("");
 
+    const name = file.name.toLowerCase();
+    const isXlsx = name.endsWith('.xlsx') || name.endsWith('.xls');
+
     const formData = new FormData();
-    formData.append("file", file);
+    if (isXlsx) {
+      if (!selectedSheet) {
+        setError("Please select a sheet for analysis.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+        const sheet = wb.Sheets[selectedSheet];
+        if (!sheet) throw new Error("Selected sheet not found");
+        const csv = XLSX.utils.sheet_to_csv(sheet);
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const csvFile = new File([blob], 'upload.csv', { type: 'text/csv' });
+        formData.append("file", csvFile);
+      } catch (er: any) {
+        setError(er.message || "Failed to convert selected sheet to CSV");
+        setLoading(false);
+        return;
+      }
+    } else {
+      formData.append("file", file);
+    }
 
     try {
       const response = await fetch(process.env.NEXT_PUBLIC_PROBIT_SERVICE_URL || '', {
@@ -91,24 +210,37 @@ export default function ProbitPage() {
         setResults({ finney: resultData, profile_likelihood: null });
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result;
-        if (typeof text === "string") {
-          const rows = text.split("\n").map((row) => row.split(","));
-          const headers = rows[0];
-          const body = rows.slice(1).filter(row => row.join("").trim() !== "");
-          const formattedData = body.map((row) => {
-            const rowData: any = {};
-            headers.forEach((header, i) => {
-              rowData[header.trim()] = row[i];
+      // Build preview data for display
+      if (isXlsx) {
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+          const sheet = wb.Sheets[selectedSheet];
+          if (sheet) {
+            const json = XLSX.utils.sheet_to_json(sheet, { defval: "" }) as any[];
+            setData(json);
+          }
+        } catch {}
+      } else {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target?.result;
+          if (typeof text === "string") {
+            const rows = text.split("\n").map((row) => row.split(","));
+            const headers = rows[0];
+            const body = rows.slice(1).filter(row => row.join("").trim() !== "");
+            const formattedData = body.map((row) => {
+              const rowData: any = {};
+              headers.forEach((header, i) => {
+                rowData[header.trim()] = row[i];
+              });
+              return rowData;
             });
-            return rowData;
-          });
-          setData(formattedData);
-        }
-      };
-      reader.readAsText(file);
+            setData(formattedData);
+          }
+        };
+        reader.readAsText(file);
+      }
 
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");
@@ -120,8 +252,12 @@ export default function ProbitPage() {
   const handleReset = () => {
     setFile(null);
     setData([]);
+    setDataPreview([]);
+    setColumnHeaders([]);
     setResults(null);
     setError("");
+    setAvailableSheets([]);
+    setSelectedSheet("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -223,29 +359,30 @@ export default function ProbitPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <span style={{ marginRight: '8px', display: 'inline-flex', alignItems: 'center' }}>
-                <FaUpload size={20} color="#2563eb" />
+                <Upload size={20} color="#2563eb" />
               </span>
-              Upload .CSV File
+              Upload Data
             </CardTitle>
             <CardDescription>
-              The .csv file should have columns named exactly as <b>DOSE</b>, <b>RESPONSE</b>, and <b>TOTAL</b>. If control group (DOSE = 0) has RESPONSE counts, corrected mortality will be automatically calculated for non-control groups using Abbott&apos;s formula.
+            Upload a .CSV or .XLSX file (max 1 MB). File should have columns named exactly as <b>DOSE</b>, <b>RESPONSE</b>, and <b>TOTAL</b>. If control group (DOSE = 0) has RESPONSE counts, corrected mortality will be automatically calculated for non-control groups using Abbott&apos;s formula.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-4">
               <Input
                 type="file"
-                accept=".csv"
+                accept=".csv,.xlsx,.xls"
                 onChange={handleFileChange}
                 className="flex-1 bg-blue-50"
                 ref={fileInputRef}
               />
               <Button 
-                onClick={handleAnalyze} 
-                disabled={!file || loading}
-                className="min-w-[120px]"
+                onClick={handleProcessFile} 
+                disabled={!file}
+                variant="secondary"
+                className="bg-gray-200 text-black-800 font-bold hover:bg-gray-300 border border-gray-300"
               >
-                {loading ? 'Analyzing...' : 'Analyze'}
+                Process File
               </Button>
               <Button 
                 onClick={handleReset} 
@@ -256,7 +393,23 @@ export default function ProbitPage() {
                 Reset
               </Button>
             </div>
-            
+            {availableSheets.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-1 font-medium">Select Sheet (XLSX)</label>
+                  <select
+                    value={selectedSheet}
+                    onChange={(e) => setSelectedSheet(e.target.value)}
+                    className="block w-full p-2 border border-blue-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  >
+                    {availableSheets.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="text-sm text-muted-foreground self-end">Max XLSX size: 1 MB</div>
+              </div>
+            )}
             {file && (
               <div className="text-sm text-muted-foreground">
                 Selected file: {file.name}
@@ -270,6 +423,46 @@ export default function ProbitPage() {
             )}
           </CardContent>
         </Card>
+
+        {dataPreview.length > 0 && (
+          <Card className="mb-8 border border-blue-200 rounded-lg">
+            <CardHeader>
+              <CardTitle>Data Preview</CardTitle>
+              <CardDescription>Showing the first 5 rows of your data.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-blue-200">
+                  <thead className="bg-blue-100">
+                    <tr>
+                      {columnHeaders.map((key) => (
+                        <th key={key} className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">{key}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-blue-200">
+                    {dataPreview.map((row, i) => (
+                      <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
+                        {columnHeaders.map((key) => (
+                          <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row[key]}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-4">
+                <Button 
+                  onClick={handleAnalyze} 
+                  disabled={!file || loading}
+                  className="min-w-[120px]"
+                >
+                  {loading ? 'Analyzing...' : 'Analyze'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {data.length > 0 && (
           <Card className="mb-8 border border-blue-200 rounded-lg">

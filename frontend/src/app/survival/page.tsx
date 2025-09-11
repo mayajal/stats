@@ -5,7 +5,9 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { FaAsterisk, FaUpload, FaInfoCircle } from "react-icons/fa";
+import { Upload } from 'lucide-react';
+import { FaAsterisk, FaInfoCircle } from "react-icons/fa";
+import * as XLSX from 'xlsx';
 
 const InfoIcon = ({ text }: { text: string }) => {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -211,6 +213,46 @@ export default function SurvivalPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [columnHeaders, setColumnHeaders] = useState<string[]>([]);
   const [selectedCovariates, setSelectedCovariates] = useState<string[]>([]);
+  const [availableSheets, setAvailableSheets] = useState<string[]>([]);
+  const [selectedSheet, setSelectedSheet] = useState<string>("");
+
+  const handleProcessFile = async () => {
+    if (!file) {
+      setError("Please select a file first.");
+      return;
+    }
+    const name = file.name.toLowerCase();
+    const isXlsx = name.endsWith('.xlsx') || name.endsWith('.xls');
+    try {
+      if (isXlsx) {
+        if (!selectedSheet) {
+          setError("Please select a sheet to preview.");
+          return;
+        }
+        const arrayBuffer = await file.arrayBuffer();
+        const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+        const sheet = wb.Sheets[selectedSheet];
+        if (!sheet) throw new Error("Selected sheet not found");
+        const json = XLSX.utils.sheet_to_json(sheet, { defval: "" }) as any[];
+        setData(json.slice(0, 5));
+      } else {
+        const text = await file.text();
+        const rows = text.split("\n").map((r) => r.split(","));
+        const headers = rows[0] || [];
+        const body = rows.slice(1).filter(r => r.join("").trim() !== "");
+        const formatted = body.map((row) => {
+          const rowData: any = {};
+          headers.forEach((h, i) => {
+            rowData[String(h).trim()] = row[i];
+          });
+          return rowData;
+        });
+        setData(formatted.slice(0, 5));
+      }
+    } catch (er: any) {
+      setError(er.message || "Failed to process file preview");
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -220,17 +262,73 @@ export default function SurvivalPage() {
       setData([]);
       setResults(null);
       setSelectedCovariates([]); // Reset covariates on new file
+      setAvailableSheets([]);
+      setSelectedSheet("");
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result;
-        if (typeof text === "string") {
-          const rows = text.split("\n");
-          const headers = rows[0].split(",").map(h => h.trim());
-          setColumnHeaders(headers);
+      const name = file.name.toLowerCase();
+      const isXlsx = name.endsWith('.xlsx') || name.endsWith('.xls');
+      if (isXlsx) {
+        if (file.size > 1024 * 1024) {
+          setError("XLSX file too large. Max allowed size is 1 MB.");
+          setFile(null);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+          return;
         }
-      };
-      reader.readAsText(file);
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const wb = XLSX.read(new Uint8Array(evt.target?.result as ArrayBuffer), { type: 'array' });
+            const sheets = wb.SheetNames || [];
+            setAvailableSheets(sheets);
+            const defaultSheet = sheets[0] || "";
+            setSelectedSheet(defaultSheet);
+            if (defaultSheet) {
+              const sheet = wb.Sheets[defaultSheet];
+              const json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" }) as any[];
+              const headers = Array.isArray(json[0]) ? (json[0] as any[]).map((h) => String(h).trim()) : [];
+              setColumnHeaders(headers);
+            } else {
+              setColumnHeaders([]);
+            }
+          } catch (er) {
+            setError("Failed to read XLSX file. Ensure it is a valid spreadsheet.");
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target?.result;
+          if (typeof text === "string") {
+            const rows = text.split("\n");
+            const headers = rows[0].split(",").map(h => h.trim());
+            setColumnHeaders(headers);
+          } else {
+            setColumnHeaders([]);
+          }
+        };
+        reader.readAsText(file);
+      }
+
+    }
+  };
+
+  const handleSheetChange = async (sheetName: string) => {
+    setSelectedSheet(sheetName);
+    if (!file) return;
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+      const sheet = wb.Sheets[sheetName];
+      if (sheet) {
+        const json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" }) as any[];
+        const headers = Array.isArray(json[0]) ? (json[0] as any[]).map((h) => String(h).trim()) : [];
+        setColumnHeaders(headers);
+      } else {
+        setColumnHeaders([]);
+      }
+    } catch {
+      // ignore
     }
   };
 
@@ -243,8 +341,32 @@ export default function SurvivalPage() {
     setLoading(true);
     setError("");
 
+    const name = file.name.toLowerCase();
+    const isXlsx = name.endsWith('.xlsx') || name.endsWith('.xls');
     const formData = new FormData();
-    formData.append("file", file);
+    if (isXlsx) {
+      if (!selectedSheet) {
+        setError("Please select a sheet for analysis.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+        const sheet = wb.Sheets[selectedSheet];
+        if (!sheet) throw new Error("Selected sheet not found");
+        const csv = XLSX.utils.sheet_to_csv(sheet);
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const csvFile = new File([blob], 'upload.csv', { type: 'text/csv' });
+        formData.append("file", csvFile);
+      } catch (er: any) {
+        setError(er.message || "Failed to convert selected sheet to CSV");
+        setLoading(false);
+        return;
+      }
+    } else {
+      formData.append("file", file);
+    }
     selectedCovariates.forEach(cov => formData.append('covariates[]', cov));
 
     try {
@@ -294,6 +416,8 @@ export default function SurvivalPage() {
     setError("");
     setColumnHeaders([]);
     setSelectedCovariates([]);
+    setAvailableSheets([]);
+    setSelectedSheet("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -317,29 +441,30 @@ export default function SurvivalPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <span style={{ marginRight: '8px', display: 'inline-flex', alignItems: 'center' }}>
-                <FaUpload size={20} color="#2563eb" />
+                <Upload size={20} color="#2563eb" />
               </span>
-              Upload .CSV File
+              Upload Data
             </CardTitle>
             <CardDescription>
-              The .csv file should have columns named exactly as <b>TIME</b>, <b>EVENT</b>, and <b>GROUP</b>. Covariates can be optionally included in additional columns for Cox regression.
+              Upload a .CSV or .XLSX file (max 1 MB). Files should have columns named exactly as <b>TIME</b>, <b>EVENT</b>, and <b>GROUP</b>. Covariates can be optionally included in additional columns for Cox regression.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-4">
               <Input
                 type="file"
-                accept=".csv"
+                accept=".csv,.xlsx,.xls"
                 onChange={handleFileChange}
                 className="flex-1 bg-blue-50"
                 ref={fileInputRef}
               />
-              <Button 
-                onClick={handleAnalyze} 
-                disabled={!file || loading}
-                className="min-w-[120px]"
+              <Button
+                onClick={handleProcessFile}
+                disabled={!file}
+                variant="secondary"
+                className="bg-gray-200 text-black-800 font-bold hover:bg-gray-300 border border-gray-300"
               >
-                {loading ? 'Analyzing...' : 'Analyze'}
+                Process File
               </Button>
               <Button 
                 onClick={handleReset} 
@@ -350,7 +475,24 @@ export default function SurvivalPage() {
                 Reset
               </Button>
             </div>
-            
+            {availableSheets.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-1 font-medium">Select Sheet (XLSX)</label>
+                  <select
+                    value={selectedSheet}
+                    onChange={(e) => handleSheetChange(e.target.value)}
+                    className="block w-full p-2 border border-blue-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  >
+                    {availableSheets.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="text-sm text-muted-foreground self-end">Max XLSX size: 1 MB</div>
+              </div>
+            )}
+
             {file && (
               <div className="text-sm text-muted-foreground">
                 Selected file: {file.name}
@@ -395,8 +537,8 @@ export default function SurvivalPage() {
         {data.length > 0 && (
           <Card className="mb-8 border border-blue-200 rounded-lg">
             <CardHeader>
-              <CardTitle>Uploaded Data</CardTitle>
-              <CardDescription>The data from your uploaded file.</CardDescription>
+              <CardTitle>Data Preview</CardTitle>
+              <CardDescription>Showing the first 5 rows of your data.</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -418,6 +560,15 @@ export default function SurvivalPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="mt-4">
+                <Button 
+                  onClick={handleAnalyze} 
+                  disabled={!file || loading}
+                  className="min-w-[120px]"
+                >
+                  {loading ? 'Analyzing...' : 'Analyze'}
+                </Button>
               </div>
             </CardContent>
           </Card>
