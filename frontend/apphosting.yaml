@@ -49,7 +49,7 @@ env:
     availability:
       - BUILD
       - RUNTIME
-  - variable: NEXT_PUBLIC_LLM_SERVICE_URL
+  - variable: NEXT_PUBLIC_LMM_SERVICE_URL
     value: https://lmm-service-zur5dejluq-uc.a.run.app/lmm
     availability:
       - BUILD
