@@ -27,7 +27,7 @@ const features = [
   },
   {
     icon: <FaMixer style={{ fontSize: "1.5rem", color: "#2563eb" }} />,
-    title: "Linear Mixed Models",
+    title: "Linear Mixed Model",
     link: "/lmm",
   },
   {
