@@ -383,25 +383,6 @@ export default function SurvivalPage() {
       const resultData = await response.json();
       setResults(resultData);
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result;
-        if (typeof text === "string") {
-          const rows = text.split("\n").map((row) => row.split(","));
-          const headers = rows[0];
-          const body = rows.slice(1).filter(row => row.join("").trim() !== "");
-          const formattedData = body.map((row) => {
-            const rowData: any = {};
-            headers.forEach((header, i) => {
-              rowData[header.trim()] = row[i];
-            });
-            return rowData;
-          });
-          setData(formattedData);
-        }
-      };
-      reader.readAsText(file);
-
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");
     } finally {
