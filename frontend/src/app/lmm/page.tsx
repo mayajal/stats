@@ -17,88 +17,228 @@ const cleanCell = (cell: string) => {
                .replace(/(\w+)\\[T\.\([^\\]+\)\]/g, '$2');
 };
 
-const ModelSummaryTable = ({ summaryData }: { summaryData: any }) => {
-    if (!summaryData || typeof summaryData !== 'object') return null;
+const ModelSummaryHtml = ({ html }: { html: string }) => {
+    if (!html) return null;
 
-    const renderSingleTable = (data: any[], title: string) => {
-        if (!data || data.length === 0) return null;
-        const header = data[0];
-        const body = data.slice(1);
+    const renderParsedTables = (htmlString: string) => {
+        try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlString, 'text/html');
+            const tables = Array.from(doc.querySelectorAll('table'));
 
-        return (
-            <div className="my-4" key={title}>
-                <h4 className="text-md font-semibold mb-2">{title}</h4>
-                <div className="overflow-x-auto border rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-200 font-mono text-sm">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                {header.map((h: string, j: number) => (
-                                    <th key={j} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{cleanCell(h)}</th>
+            if (tables.length === 0) return null;
+
+            const formatParamEffect = (value: string) => {
+                if (typeof value !== 'string') return value as any;
+                if (value === 'Intercept') return value;
+                const parts = value.split(':');
+                const cleaned = parts.map(p => {
+                    // C(name)[T.level] -> level
+                    const m = p.match(/^C\(([^)]+)\)\[T\.([^\]]+)\]$/);
+                    if (m) {
+                        return m[2];
+                    }
+                    // Q("name") or Q('name')
+                    const q = p.match(/^Q\(["']([^"']+)["']\)$/);
+                    if (q) {
+                        return q[1];
+                    }
+                    // C(name) -> name
+                    const c = p.match(/^C\(([^)]+)\)$/);
+                    if (c) {
+                        return c[1];
+                    }
+                    // Default: return as-is (continuous terms)
+                    return p;
+                });
+                return cleaned.join(':');
+            };
+
+            return (
+                <div className="space-y-4">
+                    {tables.map((table, tIdx) => {
+                        const tableTitle = [
+                            'Model & Fit Statistics',
+                            'Parameter Estimates'
+                        ][tIdx] || `Table ${tIdx + 1}`;
+                        const rows = Array.from(table.querySelectorAll('tr')).map(tr =>
+                            Array.from(tr.querySelectorAll('th, td')).map(cell => cleanCell(cell.textContent?.trim() || ''))
+                        );
+                        const firstRow = table.querySelector('tr');
+                        const firstHasTh = firstRow ? firstRow.querySelectorAll('th').length > 0 : false;
+                        let headers = firstHasTh ? Array.from(firstRow!.querySelectorAll('th')).map(th => cleanCell(th.textContent?.trim() || '')) : [];
+                        let dataRows = firstHasTh ? rows.slice(1) : rows;
+
+                        const isParamEstimates = tableTitle === 'Parameter Estimates' || tIdx === 1;
+                        if (isParamEstimates) {
+                            if (headers.length > 0) {
+                                headers = ['', ...headers];
+                            } else if (dataRows.length > 0) {
+                                headers = Array.from({ length: dataRows[0].length }, (_, i) => (i === 0 ? '' : `Col ${i + 1}`));
+                            }
+                            // Ensure the first column shows condensed effect names
+                            dataRows = dataRows.map(row => {
+                                if (row.length === 0) return row;
+                                const first = String(row[0] ?? '');
+                                const condensed = formatParamEffect(first);
+                                return [condensed, ...row.slice(1)];
+                            });
+                        }
+
+                        return (
+                            <div key={`model-summary-table-${tIdx}`} className="overflow-x-auto">
+                                <div className="text-sm font-semibold mb-1">{tableTitle}</div>
+                                <table className="w-full border-collapse border border-purple-300 font-mono text-sm">
+                                    {headers.length > 0 && (
+                                        <thead className="bg-purple-50">
+                                            <tr>
+                                                {headers.map((h, i) => (
+                                                    <th key={`${h}-${i}`} className="border border-purple-300 px-3 py-1 text-left">
+                                                        {h}
+                                                    </th>
+                                                ))}
+                                            </tr>
+                                        </thead>
+                                    )}
+                                    <tbody>
+                                        {dataRows.map((row, rIdx) => (
+                                            <tr key={`row-${rIdx}`}>
+                                                {row.map((cell, cIdx) => {
+                                                    const cellValue = parseFloat(String(cell));
+                                                    const isPValueCol = isParamEstimates && headers[cIdx] === 'P>|z|';
+                                                    const bgColorClass = isPValueCol
+                                                        ? (cellValue > 0.05 ? 'bg-pink-200' : 'bg-green-200')
+                                                        : '';
+                                                    return (
+                                                        <td key={`cell-${rIdx}-${cIdx}`} className={`border border-purple-300 px-3 py-1 ${bgColorClass}`}>
+                                                            {cleanCell(String(cell))}
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        } catch (e) {
+            return null;
+        }
+    };
+
+    return (
+        <div className="my-4">
+            <h3 className="text-lg font-semibold mb-2">Mixed Linear Model Regression Results</h3>
+            {renderParsedTables(html) || (
+                <div className="overflow-x-auto border rounded-lg p-3 bg-white font-mono text-sm" dangerouslySetInnerHTML={{ __html: html }} />
+            )}
+        </div>
+    );
+};
+
+const renderResultsTable = (data: string) => {
+    try {
+        if (typeof data === 'string' && data.includes('<table')) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'text/html');
+            const table = doc.querySelector('table');
+            if (table) {
+                const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent?.trim() || '');
+                const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr =>
+                    Array.from(tr.querySelectorAll('td, th')).map(cell => cell.textContent?.trim() || '')
+                ).sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+                return (
+                    <div className="overflow-x-auto mb-6">
+                        <table className="w-full border-collapse border border-purple-300">
+                            <thead className="bg-purple-50">
+                                <tr className="bg-purple-50">
+                                    {headers.map((h, i) => <th key={`${h}-${i}`} className="border border-purple-300 px-4 py-2 text-left">{h}</th>)}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows.map((row, i) => (
+                                    <tr key={i}>
+                                        {row.map((cell, j) => <td key={`${i}-${j}`} className="border border-purple-300 px-4 py-2">{cell}</td>)}
+                                    </tr>
                                 ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            }
+        }
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            const headers = Object.keys(parsed[0]);
+            const sortedParsed = parsed.sort((a: any, b: any) => String(a[headers[0]]).localeCompare(String(b[headers[0]])));
+            return (
+                <div className="overflow-x-auto mb-6">
+                    <table className="w-full border-collapse border border-purple-300">
+                        <thead className="bg-purple-50">
+                            <tr className="bg-purple-50">
+                                {headers.map(h => <th key={h} className="border border-purple-300 px-4 py-2 text-left">{h}</th>)}
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {body.map((row: string[], i: number) => (
+                        <tbody>
+                            {sortedParsed.map((row: any, i: number) => (
                                 <tr key={i}>
-                                    {row.map((cell: string, j: number) => (
-                                        <td key={j} className="px-6 py-4 whitespace-pre text-left">{cleanCell(cell)}</td>
+                                    {headers.map(h => (
+                                        <td key={`${i}-${h}`} className="border border-purple-300 px-4 py-2">
+                                            {!isNaN(Number(row[h])) && row[h] !== null && String(row[h]).trim() !== ''
+                                                ? Number(row[h]).toFixed(2)
+                                                : String(row[h])}
+                                        </td>
                                     ))}
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-            </div>
-        );
-    };
-
-    return (
-        <div className="my-4 space-y-4">
-            <h3 className="text-lg font-semibold">Model Summary</h3>
-            {Object.entries(summaryData).map(([title, data]) =>
-                renderSingleTable(data as any[], title.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()))
-            )}
-        </div>
-    );
+            );
+        }
+        const objHeaders = Object.keys(parsed);
+        if (objHeaders.length > 0 && typeof (parsed as any)[objHeaders[0]] === 'object') {
+            const rowKeys = Object.keys((parsed as any)[objHeaders[0]]).sort((a, b) => a.localeCompare(b));
+            return (
+                <div className="overflow-x-auto mb-6">
+                    <table className="w-full border-collapse border border-purple-300">
+                        <thead className="bg-purple-50">
+                            <tr className="bg-purple-50">
+                                <th className="border border-purple-300 px-4 py-2 text-left"></th>
+                                {objHeaders.map(h => <th key={h} className="border border-purple-300 px-4 py-2 text-left">{h}</th>)}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rowKeys.map(key => (
+                                <tr key={key}>
+                                    <td className="border border-purple-300 px-4 py-2 font-medium">{key}</td>
+                                    {objHeaders.map(h => (
+                                        <td key={`${key}-${h}`} className="border border-purple-300 px-4 py-2">
+                                            {!isNaN(Number((parsed as any)[h][key])) && (parsed as any)[h][key] !== null && String((parsed as any)[h][key]).trim() !== ''
+                                                ? Number((parsed as any)[h][key]).toFixed(2)
+                                                : String((parsed as any)[h][key])}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+        return null;
+    } catch (e) {
+        return null;
+    }
 };
-
-
 
 const ResultsDisplay = ({ results, loading, error }: { results: any, loading: boolean, error: string }) => {
     if (loading) return <div className="text-center py-4">Loading...</div>;
     if (error) return <div className="text-red-500 bg-red-100 p-4 rounded-md">Error: {error}</div>;
     if (!results) return null;
-
-    const renderTable = (jsonData: string, title: string) => {
-        try {
-            const data = JSON.parse(jsonData);
-            if (!data || data.length === 0) return <p>No data available for {title}.</p>;
-            const headers = Object.keys(data[0]);
-            return (
-                <div className="my-4">
-                    <h3 className="text-lg font-semibold mb-2">{title}</h3>
-                    <div className="overflow-x-auto border rounded-lg">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    {headers.map(h => <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {data.map((row: any, i: number) => (
-                                    <tr key={i}>
-                                        {headers.map(h => <td key={h} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row[h]}</td>)}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            );
-        } catch (e) {
-            return <p>Error parsing table data for {title}.</p>;
-        }
-    };
 
     return (
         <Card className="mt-6">
@@ -106,20 +246,88 @@ const ResultsDisplay = ({ results, loading, error }: { results: any, loading: bo
                 <CardTitle className="flex items-center"><FaChartBar className="mr-2" /> Analysis Results</CardTitle>
             </CardHeader>
             <CardContent>
-                {results.model_summary && <ModelSummaryTable summaryData={results.model_summary} />}
-                {results.mean_separation_results && renderTable(results.mean_separation_results, "Mean Separation Results")}
-                {results.cd_value && <p className="mt-4"><b>Critical Difference (CD):</b> {results.cd_value.toFixed(4)}</p>}
-                
+                {results.model_summary_html && <ModelSummaryHtml html={results.model_summary_html} />}
+
+                {/* Diagnostics */}
                 {results.plots && (
                     <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-2">Plots</h3>
+                        <h3 className="text-lg font-semibold mb-2">Diagnostic Plots</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {Object.entries(results.plots).map(([key, value]) => (
-                                <div key={key} className="border rounded-lg p-2">
-                                    <h4 className="text-md font-semibold text-center capitalize mb-2">{key.replace(/_/g, ' ')}</h4>
-                                    <img src={`data:image/png;base64,${value}`} alt={key} className="mx-auto"/>
+                            {results.plots.residuals_vs_fitted && (
+                                <div className="border rounded-lg p-2">
+                                <img src={`data:image/png;base64,${results.plots.residuals_vs_fitted}`} alt="Residuals vs Fitted" className="mx-auto" />
                                 </div>
-                            ))}
+                            )}
+                            {results.plots.qq_plot && (
+                                <div className="border rounded-lg p-2">
+                                    
+                                    <img src={`data:image/png;base64,${results.plots.qq_plot}`} alt="Q-Q Plot" className="mx-auto" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {results.shapiro && (
+                    <div className="bg-purple-50 p-4 rounded-md my-4">
+                        <p><b>Shapiro-Wilk Statistic:</b> {results.shapiro.stat != null ? Number(results.shapiro.stat).toFixed(4) : 'NA'}</p>
+                        <p><b>P-value:</b> {results.shapiro.p != null ? Number(results.shapiro.p).toFixed(4) : 'NA'}</p>
+                        <p className="text-sm text-muted-foreground mt-2">
+                            {results.shapiro.p != null && !isNaN(Number(results.shapiro.p))
+                                ? (Number(results.shapiro.p) < 0.05
+                                    ? 'Residuals deviate from normality (p < 0.05). Consider checking outliers, transforming the response, or using robust methods.'
+                                    : 'Residuals are consistent with a normal distribution (p ≥ 0.05). Normality assumption holds.')
+                                : ''}
+                        </p>
+                    </div>
+                )}
+
+                {/* Tukey HSD */}
+                {results.tukey_results && Object.keys(results.tukey_results)
+                    .filter((factor: string) => {
+                        const f = factor || '';
+                        const cleaned = cleanCell(f);
+                        return cleaned !== 'TREAT' && f !== 'TREAT';
+                    })
+                    .map((factor: string) => (
+                        <div key={factor} className="my-4">
+                            <h3 className="text-lg font-semibold mb-2">Tukey HSD: {factor}</h3>
+                            {renderResultsTable(results.tukey_results[factor])}
+                        </div>
+                    ))}
+
+                {/* Mean Separation */}
+                {results.mean_separation_results && Object.keys(results.mean_separation_results).map((factor: string) => (
+                    <div key={factor} className="my-4">
+                        <h3 className="text-lg font-semibold mb-2">Mean Separation (Tukey HSD Post-hoc): {factor}</h3>
+                        {renderResultsTable(results.mean_separation_results[factor])}
+                    </div>
+                ))}
+
+                {typeof results.overall_cv === 'number' && (
+                    <p className="mt-4 text-sm text-muted-foreground"><b>Overall CV (%):</b> {Number(results.overall_cv).toFixed(2)}</p>
+                )}
+                {typeof results.cd_value === 'number' && (
+                    <p className="mt-1 text-sm text-muted-foreground"><b>Critical Difference (CD):</b> {Number(results.cd_value).toFixed(2)}</p>
+                )}
+
+                {/* Mean Plots */}
+                {results.plots && (results.plots.mean_bar_plot || results.plots.mean_box_plot) && (
+                    <div className="mt-6">
+                        <h3 className="text-lg font-semibold mb-2">Mean Plots</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {results.plots.mean_bar_plot && (
+                                <div className="border rounded-lg p-2">
+                                    
+                                    <img src={`data:image/png;base64,${results.plots.mean_bar_plot}`} alt="Bar Plot" className="mx-auto" />
+                                </div>
+                            )}
+                            {results.plots.mean_box_plot && (
+                                <div className="border rounded-lg p-2">
+                                    
+                                    <img src={`data:image/png;base64,${results.plots.mean_box_plot}`} alt="Box Plot" className="mx-auto" />
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -280,7 +488,7 @@ export default function LMMPage() {
                 <Card className="mb-8">
                     <CardHeader>
                         <CardTitle className="flex items-center"><FaUpload className="mr-2" /> Upload Data</CardTitle>
-                        <CardDescription>Step 1: Upload a .CSV file. Step 2: Process it to see a preview.</CardDescription>
+                        <CardDescription>Upload a .CSV file. Process it to see a preview.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-center space-x-4">
@@ -320,7 +528,7 @@ export default function LMMPage() {
                     </Card>
                 )}
 
-                {showAnalysisTabs && (
+                {dataPreview.length > 0 && (
                     <Card className="mb-8">
                         <CardHeader><CardTitle>LMM for Fixed, Random & Interaction Effects</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
