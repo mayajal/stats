@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link"; // Changed from "react-router-dom"
-import { FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxes,FaAsterisk } from "react-icons/fa";
+import { FaMixer, FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxes,FaAsterisk } from "react-icons/fa";
 
 const features = [
   {
@@ -30,7 +30,7 @@ const features = [
     link: "/frbd",
   },
   {
-    icon: <FaLayerGroup style={{ fontSize: "1.5rem", color: "#f97316" }} />,
+    icon: <FaMixer style={{ fontSize: "1.5rem", color: "#2563eb" }} />,
     title: "Linear Mixed Models (LMM)",
     button: "Start Analysis",
     link: "/lmm",
@@ -41,13 +41,7 @@ const features = [
     button: "Start Analysis",
     link: "/non-parametric",
   },
-  {
-    icon: <FaLayerGroup style={{ fontSize: "1.5rem", color: "#edb83dff" }} />,
-    title: "Split Plot Analysis",
-    text: "Coming Soon",
-    button: "Start Analysis",
-    link: "#",
-  },
+
   {
     icon: <FaBug style={{ fontSize: "1.5rem", color: "#e719ddff" }} />,
     title: "Probit Analysis",
@@ -59,6 +53,13 @@ const features = [
     title: "Survival Analysis",
     button: "Start Analysis",
     link: "/survival",
+  },
+  {
+    icon: <FaLayerGroup style={{ fontSize: "1.5rem", color: "#edb83dff" }} />,
+    title: "Split Plot Analysis",
+    text: "Coming Soon",
+    button: "Start Analysis",
+    link: "#",
   },
 ];
 
