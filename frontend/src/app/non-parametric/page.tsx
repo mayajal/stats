@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Terminal, BarChart3, Upload, PlayCircle, FileText, Info, RotateCcw, ChevronDown } from "lucide-react";
+import * as XLSX from 'xlsx';
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -29,6 +30,10 @@ export default function NonParametricTestTool() {
   const [analysisResults, setAnalysisResults] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [isDataTypesVisible, setIsDataTypesVisible] = useState(false);
+  const [data, setData] = useState<any[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [availableSheets, setAvailableSheets] = useState<string[]>([]);
+  const [selectedSheet, setSelectedSheet] = useState<string>("");
 
   const decisionTree: { [key: string]: string } = {
     '1--nominal': 'Chi-square goodness of fit',
@@ -56,12 +61,12 @@ export default function NonParametricTestTool() {
 
   const dataFormatDescriptions: { [key: string]: string } = {
     'Chi-square goodness of fit': 'Your data should be in a single column representing the observed frequencies for each category. Optionally, a second column can be provided for expected frequencies. If no expected frequencies are given, they will be assumed to be equal.',
-    'Mann-Whitney U test': 'Your CSV data should have exactly two columns, one for each independent group.',
-    'Kruskal-Wallis': 'Your CSV data should have two or more columns, with each column representing a different group for comparison.',
-    'Chi-square (or Fisher’s exact)': 'Your data should be a contingency table in CSV format (e.g., a 2x2 table representing observed frequencies). The file should not contain headers or index columns.',
-    'Wilcoxon signed-rank': 'Your CSV data should have exactly two columns for paired data (e.g., \'before\' and \'after\' values for the same set of subjects).',
-    'McNemar’s test': 'Requires a 2x2 contingency table in CSV format representing paired nominal data.',
-    'Friedman test': 'Your CSV data should have at least three columns, where each column represents a repeated measure on the same subjects.',
+    'Mann-Whitney U test': 'Your data should have exactly two columns, one for each independent group.',
+    'Kruskal-Wallis': 'Your data should have two or more columns, with each column representing a different group for comparison.',
+    'Chi-square (or Fisher’s exact)': 'Your data should be a contingency table in format (e.g., a 2x2 table representing observed frequencies). The file should not contain headers or index columns.',
+    'Wilcoxon signed-rank': 'Your data should have exactly two columns for paired data (e.g., \'before\' and \'after\' values for the same set of subjects).',
+    'McNemar’s test': 'Requires a 2x2 contingency table in format representing paired nominal data.',
+    'Friedman test': 'Your data should have at least three columns, where each column represents a repeated measure on the same subjects.',
   };
 
   const handleRecommendTest = () => {
@@ -86,14 +91,95 @@ export default function NonParametricTestTool() {
 
   const handleResetData = () => {
     setDataFile(null);
+    setData([]);
     setAnalysisResults(null);
     setError(null);
+    setAvailableSheets([]);
+    setSelectedSheet("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleResetAnalysis = () => {
     setStep(1);
     handleResetData();
     handleResetStep1();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
+      if (file.size > 1024 * 1024) {
+        setError("File too large. Max allowed size is 1 MB.");
+        setDataFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+      setDataFile(file);
+      setError("");
+      setData([]);
+      setAnalysisResults(null);
+      setAvailableSheets([]);
+      setSelectedSheet("");
+
+      const name = file.name.toLowerCase();
+      const isXlsx = name.endsWith('.xlsx') || name.endsWith('.xls');
+      if (isXlsx) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const wb = XLSX.read(new Uint8Array(evt.target?.result as ArrayBuffer), { type: 'array' });
+            const sheets = wb.SheetNames || [];
+            setAvailableSheets(sheets);
+            if (sheets.length > 0) {
+              setSelectedSheet(sheets[0]);
+            }
+          } catch (er) {
+            setError("Failed to read XLSX file. Ensure it is a valid spreadsheet.");
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    }
+  };
+
+  const handleProcessFile = async () => {
+    if (!dataFile) {
+      setError("Please select a file first.");
+      return;
+    }
+    const name = dataFile.name.toLowerCase();
+    const isXlsx = name.endsWith('.xlsx') || name.endsWith('.xls');
+    try {
+      if (isXlsx) {
+        if (!selectedSheet) {
+          setError("Please select a sheet to preview.");
+          return;
+        }
+        const arrayBuffer = await dataFile.arrayBuffer();
+        const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+        const sheet = wb.Sheets[selectedSheet];
+        if (!sheet) throw new Error("Selected sheet not found");
+        const json = XLSX.utils.sheet_to_json(sheet, { defval: "" }) as any[];
+        setData(json.slice(0, 5));
+      } else {
+        const text = await dataFile.text();
+        const rows = text.split("\n").map((r) => r.split(","));
+        const headers = rows[0] || [];
+        const body = rows.slice(1).filter(r => r.join("").trim() !== "");
+        const formatted = body.map((row) => {
+          const rowData: any = {};
+          headers.forEach((h, i) => {
+            rowData[String(h).trim()] = row[i];
+          });
+          return rowData;
+        });
+        setData(formatted.slice(0, 5));
+      }
+    } catch (er: any) {
+      setError(er.message || "Failed to process file preview");
+    }
   };
 
   const handleRunAnalysis = async () => {
@@ -111,7 +197,31 @@ export default function NonParametricTestTool() {
     const formData = new FormData();
     formData.append('test_type', testKey);
     if (dataFile) {
-      formData.append('file', dataFile);
+      const name = dataFile.name.toLowerCase();
+      const isXlsx = name.endsWith('.xlsx') || name.endsWith('.xls');
+      if (isXlsx) {
+        if (!selectedSheet) {
+          setError("Please select a sheet for analysis.");
+          setIsLoading(false);
+          return;
+        }
+        try {
+          const arrayBuffer = await dataFile.arrayBuffer();
+          const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+          const sheet = wb.Sheets[selectedSheet];
+          if (!sheet) throw new Error("Selected sheet not found");
+          const csv = XLSX.utils.sheet_to_csv(sheet);
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const csvFile = new File([blob], 'upload.csv', { type: 'text/csv' });
+          formData.append("file", csvFile);
+        } catch (er: any) {
+          setError(er.message || "Failed to convert selected sheet to CSV");
+          setIsLoading(false);
+          return;
+        }
+      } else {
+        formData.append('file', dataFile);
+      }
     } else {
       setError("Please upload a file to run the analysis.");
       setIsLoading(false);
@@ -232,15 +342,84 @@ export default function NonParametricTestTool() {
             </AlertDescription>
           </Alert>
         )}
-        <div className="grid gap-2">
-          <Label htmlFor="dataFile"><Upload className="h-4 w-4 mr-2 inline-block"/>Upload CSV file (max 1MB)</Label>
-          <Input id="dataFile" type="file" accept=".csv" onChange={(e) => setDataFile(e.target.files ? e.target.files[0] : null)} />
-          {dataFile && <p className="text-sm text-muted-foreground">Selected: {dataFile.name}</p>}
+        <div className="flex items-center space-x-4">
+          <Input
+            type="file"
+            accept=".csv,.xlsx,.xls"
+            onChange={handleFileChange}
+            className="flex-1 bg-blue-50"
+            ref={fileInputRef}
+          />
+          <Button
+            onClick={handleProcessFile}
+            disabled={!dataFile}
+            variant="secondary"
+            className="bg-gray-200 text-black-800 font-bold hover:bg-gray-300 border border-gray-300"
+          >
+            Process File
+          </Button>
+          <Button 
+            onClick={handleResetData} 
+            variant="outline"
+            disabled={!dataFile && data.length === 0 && !analysisResults}
+            className="min-w-[120px]"
+          >
+            Reset
+          </Button>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setStep(3)} disabled={!isDataProvided}>Next</Button>
-          <Button variant="outline" onClick={handleResetData}>Reset</Button>
-        </div>
+        {availableSheets.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1 font-medium">Select Sheet (XLSX)</label>
+              <select
+                value={selectedSheet}
+                onChange={(e) => setSelectedSheet(e.target.value)}
+                className="block w-full p-2 border border-blue-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              >
+                {availableSheets.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+            <div className="text-sm text-muted-foreground self-end">Max XLSX size: 1 MB</div>
+          </div>
+        )}
+        {dataFile && <p className="text-sm text-muted-foreground">Selected: {dataFile.name}</p>}
+        {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+        
+        {data.length > 0 && (
+          <>
+            <Card className="mb-8 border border-blue-200 rounded-lg">
+              <CardHeader>
+                <CardTitle>Data Preview</CardTitle>
+                <CardDescription>Showing the first 5 rows of your data.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-blue-200">
+                    <thead className="bg-blue-100">
+                      <tr>
+                        {Object.keys(data[0]).map((key) => (
+                          <th key={key} className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">{key}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-blue-200">
+                      {data.map((row, i) => (
+                        <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
+                          {Object.values(row).map((value: any, j: number) => (
+                            <td key={j} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{value}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+            <Button onClick={() => setStep(3)} disabled={!isDataProvided}>Next</Button>
+          </>
+        )}
       </CardContent>
     </Card>
   );
@@ -350,7 +529,7 @@ export default function NonParametricTestTool() {
           )}
         </Card>
 
-        {error && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+        {error && !data.length && <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
         
         <div className="flex items-start space-x-8">
           <div className="w-1/4">
