@@ -50,30 +50,32 @@ def alpha_lattice_met_analysis(df, dependent_var, genotype_var, rep_var, block_v
 
     # Try fitting the most complex model first (random slopes)
     try:
-        fixed_formula = f"{dependent_var} ~ 1 + {year_var} + {env_var} + ({rep_var}/{block_var})"
-        random_formula = f"~ 1 + {env_var}"
+        fixed_formula = f"{dependent_var} ~ 1 + {year_var} + {env_var}"
+        random_formula = f"~ 1 + {env_var} + {year_var} + {rep_var} + {block_var}"
         md = smf.mixedlm(fixed_formula, df, groups=df[genotype_var], re_formula=random_formula)
         mdf = md.fit()
-        model_type = 'random_slope'
-        results_message = "Successfully fitted a random slope model (Genotype + GxE random)."
-    except Exception:
+        model_type = 'complex_random_effects'
+        results_message = "Successfully fitted a model with random effects for Genotype, GxE, GxY, Rep, and Block."
+    except Exception as e:
+        print(f"Attempting complex model failed: {e}")
         pass
 
-    # If that failed, try a simple random intercept model
+    # If that failed, try a simpler random intercept model for genotype
     if mdf is None:
         try:
-            simple_fixed_formula = f"{dependent_var} ~ 1 + {year_var} + {env_var} + ({rep_var}/{block_var}) + {genotype_var}:{env_var}"
-            md = smf.mixedlm(simple_fixed_formula, df, groups=df[genotype_var])
+            fixed_formula_simple = f"{dependent_var} ~ 1 + {year_var} + {env_var}"
+            # Only random intercept for genotype
+            md = smf.mixedlm(fixed_formula_simple, df, groups=df[genotype_var])
             mdf = md.fit()
-            model_type = 'random_intercept'
-            results_message = "Warning: The complex model failed to converge. A simpler model (random intercept for Genotype) was fitted instead. GxE is treated as a fixed effect."
+            model_type = 'random_intercept_genotype'
+            results_message = "Warning: The complex random effects model failed to converge. A simpler model (random intercept for Genotype) was fitted instead."
         except Exception as e:
             raise Exception(f"Model fitting failed for all attempted models. The data may not support the complexity. Error: {e}")
 
     # Now, process results based on model_type
     
     # 2. BLUP Estimation
-    if model_type == 'random_slope':
+    if model_type == 'complex_random_effects':
         blups = {k: v['Group'] for k, v in mdf.random_effects.items()}
         random_effects_blup = pd.DataFrame.from_dict(blups, orient='index', columns=['BLUP'])
     else: # random_intercept
@@ -89,7 +91,7 @@ def alpha_lattice_met_analysis(df, dependent_var, genotype_var, rep_var, block_v
         vg = var_comp.get('Group', 0)
         ve = mdf.scale
 
-        if model_type == 'random_slope':
+        if model_type == 'complex_random_effects':
             vge = var_comp.get(env_var, 0)
         else:
             vge = 0

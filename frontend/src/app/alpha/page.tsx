@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Upload, ChevronDown } from 'lucide-react';
-import { FaChartBar, FaMixer } from "react-icons/fa";
+import { FaChartBar, FaAtom } from "react-icons/fa";
 import { parse } from 'papaparse';
 import * as XLSX from 'xlsx';
 
@@ -16,7 +16,7 @@ const cleanCell = (cell: string) => {
     }
     return cell.replace(/C\(Q\(\"([^\"]+)\"\)\)/g, '$1')
                .replace(/Q\(\"([^\"]+)\"\)/g, '$1')
-               .replace(/(\w+)\[T\.\([^\\]+\) \\\\]/g, '$2');
+               .replace(/(\w+)\[T\.\([^\\]+\) \\\]/g, '$2');
 };
 
 const ModelSummaryHtml = ({ html, fixedEffects, randomEffects, treatmentLevels, locationLevels }: { html: string, fixedEffects: string[], randomEffects: string[], treatmentLevels: string[], locationLevels: string[] }) => {
@@ -500,7 +500,7 @@ const ResultsDisplay = ({ results, loading, error, fixedEffects, randomEffects, 
     );
 };
 
-export default function LMMPage() {
+export default function ALPHAPage() {
     const [file, setFile] = useState<File | null>(null);
     const [dataPreview, setDataPreview] = useState<any[]>([]);
     const [showAnalysisTabs, setShowAnalysisTabs] = useState(false);
@@ -520,7 +520,6 @@ export default function LMMPage() {
     const [location, setLocation] = useState("");
     const [replication, setReplication] = useState("");
     const [block, setBlock] = useState("");
-    const [season, setSeason] = useState("");
 
     const [treatmentLevels, setTreatmentLevels] = useState<string[]>([]);
     const [locationLevels, setLocationLevels] = useState<string[]>([]);
@@ -639,7 +638,7 @@ export default function LMMPage() {
 
         const processAndFetch = async (jsonData: string) => {
             const fixedEffects = [treatment, location].filter(Boolean);
-            const randomEffects = [replication, block, season].filter(Boolean);
+            const randomEffects = [replication, block].filter(Boolean);
 
             const formData = new FormData();
             formData.append("data", jsonData);
@@ -650,8 +649,8 @@ export default function LMMPage() {
             formData.append("random_effects", randomEffects.join(','));
 
             try {
-                const serviceUrl = process.env.NEXT_PUBLIC_LMM_SERVICE_URL || '';
-                if (!serviceUrl) throw new Error("LMM service URL is not configured");
+                const serviceUrl = process.env.NEXT_PUBLIC_ALPHA_SERVICE_URL || '';
+                if (!serviceUrl) throw new Error("ALPHA service URL is not configured");
                 const response = await fetch(serviceUrl, { method: "POST", body: formData });
                 const raw = await response.text();
                 let resultData: any;
@@ -713,7 +712,6 @@ export default function LMMPage() {
         setLocation("");
         setReplication("");
         setBlock("");
-        setSeason("");
         setAvailableSheets([]);
         setSelectedSheet("");
         if (fileInputRef.current) {
@@ -733,13 +731,12 @@ export default function LMMPage() {
             <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center mb-4">
-                        <FaMixer style={{ height: '2rem', width: '2rem', color: '#2563eb', marginRight: '0.75rem' }} />
-                        <h1 className="text-3xl font-bold">Linear Mixed Model (LMM)</h1>
+                        <FaAtom style={{ height: '2rem', width: '2rem', color: "#edb83dff", marginRight: '0.75rem' }} />
+                        <h1 className="text-3xl font-bold">Alpha Lattice Design</h1>
                     </div>
-                    <p className="text-muted-foreground">Analyze data with both fixed and random effects using Linear Mixed Model.  This model assumes that the effect of a fixed effect (eg genotype) on response variable (eg. yield) might be different depending on the Location. For example, Genotype A might be the best in Location 1, but Genotype B might be the best in Location 2. This model is ideal if you want to find the best-performing genotype for each specific location.</p>
-                    
-                    <p className="text-muted-foreground">In case you want to just measure the average effect of each genotype use <a href="https://vita.chloropy.com/alpha" target="_blank" rel="noopener noreferrer" className="font-bold underline text-blue-600">Alpha Lattice Design</a>.</p>
-                
+                    <p className="text-muted-foreground">Analyze data with both fixed and random effects. This model assumes that the effect of a fixed effect (eg. genotype) on response variable (eg. yield) is consistent across all locations. It tries to find the average effect of each fixed effect. This approach is better if you are looking for a genotype that performs well on average across all environments, rather than a specialized one for each location.</p>
+                    <p className="text-muted-foreground">To measure the interaction effect of fixed variables <a href="https://vita.chloropy.com/lmm" target="_blank" rel="noopener noreferrer" className="underline font-bold text-blue-600" >Linear Mixed Model</a>.</p>
+
                 </div>
 
                 <Card className="mb-8 !border !border-primary rounded-lg">
@@ -840,25 +837,21 @@ export default function LMMPage() {
                                         </div>
                                     </div>
                                     <div>
-                                        <h4 className="font-medium mb-2">Random Variables (max 2)</h4>
+                                        <h4 className="font-medium mb-2">Random Variables</h4>
                                         <div className="space-y-2 pl-4 border-l-2 border-gray-300">
                                             <div>
                                                 <label>Replication <span className="text-red-500">*</span></label>
                                                 {renderColumnSelector(replication, setReplication, "Select Replication")}
                                             </div>
                                             <div>
-                                                <label>Block</label>
-                                                {renderColumnSelector(block, setBlock, "Select Block", true)}
-                                            </div>
-                                            <div>
-                                                <label>Season/Year</label>
-                                                {renderColumnSelector(season, setSeason, "Select Season/Year", true)}
+                                                <label>Block <span className="text-red-500">*</span></label>
+                                                {renderColumnSelector(block, setBlock, "Select Block")}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <Button onClick={handleAnalyze} disabled={loading || !responseCol || !treatment || !replication} variant="secondary" className="bg-gray-200 text-black-800 font-bold hover:bg-black-300 border border-gray-300">
+                            <Button onClick={handleAnalyze} disabled={loading || !responseCol || !treatment || !replication || !block} variant="secondary" className="bg-gray-200 text-black-800 font-bold hover:bg-black-300 border border-gray-300">
                                 {loading ? "Analyzing..." : "Run Analysis"}
                             </Button>
                         </CardContent>
@@ -870,7 +863,7 @@ export default function LMMPage() {
                     loading={loading}
                     error={error}
                     fixedEffects={[treatment, location].filter(Boolean)}
-                    randomEffects={[replication, block, season].filter(Boolean)}
+                    randomEffects={[replication, block].filter(Boolean)}
                     treatmentLevels={treatmentLevels}
                     locationLevels={locationLevels}
                 />

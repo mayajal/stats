@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { FaMixer, FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxes,FaAsterisk } from "react-icons/fa";
+import { FaAtom, FaMixer, FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxes,FaAsterisk } from "react-icons/fa";
 
 const features = [
   {
@@ -15,6 +15,13 @@ const features = [
     title: "Data Quality Check",
     link: "/data-quality",
   },
+  
+  {
+    icon: <FaBoxes style={{ fontSize: "1.5rem", color: "#14b8a6" }} />,
+    title: "Non-Parametric Tests",
+    link: "/non-parametric",
+  },
+  
   {
     icon: <FaThLarge style={{ fontSize: "1.5rem", color: "#a21caf" }} />,
     title: "RCBD Analysis",
@@ -26,15 +33,23 @@ const features = [
     link: "/frbd",
   },
   {
+    icon: <FaAtom style={{ fontSize: "1.5rem", color: "#edb83dff" }} />,
+    title: "Alpha Lattice Design",
+    link: "/alpha",
+  },
+
+  {
     icon: <FaMixer style={{ fontSize: "1.5rem", color: "#2563eb" }} />,
     title: "Linear Mixed Model",
     link: "/lmm",
   },
   {
-    icon: <FaBoxes style={{ fontSize: "1.5rem", color: "#14b8a6" }} />,
-    title: "Non-Parametric Tests",
-    link: "/non-parametric",
+    icon: <FaMixer style={{ fontSize: "1.5rem", color: "#2563eb" }} />,
+    title: "LMM-BLUPs",
+    link: "/blup",
   },
+
+ 
   {
     icon: <FaBug style={{ fontSize: "1.5rem", color: "#e719ddff" }} />,
     title: "Probit Analysis",

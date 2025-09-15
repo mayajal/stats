@@ -1,4 +1,3 @@
-
 import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
@@ -39,8 +38,8 @@ logging.basicConfig(level=logging.INFO)
 def health_root():
     return "OK", 200
 
-@app.get("/lmm")
-def health_lmm():
+@app.get("/alpha")
+def health_alpha():
     return "OK", 200
 
 def assign_significance_letters(tukey_df, means):
@@ -78,7 +77,7 @@ def assign_significance_letters(tukey_df, means):
     return letters
 
 @app.route("/", methods=["POST"])
-@app.route("/lmm", methods=["POST"])
+@app.route("/alpha", methods=["POST"])
 def analyze():
     try:
         app.logger.info("Analysis request received")
@@ -159,27 +158,30 @@ def analyze():
         if not formula_terms:
              return jsonify({"error": "No valid fixed effects found in the data."}), 400
 
-        # Construct RHS for fixed effects including interactions
-        if len(formula_terms) > 1:
-            rhs_terms = " * ".join(formula_terms) # Use '*' for interactions
-        else:
-            rhs_terms = formula_terms[0] # Only one fixed effect, no interaction
-
+        # Construct RHS for fixed effects
+        rhs_terms = " + ".join(formula_terms)
         formula = f"{response_col} ~ {rhs_terms}"
 
-        # Random effects part (as variance components)
-        # The first random effect in the list is used as the primary grouping factor.
-        # Subsequent random effects are added as variance components.
-        primary_group = random_effects[0]
+        # Define allowed random effects and filter based on presence in data
+        allowed_random_effects = ['Replication', 'Block']
+        present_random_effects = [re for re in random_effects if re in data.columns]
         
-        # Initialize vc_formula with other random effects, excluding the primary_group
-        vc_formula = {re: "~ 1" for re in random_effects[1:] if re in data.columns}
+        # Further filter to only include allowed random effects
+        filtered_random_effects = [re for re in present_random_effects if re in allowed_random_effects]
 
-        # Ensure the primary_group is in the data columns
-        if primary_group not in data.columns:
-            return jsonify({"error": f"Primary random effect '{primary_group}' not found in data."}), 400
+        if not filtered_random_effects:
+            error_msg = ("The model requires 'Replication' and/or 'Block' as random effects. "
+                         "None of these were found in the provided data or random effects list.")
+            return jsonify({"error": error_msg}), 400
 
-        model = smf.mixedlm(formula, data, groups=data[primary_group], vc_formula=vc_formula)
+        # The first random effect is the main grouping factor
+        grouping_var = filtered_random_effects[0]
+        
+        # Other random effects are specified as variance components
+        vc_formula = {re: f"0 + C({re})" for re in filtered_random_effects[1:]}
+
+        # Fit the mixed-effects model
+        model = smf.mixedlm(formula, data, groups=data[grouping_var], vc_formula=vc_formula)
         
         # Robust fitting with multiple optimizers
         methods = ['bfgs', 'lbfgs', 'cg', 'ncg']
@@ -201,7 +203,7 @@ def analyze():
             error_message = (
                 "The model could not be fitted, likely due to a singular matrix. "
                 "This often means the model is too complex for the data or that some variables are perfectly correlated. "
-                "Try simplifying the model by removing optional random effects (e.g., 'Block' or 'Season') and run the analysis again."
+                "Try simplifying the model by removing an optional random effect (e.g., 'Block') and run the analysis again."
             )
             if last_exception:
                 error_message += f" (Last error: {str(last_exception)})"
@@ -248,7 +250,7 @@ def analyze():
                 tukey_results[tukey_factor] = tukey_df.to_json(orient='records')
 
                 # Critical Difference (CD)
-                # Adapted for general LMM: uses the number of levels of the first random effect
+                # Adapted for general alpha: uses the number of levels of the first random effect
                 # as a proxy for the number of replications ('r').
                 mse = result.scale
                 n_replications = data[random_effects[0]].nunique() if random_effects else 1
@@ -368,24 +370,6 @@ def analyze():
             overall_std = data[response_col].std()
             overall_cv = float((overall_std / overall_mean) * 100) if overall_mean != 0 else 0.0
 
-            # Extract random effects (BLUPs)
-            random_effects_results = json.dumps([])
-            if hasattr(result, 'random_effects') and result.random_effects:
-                # The result.random_effects is a dict of series.
-                # Let's format it for JSON.
-                try:
-                    re_dict = {k: v['group'] for k, v in result.random_effects.items()}
-                    random_effects_df = pd.DataFrame.from_dict(re_dict, orient='index', columns=['RandomEffect_Value'])
-                    random_effects_df.index.name = primary_group
-                    random_effects_df = random_effects_df.reset_index()
-                    # Round the numeric values
-                    random_effects_df['RandomEffect_Value'] = random_effects_df['RandomEffect_Value'].round(4)
-                    random_effects_results = random_effects_df.to_json(orient='records')
-                except KeyError:
-                    # Fallback for different structures if 'group' is not the key
-                    random_effects_results = json.dumps([{'error': 'Could not parse random effects'}])
-
-
             return jsonify({
                 "model_summary_html": model_summary_html,
                 "tukey_results": tukey_results,
@@ -394,8 +378,7 @@ def analyze():
                 "mean_separation_results": mean_separation_results,
                 "cd_value": cd_value if cd_value is not None else None,
                 "shapiro": {"stat": float(shapiro_stat) if not np.isnan(shapiro_stat) else None, "p": float(shapiro_p) if not np.isnan(shapiro_p) else None},
-                "overall_cv": overall_cv,
-                "random_effects_results": random_effects_results
+                "overall_cv": overall_cv
             })
 
         except ValueError as e:
@@ -404,7 +387,7 @@ def analyze():
                 error_message = (
                     "The analysis failed due to an internal error in the statistical library. "
                     "This can happen with models that have only one random effect (e.g., 'Replication') and no other variance components. "
-                    "If your experimental design includes other random factors like 'Block' or 'Season', please include them in the 'random_effects' list and try again."
+                    "If your experimental design includes other random factors like 'Block', please include them in the 'random_effects' list and try again."
                 )
                 return jsonify({"error": error_message}), 400
             else:

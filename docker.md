@@ -123,4 +123,7 @@ docker run -d -p 8080:8080 lmm-service:latest
 docker build -t blup-service .
 docker run -d -p 8080:8080 blup-service:latest
 
+docker build -t alpha-service .
+docker run -d -p 8080:8080 alpha-service:latest
+
 

@@ -25,10 +25,10 @@ const ModelSummaryHtml = ({ html }: { html: string }) => {
         try {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlString, 'text/html');
-            const tables = Array.from(doc.querySelectorAll('table'));
+            const tables = Array.from(doc.querySelectorAll('table.simpletable'));
 
             if (tables.length < 2) {
-                 return <div className="overflow-x-auto border rounded-lg p-3 bg-white font-mono text-sm" dangerouslySetInnerHTML={{ __html: htmlString }} />;
+                return <div className="overflow-x-auto border rounded-lg p-3 bg-white font-mono text-sm" dangerouslySetInnerHTML={{ __html: htmlString }} />;
             }
 
             const formatParamEffect = (value: string) => {
@@ -62,56 +62,23 @@ const ModelSummaryHtml = ({ html }: { html: string }) => {
 
             let fixedEffectsHeaders: string[] = [];
             let fixedEffectsData: string[][] = [];
-            let randomEffectsHeaders: string[] = ['Parameter', 'Variance', 'Std.Dev.']; // Default, will try to extract if possible
+            let randomEffectsHeaders: string[] = ["Parameter", "Value", "Std.Err."];
             let randomEffectsData: string[][] = [];
 
-            let inFixedEffectsSection = false;
-            let inRandomEffectsSection = false;
+            if (allRows.length > 0) {
+                fixedEffectsHeaders = Array.from(allRows[0].querySelectorAll('th, td')).map(cell => cleanCell(cell.textContent?.trim() || ''));
 
-            // Extract fixed effects headers from the thead of the second table
-            const theadRows = Array.from(effectsTable.querySelectorAll('thead tr'));
-            if (theadRows.length > 1) { // Expecting at least two rows for headers
-                fixedEffectsHeaders = Array.from(theadRows[1].querySelectorAll('th, td')).map(cell => cleanCell(cell.textContent?.trim() || ''));
-            } else if (theadRows.length === 1) { // Fallback if only one header row
-                fixedEffectsHeaders = Array.from(theadRows[0].querySelectorAll('th, td')).map(cell => cleanCell(cell.textContent?.trim() || ''));
-            }
-            
-            // Iterate through all rows to separate fixed and random effects data
-            allRows.forEach(row => {
-                const cells = Array.from(row.querySelectorAll('th, td')).map(cell => cleanCell(cell.textContent?.trim() || ''));
-                const firstCellText = cells[0];
+                for (let i = 1; i < allRows.length; i++) {
+                    const row = allRows[i];
+                    const cells = Array.from(row.querySelectorAll('th, td')).map(cell => cleanCell(cell.textContent?.trim() || ''));
 
-                if (row.classList.contains('thead') && firstCellText === 'Fixed Effects') {
-                    inFixedEffectsSection = true;
-                    inRandomEffectsSection = false;
-                    // Fixed effects headers are already extracted from thead
-                } else if (row.classList.contains('theadd') && firstCellText === 'Random Effects') {
-                    inRandomEffectsSection = true;
-                    inFixedEffectsSection = false;
-                    // For random effects, statsmodels often puts headers in tfoot or implies them.
-                    // We'll try to extract from tfoot if available, otherwise use default.
-                    const tfootRows = Array.from(effectsTable.querySelectorAll('tfoot tr'));
-                    if (tfootRows.length > 0) {
-                        const tfootCells = Array.from(tfootRows[0].querySelectorAll('th, td')).map(cell => cleanCell(cell.textContent?.trim() || ''));
-                        // Assuming the tfoot row contains relevant headers for random effects
-                        // This might need further refinement based on exact statsmodels output
-                        if (tfootCells.includes('Var') && tfootCells.includes('Std.Dev.')) {
-                             randomEffectsHeaders = ['Parameter', 'Var', 'Std.Dev.']; // Adjust as per actual output
-                        }
-                    }
-                } else if (inFixedEffectsSection && !row.classList.contains('thead') && !row.classList.contains('theadd') && cells.length === fixedEffectsHeaders.length) {
-                    fixedEffectsData.push(cells);
-                } else if (inRandomEffectsSection && !row.classList.contains('thead') && !row.classList.contains('theadd') && cells.length >= 2) { // Random effects usually have Parameter, Var, Std.Dev.
-                    // Filter out rows that are just footers or empty
-                    if (!firstCellText.includes('Covariance Type:') && firstCellText !== '') {
+                    if (cells.length === fixedEffectsHeaders.length) {
+                        fixedEffectsData.push(cells);
+                    } else if (cells.length > 1) {
                         randomEffectsData.push(cells);
                     }
                 }
-            });
-
-            // Filter out any empty rows that might have been added due to parsing nuances
-            fixedEffectsData = fixedEffectsData.filter(row => row.some(cell => cell !== ''));
-            randomEffectsData = randomEffectsData.filter(row => row.some(cell => cell !== ''));
+            }
 
             return (
                 <div className="space-y-6">
@@ -141,15 +108,17 @@ const ModelSummaryHtml = ({ html }: { html: string }) => {
                             <h4 className="text-md font-semibold mb-2">Fixed Effects</h4>
                             <div className="overflow-x-auto">
                                 <table className="w-full border-collapse !border !border-primary font-mono text-sm">
-                                    <thead className="bg-cyan-50">
-                                        <tr>
-                                            {effectsHeaders.map((h, i) => (
-                                                <th key={`fix-header-${i}`} className="!border !border-primary px-2 py-1 text-left">
-                                                    {h}
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
+                                    {fixedEffectsHeaders.length > 0 && (
+                                        <thead className="bg-cyan-50">
+                                            <tr>
+                                                {fixedEffectsHeaders.map((h, i) => (
+                                                    <th key={`fix-header-${i}`} className="!border !border-primary px-2 py-1 text-left">
+                                                        {h}
+                                                    </th>
+                                                ))}
+                                            </tr>
+                                        </thead>
+                                    )}
                                     <tbody>
                                         {fixedEffectsData.map((row, rIdx) => (
                                             <tr key={`fix-row-${rIdx}`}>
@@ -172,15 +141,17 @@ const ModelSummaryHtml = ({ html }: { html: string }) => {
                             <h4 className="text-md font-semibold mb-2">Random Effects (Variance Components)</h4>
                             <div className="overflow-x-auto">
                                 <table className="w-full border-collapse !border !border-primary font-mono text-sm">
-                                    <thead className="bg-cyan-50">
-                                        <tr>
-                                            {effectsHeaders.map((h, i) => (
-                                                <th key={`rand-header-${i}`} className="!border !border-primary px-2 py-1 text-left">
-                                                    {h}
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
+                                    {randomEffectsHeaders.length > 0 && (
+                                        <thead className="bg-cyan-50">
+                                            <tr>
+                                                {randomEffectsHeaders.map((h, i) => (
+                                                    <th key={`rand-header-${i}`} className="!border !border-primary px-2 py-1 text-left">
+                                                        {h}
+                                                    </th>
+                                                ))}
+                                            </tr>
+                                        </thead>
+                                    )}
                                     <tbody>
                                         {randomEffectsData.map((row, rIdx) => (
                                             <tr key={`rand-row-${rIdx}`}>
@@ -552,7 +523,7 @@ export default function BlupPage() {
             <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center mb-4">
-                        <h1 className="text-3xl font-bold">Alpha Lattice LMM Analysis</h1>
+                        <h1 className="text-3xl font-bold">LMM BLUPs Analysis</h1>
                     </div>
                     <p className="text-muted-foreground">Comprehensive Linear Mixed Model Analysis of Multi-Environment Alpha Lattice Trials with BLUP, Heritability, and Diagnostic Visualization.</p>
                 </div>
