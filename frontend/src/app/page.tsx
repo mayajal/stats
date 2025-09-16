@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { FaAtom, FaMixer, FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxes,FaAsterisk } from "react-icons/fa";
+import { FaAtom, FaMixer, FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxes,FaAsterisk, FaMapMarkedAlt } from "react-icons/fa";
 
 const features = [
   {
@@ -47,6 +47,11 @@ const features = [
     icon: <FaMixer style={{ fontSize: "1.5rem", color: "#2563eb" }} />,
     title: "LMM-BLUPs",
     link: "/blup",
+  },
+  {
+    icon: <FaMapMarkedAlt style={{ fontSize: "1.5rem", color: "#34d399" }} />,
+    title: "Spatial Stability",
+    link: "/spatial",
   },
 
  

@@ -10,7 +10,9 @@ const nextConfig = {
     });
     return config;
   },
-  
+  env: {
+    NEXT_PUBLIC_SPATIAL_SERVICE_URL: 'http://localhost:8080/spatial',
+  },
 };
 
 module.exports = nextConfig;

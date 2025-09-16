@@ -126,4 +126,7 @@ docker run -d -p 8080:8080 blup-service:latest
 docker build -t alpha-service .
 docker run -d -p 8080:8080 alpha-service:latest
 
+docker build -t spatial-service .
+docker run -d -p 8080:8080 spatial-service:latest
+
 
