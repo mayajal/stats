@@ -129,4 +129,6 @@ docker run -d -p 8080:8080 alpha-service:latest
 docker build -t spatial-service .
 docker run -d -p 8080:8080 spatial-service:latest
 
+docker build -t alpha-r-plumber-service .
+docker run -d -p 8000:8000 alpha-r-plumber-service:latest
 
