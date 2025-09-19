@@ -192,7 +192,7 @@ def analyze():
         return jsonify({"error": "No selected file"}), 400
 
     try:
-        df = pd.read_csv(file)
+        df = pd.read_csv(file.stream)
         required_cols = {'DOSE', 'TOTAL', 'RESPONSE'}
         if not required_cols.issubset(df.columns):
             return jsonify({"error": f"Missing required columns. Found: {list(df.columns)}, Required: {list(required_cols)}"}), 400
@@ -233,14 +233,11 @@ def analyze():
         df_analysis = df[df['DOSE'] > 0].copy()
         if control_mortality_proportion > 0:
             df_analysis['OBS_PROP'] = df_analysis['RESPONSE'] / df_analysis['TOTAL']
-            df_analysis['CORRECTED_OBS_PROP'] = np.nan
-            for index, row in df_analysis.iterrows():
-                observed_mortality_proportion = row['OBS_PROP']
-                if (1 - control_mortality_proportion) != 0:
-                    corrected_mortality_proportion = (observed_mortality_proportion - control_mortality_proportion) / (1 - control_mortality_proportion)
-                    df_analysis.loc[index, 'CORRECTED_OBS_PROP'] = np.maximum(0, np.minimum(1, corrected_mortality_proportion))
-                else:
-                    df_analysis.loc[index, 'CORRECTED_OBS_PROP'] = 0
+            if (1 - control_mortality_proportion) != 0:
+                corrected_mortality_proportion = (df_analysis['OBS_PROP'] - control_mortality_proportion) / (1 - control_mortality_proportion)
+                df_analysis['CORRECTED_OBS_PROP'] = np.maximum(0, np.minimum(1, corrected_mortality_proportion))
+            else:
+                df_analysis['CORRECTED_OBS_PROP'] = 0
             df_analysis['CORRECTED_DEAD'] = (df_analysis['CORRECTED_OBS_PROP'] * df_analysis['TOTAL']).round().astype('Int64')
         else:
             df_analysis['CORRECTED_OBS_PROP'] = df_analysis['RESPONSE'] / df_analysis['TOTAL']
@@ -264,7 +261,7 @@ def analyze():
             p = np.clip(p, 1e-10, 1 - 1e-10)
             log_likelihood = np.sum(response * np.log(p) + (n - response) * np.log(1 - p))
             return -log_likelihood
-        result = minimize(probit_log_likelihood, initial_params, args=(df_analysis['log_CONC'], df_analysis['N'], df_analysis['CORRECTED_DEAD']))
+        result = minimize(probit_log_likelihood, initial_params, args=(df_analysis_valid['log_CONC'], df_analysis_valid['N'], df_analysis_valid['CORRECTED_DEAD']))
         mle_intercept, mle_slope = result.x
         # LD values and profile likelihood CIs
         ld_levels = [0.10, 0.25, 0.50, 0.75, 0.90, 0.99]
@@ -284,7 +281,7 @@ def analyze():
                 res = minimize(lambda slope: probit_log_likelihood([target_probit_fixed - slope[0] * ld_log_conc_fixed, slope[0]], log_conc, n, response),
                                [initial_slope], method='L-BFGS-B', bounds=bounds)
                 return -res.fun
-            profile_lls = [profile_log_likelihood_ld_log_conc(ll, target_probit, df_analysis['log_CONC'], df_analysis['N'], df_analysis['CORRECTED_DEAD'], mle_slope) for ll in log_ld_range]
+            profile_lls = [profile_log_likelihood_ld_log_conc(ll, target_probit, df_analysis_valid['log_CONC'], df_analysis_valid['N'], df_analysis_valid['CORRECTED_DEAD'], mle_slope) for ll in log_ld_range]
             mle_log_likelihood = -result.fun
             threshold = mle_log_likelihood - chi2.ppf(0.95, 1) / 2
             ll_values = np.array(profile_lls)
@@ -325,9 +322,9 @@ def analyze():
         # --- Generate unique plot for Profile Likelihood ---
         plt.figure()
         # Plot empirical probits
-        plt.scatter(df_analysis['log_CONC'], df_analysis['EMP_PROBIT'], label='Empirical Probits (Corrected)')
+        plt.scatter(df_analysis_valid['log_CONC'], df_analysis_valid['EMP_PROBIT'], label='Empirical Probits (Corrected)')
         # Plot MLE fit
-        log_conc_range = np.linspace(df_analysis['log_CONC'].min(), df_analysis['log_CONC'].max(), 100)
+        log_conc_range = np.linspace(df_analysis_valid['log_CONC'].min(), df_analysis_valid['log_CONC'].max(), 100)
         predicted_probits_mle = mle_intercept + mle_slope * log_conc_range
         plt.plot(log_conc_range, predicted_probits_mle, color='red', label='MLE Fitted Probit Line')
         # Optionally, plot confidence intervals if desired (not profile likelihood CIs, but from statsmodels)
@@ -349,13 +346,13 @@ def analyze():
         model_summary = [equation, intercept_str, slope_str]
         # Goodness-of-fit: Pearson chi-square test (same as Finney's method)
         # Calculate expected counts using MLE parameters
-        df_analysis['EXPECTED_PROBIT'] = mle_intercept + mle_slope * df_analysis['log_CONC']
-        df_analysis['EXPECTED_PROP'] = norm.cdf(df_analysis['EXPECTED_PROBIT'])
-        df_analysis['EXPECTED_DEAD'] = df_analysis['N'] * df_analysis['EXPECTED_PROP']
-        observed_dead = df_analysis['CORRECTED_DEAD']
-        expected_dead = df_analysis['EXPECTED_DEAD']
+        df_analysis_valid['EXPECTED_PROBIT'] = mle_intercept + mle_slope * df_analysis_valid['log_CONC']
+        df_analysis_valid['EXPECTED_PROP'] = norm.cdf(df_analysis_valid['EXPECTED_PROBIT'])
+        df_analysis_valid['EXPECTED_DEAD'] = df_analysis_valid['N'] * df_analysis_valid['EXPECTED_PROP']
+        observed_dead = df_analysis_valid['CORRECTED_DEAD']
+        expected_dead = df_analysis_valid['EXPECTED_DEAD']
         chi_squared_stat = ((observed_dead - expected_dead) ** 2 / expected_dead).sum()
-        degrees_of_freedom = len(df_analysis) - 2
+        degrees_of_freedom = len(df_analysis_valid) - 2
         p_value = chi2.sf(chi_squared_stat, degrees_of_freedom) if degrees_of_freedom > 0 else np.nan
         goodness_of_fit_data = {
             "Chi-Squared": f"{chi_squared_stat:.4f}",

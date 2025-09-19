@@ -912,6 +912,7 @@ export default function LMMPage() {
                             <Button onClick={handleAnalyze} disabled={loading || !responseCol || !treatment || !replication || !block} variant="secondary" className="bg-gray-200 text-black-800 font-bold hover:bg-black-300 border border-gray-300">
                                 {loading ? "Analyzing..." : "Run Analysis"}
                             </Button>
+                            <p className="text-sm text-muted-foreground">may take 30s to finish analysis</p>
                         </CardContent>
                     </Card>
                 )}
