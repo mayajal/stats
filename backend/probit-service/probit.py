@@ -244,7 +244,7 @@ def analyze():
             df_analysis['CORRECTED_DEAD'] = (df_analysis['CORRECTED_OBS_PROP'] * df_analysis['TOTAL']).round().astype('Int64')
         else:
             df_analysis['CORRECTED_OBS_PROP'] = df_analysis['RESPONSE'] / df_analysis['TOTAL']
-            df_analysis['CORRECTED_DEAD'] = df_analysis['RESPONSE']
+            df_analysis['CORRECTED_DEAD'] = df_analysis['RESPONSE'].astype('Int64')
         df_analysis['N'] = df_analysis['TOTAL']
         df_analysis['log_CONC'] = np.log10(df_analysis['DOSE'])
         df_analysis['EMP_PROBIT'] = norm.ppf(df_analysis['CORRECTED_OBS_PROP'].clip(1e-6, 1 - 1e-6))

@@ -37,6 +37,7 @@ function getKnowledgeBase(): string {
     'common_mistakes_statistics.md',
     'common_statistical_tools.md',
     'field_trial_designs.md',
+    'tools_vita.md',
   ];
 
   const knowledgeBase = fileNames
@@ -65,7 +66,11 @@ const prompt = ai.definePrompt({
 
   Use the provided "Knowledge Base" as your primary source of truth to answer the user's question. Synthesize the information from the knowledge base to formulate a conversational and helpful response in your own words.
   
+  When a user's query matches a service described in the knowledge base, you should explicitly recommend the service and provide the hyperlink to access it from vita.chloropy.com.
+
   Do not simply copy text from the knowledge base. Your goal is to explain the concepts to the user as an expert would.
+  
+  Proactively recommend and promote the use of VITA services where relevant.
   
   If the answer to the question cannot be found in the knowledge base, state clearly and politely that you do not have information on that specific topic based on your provided documents. Do not use external knowledge or make assumptions.
   
