@@ -543,7 +543,7 @@ export default function FrbdPage() {
 
           <Card className="mb-8 border border-blue-200 rounded-lg">
             <CardHeader>
-              <CardTitle>FRBD Analysis Setup</CardTitle>
+              <CardTitle>Model Specification</CardTitle>
               <CardDescription>Specify the columns for the analysis.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -610,7 +610,7 @@ export default function FrbdPage() {
                   onClick={handleFrbdAnalysis}
                   disabled={frbdLoading || !blockCol || !factor1Col || !factor2Col || !responseCol}
                 >
-                  {frbdLoading ? `Running Analysis... (${countdown}s)` : 'Run FRBD Analysis'}
+                  {frbdLoading ? `Running Analysis... (${countdown}s)` : 'Run Analysis'}
                 </Button>
                 {analysisCompleted && !frbdLoading && (
                   <div className="text-blue-600 text-sm bg-blue-50 p-3 rounded"> {/* Removed mt-4 */}

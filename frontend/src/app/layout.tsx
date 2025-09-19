@@ -58,9 +58,9 @@ export default function RootLayout({
         </header>
         <hr className="border-b border-gray-200 mb-4" />
         <main className="flex-grow">{children}</main>
-        <hr className="border-t border-gray-200 my-4" />
-        <footer className=" sticky top-0 z-50 text-center p-4 text-sm text-gray-500">
-          <p className="mb-1">Developed for larger screens 1440 x 900 pixels</p>
+        <hr className="border-t border-black my-2"/>
+        <footer className="sticky top-0 z-50 text-center p-4 text-sm text-gray-500">
+          <p className="mb-1">Works better in larger screens (1440 x 900 pixels and above)</p>
           &copy; Chloropy 2025 || <a href="mailto:contact@chloropy.com" className="text-blue-600 hover:underline">Feedback ||</a>  <a href="https://www.chloropy.com/vita/data-privacy" className="text-blue-600 hover:underline">Data Privacy</a>
         </footer>
       </body>

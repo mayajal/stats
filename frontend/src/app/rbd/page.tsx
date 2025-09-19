@@ -557,7 +557,7 @@ export default function RbdPage() {
           {data.length > 0 && (
               <Card className="mb-8 border border-blue-200 rounded-lg">
                 <CardHeader>
-                  <CardTitle>RCBD Analysis Setup</CardTitle>
+                  <CardTitle>Model Specification</CardTitle>
                   <CardDescription>Specify the columns for the analysis.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -650,10 +650,10 @@ export default function RbdPage() {
                       onClick={handleRbdAnalysis}
                       disabled={rbdLoading || !blockCol || !factorCol || !responseValueCol || (responseVariableCol && !selectedResponseVariable)}
                     >
-                      {rbdLoading ? `Running Analysis... (${countdown}s)` : 'Run RCBD Analysis'}
+                      {rbdLoading ? `Running Analysis... (${countdown}s)` : 'Run Analysis'}
                     </Button>
                     {analysisCompleted && !rbdLoading && (
-                      <div className="text-blue-600 text-sm bg-blue-50 p-3 rounded"> {/* Removed mt-4 */}
+                      <div className="text-white-600 text-sm p-3 rounded"> {/* Removed mt-4 */}
                         Analysis over. Results are below.
                       </div>
                     )}

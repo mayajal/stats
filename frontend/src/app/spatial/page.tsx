@@ -35,13 +35,13 @@ const MoranInterpretation = ({ moranI, pValue }: { moranI: number, pValue: numbe
 
     return (
         <div className="mt-4 text-sm text-gray-700">
-            <p><b>Interpretation of Moran's I:</b></p>
+            <p><b>Interpretation of Moran&apos;s I:</b></p>
             <ul className="list-disc list-inside">
                 <li>Values close to +1 indicate strong positive spatial autocorrelation (similar values cluster together).</li>
                 <li>Near 0 means spatial randomness (no discernible pattern).</li>
                 <li>Close to -1 signals negative spatial autocorrelation (neighboring values are dissimilar).</li>
             </ul>
-            <p className="mt-2">Based on the calculated Moran's I value of <b>{moranI.toFixed(4)}</b>, the data exhibits {interpretationText}</p>
+            <p className="mt-2">Based on the calculated Moran&apos;s I value of <b>{moranI.toFixed(4)}</b>, the data exhibits {interpretationText}</p>
             <p className="mt-2"><b>Significance (p-value):</b> A p-value less than 0.05 is typically considered statistically significant. With a p-value of <b>{pValue.toFixed(4)}</b>, {significanceText}</p>
         </div>
     );
@@ -138,10 +138,10 @@ const ResultsDisplay = ({ results, loading, error }: ResultsDisplayProps) => {
             {results.moran_i && (
                 <Card className="mt-6 !border border-[#34d399] rounded-lg">
                     <CardHeader>
-                        <CardTitle>Moran's I</CardTitle>
+                        <CardTitle>Moran&apos;s I</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p><b>Moran's I:</b> {results.moran_i.I.toFixed(4)}</p>
+                        <p><b>Mora&apos;s I:</b> {results.moran_i.I.toFixed(4)}</p>
                         <p><b>P-value:</b> {results.moran_i.p_value.toFixed(4)}</p>
                         <MoranInterpretation moranI={results.moran_i.I} pValue={results.moran_i.p_value} />
                     </CardContent>
@@ -378,14 +378,14 @@ export default function SpatialPage() {
                         <FaMapMarkedAlt style={{ height: '2rem', width: '2rem', color: "#34d399", marginRight: '0.75rem' }} />
                         <h1 className="text-3xl font-bold">Spatial Stability Analysis</h1>
                     </div>
-                    <p className="text-muted-foreground font-bold">Exploratory Spatial Data Analysis (Moran's I and Local Indicators of Spatial Association (LISA)) identifies local clusters and spatial outliers.</p>
+                    <p className="text-muted-foreground font-bold">Exploratory Spatial Data Analysis (Moran&apos;s I and Local Indicators of Spatial Association (LISA)) identifies local clusters and spatial outliers.</p>
                     <p className="text-muted-foreground">Using these tools, researchers can identify regions where their products perform consistently well (high-high clusters) or poorly (low-low clusters). This helps in tailoring breeding programs to specific environments, optimize number of field trials and cut costs.</p>
                 </div>
 
                 <Card className="mb-8 !border border-[#34d399] rounded-lg">
                     <CardHeader>
                         <CardTitle className="flex items-center"><Upload className="mr-2" /> Upload Data</CardTitle>
-                        <CardDescription>Upload a .CSV or .XLSX file (max 1 MB). Required columns are location and value. Location column should have state name in addition to location for accuracy. eg. "Hyderabad, Telangana". If you know latitude and longitude degrees provide them in separate columns (EPSG:4326 format). Then, map your data columns to the required fields.</CardDescription>
+                        <CardDescription>Upload a .CSV or .XLSX file (max 1 MB). Required columns are location and value. Location column should have state name in addition to location for accuracy. eg. &quot;Hyderabad, Telangana&quot;. If you know latitude and longitude degrees provide them in separate columns (EPSG:4326 format). Then, map your data columns to the required fields.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-center space-x-4">
@@ -472,9 +472,12 @@ export default function SpatialPage() {
                                     {renderColumnSelector(longCol, setLongCol, "Select Longitude", true)}
                                 </div>
                             </div>
-                            <Button onClick={handleAnalyze} disabled={loading || !locationCol || !valueCol} variant="secondary" className="bg-gray-200 text-black-800 font-bold hover:bg-black-300 border border-gray-300">
-                                {loading ? "Analyzing..." : "Run Analysis"}
-                            </Button>
+                            <div className="flex items-center space-x-2">
+                                <Button onClick={handleAnalyze} disabled={loading || !locationCol || !valueCol} variant="secondary" className="bg-gray-200 text-black-800 font-bold hover:bg-black-300 border border-gray-300">
+                                    {loading ? "Analyzing..." : "Run Analysis"}
+                                </Button>
+                                <p className="text-sm text-muted-foreground">may take 30s to finish analysis</p>
+                            </div>
                         </CardContent>
                     </Card>
                 )}

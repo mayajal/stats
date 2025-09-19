@@ -542,14 +542,15 @@ export default function SurvivalPage() {
                   </tbody>
                 </table>
               </div>
-              <div className="mt-4">
+              <div className="mt-4 flex items-center space-x-2">
                 <Button 
                   onClick={handleAnalyze} 
                   disabled={!file || loading}
                   className="min-w-[120px]"
                 >
-                  {loading ? 'Analyzing...' : 'Analyze'}
+                  {loading ? 'Analyzing...' : 'Run Analysis'}
                 </Button>
+                <p className="text-sm text-muted-foreground">may take 30s to finish analysis</p>
               </div>
             </CardContent>
           </Card>

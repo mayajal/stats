@@ -373,7 +373,7 @@ export default function ProbitPage() {
               Upload Data
             </CardTitle>
             <CardDescription>
-            Upload a .CSV or .XLSX file (max 1 MB). File should have <b>DOSE</b>, <b>RESPONSE</b>, and <b>TOTAL</b> columns. If control group (DOSE = 0) has RESPONSE counts, corrected mortality will be automatically calculated for non-control groups using Abbott&apos;s formula.
+            Upload a .CSV or .XLSX file (max 1 MB). Required columns are dose, total and response . If control group (dose = 0) has response counts, corrected mortality will be automatically calculated for non-control groups using Abbott&apos;s formula.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -518,7 +518,7 @@ export default function ProbitPage() {
                     </Select>
                   </div>
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 flex items-center space-x-2">
                   <Button 
                     onClick={handleAnalyze} 
                     disabled={!file || loading || !doseColumn || !totalColumn || !responseColumn}
@@ -527,6 +527,7 @@ export default function ProbitPage() {
                   >
                     {loading ? 'Analyzing...' : 'Run Analysis'}
                   </Button>
+                  <p className="text-sm text-muted-foreground">may take 30s to finish analysis</p>
                 </div>
               </CardContent>
             </Card>

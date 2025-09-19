@@ -198,7 +198,7 @@ const ModelSummaryHtml = ({ html, fixedEffects, randomEffects, treatmentLevels, 
                                             <li>If <b>P&gt;|z| &#60; 0.05</b>: The effect is statistically significant. This means the estimated coefficient is significantly different from zero, suggesting a real impact on the response variable.</li>
                                             <li>If <b>P&gt;|z| &#8805; 0.05</b>: The effect is not statistically significant. This means there is not enough evidence to conclude that the estimated coefficient is different from zero, suggesting its observed impact might be due to random chance.</li>
                                         </ul>
-                                        <p className="mt-2">For interaction effects (e.g., 'Factor1:Factor2'), the P-value indicates the significance of the combined effect of those factors.</p>
+                                        <p className="mt-2">For interaction effects (e.g., &apos;Factor1:Factor2&apos;), the P-value indicates the significance of the combined effect of those factors.</p>
                                     </div>
                                     {renderSubTable('Main (Fixed) Effects', fixedEffectRows, headers)}
                                     {renderSubTable('Interaction Effects', interactionEffectRows, headers)}
@@ -833,7 +833,7 @@ export default function ALPHAPage() {
                                 </div>
                                 <div className="space-y-4">
                                     <div>
-                                        <label htmlFor="tukey-factor">Factor for Tukey's Test <span className="text-red-500">*</span></label>
+                                        <label htmlFor="tukey-factor">Factor for Tukey&apos;s Test <span className="text-red-500">*</span></label>
                                         {renderColumnSelector(tukeyFactor, setTukeyFactor, "Select Tukey Factor")}
                                     </div>
                                     <div>
