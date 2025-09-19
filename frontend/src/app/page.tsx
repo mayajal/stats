@@ -2,14 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import { FaAtom, FaMixer, FaRobot, FaCheckCircle, FaThLarge, FaClone, FaLayerGroup, FaBug, FaBoxes,FaAsterisk, FaMapMarkedAlt } from "react-icons/fa";
+import { FaAtom, FaMixer, FaCheckCircle, FaThLarge, FaClone, FaBug, FaBoxes,FaAsterisk, FaMapMarkedAlt } from "react-icons/fa";
 
 const features = [
-  {
-    icon: <FaRobot style={{ fontSize: "1.5rem", color: "#2563eb" }} />,
-    title: "AI Statistical Guide",
-    link: "/guide",
-  },
+  
   {
     icon: <FaCheckCircle style={{ fontSize: "1.5rem", color: "#22c55e" }} />,
     title: "Data Quality Check",
@@ -29,7 +25,7 @@ const features = [
   },
   {
     icon: <FaClone style={{ fontSize: "1.5rem", color: "#ec4899" }} />,
-    title: "FRBD Analysis",
+    title: "Factorial RBD Analysis",
     link: "/frbd",
   },
   {
@@ -43,14 +39,10 @@ const features = [
     title: "Linear Mixed Model",
     link: "/lmm",
   },
-  {
-    icon: <FaMixer style={{ fontSize: "1.5rem", color: "#2563eb" }} />,
-    title: "LMM-BLUPs",
-    link: "/blup",
-  },
+ 
   {
     icon: <FaMapMarkedAlt style={{ fontSize: "1.5rem", color: "#34d399" }} />,
-    title: "Spatial Stability",
+    title: "Geo Stability of Hybrids",
     link: "/spatial",
   },
 
@@ -65,20 +57,15 @@ const features = [
     title: "Survival Analysis",
     link: "/survival",
   },
-  {
-    icon: <FaLayerGroup style={{ fontSize: "1.5rem", color: "#edb83dff" }} />,
-    title: "Split Plot Analysis",
-    text: "Coming Soon",
-    link: "#",
-  },
+ 
 ];
 
 const StatVizHome: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-300 flex flex-col items-center px-4">
       <header className="mt-8 mb-8 text-center">
-        <h1 className="text-4xl font-extrabold text-black-800 mb-2">Welcome to VITA</h1>
-        <p className="text-black-600 text-lg">Your AI-Powered Statistical Guide & Analysis Tool</p>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-black-800 mb-2">Welcome to VITA</h1>
+        <p className="text-base sm:text-lg text-black-600">Your AI-Powered Statistical Guide & Analysis Tool</p>
       </header>
 
       <main className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
@@ -94,9 +81,6 @@ const StatVizHome: React.FC = () => {
             >
               <div className="mb-4">{feature.icon}</div>
               <h2 className="text-xl font-bold text-gray-800 mb-2">{feature.title}</h2>
-              {feature.text && (
-                <p className="text-gray-400 text-lg mt-auto">{feature.text}</p>
-              )}
             </section>
           );
 
@@ -111,6 +95,9 @@ const StatVizHome: React.FC = () => {
           );
         })}
       </main>
+      <div className="mt-10 mb-8 text-center text-gray-600 text-base sm:text-lg">
+        For customised data analytical services email us at <a href="mailto:contact@chloropy.com" className="text-blue-600 hover:underline">contact@chloropy.com</a>
+      </div>
     </div>
   );
 };

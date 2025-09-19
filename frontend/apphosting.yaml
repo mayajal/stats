@@ -55,6 +55,12 @@ env:
       - BUILD
       - RUNTIME
 
+  - variable: NEXT_PUBLIC_SPATIAL_SERVICE_URL
+    value: https://spatial-service-737809041422.us-central1.run.app/spatial
+    availability:
+      - BUILD
+      - RUNTIME
+
   - variable: FIREBASE_CONFIG
     value: '{"apiKey": "AIzaSyDlBQSqy5zwe43cZ6Wb7mfqKjVa03bxA9c",
             "authDomain": "statviz-j3txi.firebaseapp.com",

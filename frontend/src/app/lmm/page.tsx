@@ -401,6 +401,59 @@ const renderResultsTable = (data: string | object) => { // data can be string or
     }
 };
 
+const VarianceComponentsTable = ({ components }: { components: { [key: string]: number } }) => {
+    if (!components || Object.keys(components).length === 0) {
+        return null;
+    }
+
+    // Ensure a specific order: user-defined random effects first, then Residual
+    const randomEffectOrder = ["Replication", "Block", "Season"];
+    const sortedKeys = Object.keys(components).sort((a, b) => {
+        const aIndex = randomEffectOrder.indexOf(a);
+        const bIndex = randomEffectOrder.indexOf(b);
+
+        if (aIndex > -1 && bIndex > -1) return aIndex - bIndex; // Both are known random effects
+        if (aIndex > -1) return -1; // a is known, b is not
+        if (bIndex > -1) return 1;  // b is known, a is not
+        if (a === 'Residual') return 1; // Push Residual to the end
+        if (b === 'Residual') return -1;
+        return a.localeCompare(b); // Fallback for other keys
+    });
+
+    return (
+        <div className="my-4">
+            <h3 className="text-lg font-semibold mb-2">Variance Components</h3>
+            <div className="overflow-x-auto">
+                <table className="w-full border-collapse !border !border-primary font-mono text-sm">
+                    <thead className="bg-cyan-50">
+                        <tr>
+                            <th className="!border !border-primary px-2 py-1 text-left">Component</th>
+                            <th className="!border !border-primary px-2 py-1 text-right">Variance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortedKeys.map(key => (
+                            <tr key={key}>
+                                <td className="!border !border-primary px-3 py-1">{key}</td>
+                                <td className="!border !border-primary px-3 py-1 text-right">{Number(components[key]).toFixed(4)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <div className="text-sm text-muted-foreground mt-2 p-3 bg-blue-50 rounded-md border border-blue-200">
+                <p><b>Interpretation of Variance Components:</b></p>
+                <ul className="list-disc pl-5 space-y-1">
+                    <li>These values estimate how much of the total variation in the response variable is attributable to each random effect.</li>
+                    <li>A higher variance indicates that the component contributes more to the overall variability.</li>
+                    <li>A variance of 0 (e.g., for 'Replication') suggests that this factor did not contribute to the variation in this specific dataset, and the model simplified itself by removing this effect.</li>
+                    <li><b>Residual</b> variance represents the random, unexplained variation or "noise" that remains after accounting for all effects in the model.</li>
+                </ul>
+            </div>
+        </div>
+    );
+};
+
 const ResultsDisplay = ({ results, loading, error, fixedEffects, randomEffects, treatmentLevels, locationLevels }: { results: any, loading: boolean, error: string, fixedEffects: string[], randomEffects: string[], treatmentLevels: string[], locationLevels: string[] }) => {
     if (loading) return <div className="text-center py-4">Loading...</div>;
     if (error) return <div className="text-red-500 bg-red-100 p-4 rounded-md">Error: {error}</div>;
@@ -413,6 +466,8 @@ const ResultsDisplay = ({ results, loading, error, fixedEffects, randomEffects, 
             </CardHeader>
             <CardContent>
                 {results.model_summary_html && <ModelSummaryHtml html={results.model_summary_html} fixedEffects={fixedEffects} randomEffects={randomEffects} treatmentLevels={treatmentLevels} locationLevels={locationLevels} />}
+
+                {results.variance_components && <VarianceComponentsTable components={results.variance_components} />}
 
                 {/* Diagnostics */}
                 {results.plots && (
@@ -821,44 +876,40 @@ export default function LMMPage() {
                                         {renderColumnSelector(responseCol, setResponseCol, "Select Response")}
                                     </div>
                                     <div>
-                                        <label htmlFor="tukey-factor">Factor for Tukey's Test <span className="text-red-500">*</span></label>
-                                        {renderColumnSelector(tukeyFactor, setTukeyFactor, "Select Tukey Factor")}
+                                        <h4 className="font-medium mb-2">Fixed Variables</h4>
+                                        <div className="space-y-2">
+                                            <div>
+                                                <label>Fixed (1) <span className="text-red-500">*</span></label>
+                                                {renderColumnSelector(treatment, setTreatment, "Select Fixed (1)")}
+                                            </div>
+                                            <div>
+                                                <label>Fixed (2) optional</label>
+                                                {renderColumnSelector(location, setLocation, "Select Fixed (2)", true)}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <div>
-                                        <h4 className="font-medium mb-2">Fixed Variables</h4>
-                                        <div className="space-y-2 pl-4 border-l-2 border-gray-300">
-                                            <div>
-                                                <label>Treatment <span className="text-red-500">*</span></label>
-                                                {renderColumnSelector(treatment, setTreatment, "Select Treatment")}
-                                            </div>
-                                            <div>
-                                                <label>Location</label>
-                                                {renderColumnSelector(location, setLocation, "Select Location", true)}
-                                            </div>
-                                        </div>
+                                        <label htmlFor="tukey-factor">Factor for Tukey's Test <span className="text-red-500">*</span></label>
+                                        {renderColumnSelector(tukeyFactor, setTukeyFactor, "Select Tukey Factor")}
                                     </div>
                                     <div>
-                                        <h4 className="font-medium mb-2">Random Variables (max 2)</h4>
-                                        <div className="space-y-2 pl-4 border-l-2 border-gray-300">
+                                        <h4 className="font-medium mb-2">Random Variables</h4>
+                                        <div className="space-y-2">
                                             <div>
-                                                <label>Replication <span className="text-red-500">*</span></label>
-                                                {renderColumnSelector(replication, setReplication, "Select Replication")}
+                                                <label>Random (1) <span className="text-red-500">*</span></label>
+                                                {renderColumnSelector(replication, setReplication, "Select Random (1)")}
                                             </div>
                                             <div>
-                                                <label>Block</label>
-                                                {renderColumnSelector(block, setBlock, "Select Block", true)}
-                                            </div>
-                                            <div>
-                                                <label>Season/Year</label>
-                                                {renderColumnSelector(season, setSeason, "Select Season/Year", true)}
+                                                <label>Random (2) <span className="text-red-500">*</span></label>
+                                                {renderColumnSelector(block, setBlock, "Select Random (2)")}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <Button onClick={handleAnalyze} disabled={loading || !responseCol || !treatment || !replication} variant="secondary" className="bg-gray-200 text-black-800 font-bold hover:bg-black-300 border border-gray-300">
+                            <Button onClick={handleAnalyze} disabled={loading || !responseCol || !treatment || !replication || !block} variant="secondary" className="bg-gray-200 text-black-800 font-bold hover:bg-black-300 border border-gray-300">
                                 {loading ? "Analyzing..." : "Run Analysis"}
                             </Button>
                         </CardContent>

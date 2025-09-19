@@ -325,7 +325,7 @@ def analyze():
                 plot_data = plot_data.sort_values(by='Treatment_sorted', ascending=True).drop(columns='Treatment_sorted')
 
                 if len(plot_data) > 0:
-                    fig, ax = plt.subplots(figsize=(12.8, 4.8)) # Double the width
+                    fig, ax = plt.subplots(figsize=(12, 6)) # Double the width
                     colors = sns.color_palette('tab10', n_colors=len(plot_data['Treatment']))
                     ax.bar(plot_data['Treatment'], plot_data['Mean'].astype(float), yerr=plot_data['SEM'].astype(float), capsize=5, color=colors)
                     ax.set_xlabel(tukey_factor or "")
@@ -345,7 +345,7 @@ def analyze():
                     # Ensure categories are naturally sorted for plotting
                     data[tukey_factor] = pd.Categorical(data[tukey_factor], categories=sorted(data[tukey_factor].unique(), key=natural_sort_key), ordered=True)
 
-                    fig, ax = plt.subplots(figsize=(12.8, 4.8)) # Double the width
+                    fig, ax = plt.subplots(figsize=(12, 6)) # Double the width
                     unique_levels = data[tukey_factor].unique()
                     if len(unique_levels) > 0:
                         palette = sns.color_palette('tab10', n_colors=len(unique_levels))
@@ -385,6 +385,32 @@ def analyze():
                     # Fallback for different structures if 'group' is not the key
                     random_effects_results = json.dumps([{'error': 'Could not parse random effects'}])
 
+            # Extract variance components
+            variance_components = {}
+            found_vcs = set()
+            try:
+                # 1. Get variances for random effects from model parameters
+                for p_name, p_value in result.params.items():
+                    if ' Var' in p_name:
+                        if p_name == 'Group Var':
+                            clean_name = primary_group
+                        else:
+                            clean_name = p_name.replace(' Var', '').strip()
+                        variance_components[clean_name] = float(p_value)
+                        found_vcs.add(clean_name)
+
+                # 2. If the primary group's variance was not in params (estimated as 0), add it.
+                if primary_group not in found_vcs and primary_group in random_effects:
+                    variance_components[primary_group] = 0.0
+
+                # 3. Add the residual variance
+                if hasattr(result, 'scale'):
+                    variance_components['Residual'] = float(result.scale)
+
+            except Exception as e:
+                app.logger.warning(f"Could not extract variance components: {e}")
+                variance_components = {"error": "Could not extract variance components."}
+
 
             return jsonify({
                 "model_summary_html": model_summary_html,
@@ -395,7 +421,8 @@ def analyze():
                 "cd_value": cd_value if cd_value is not None else None,
                 "shapiro": {"stat": float(shapiro_stat) if not np.isnan(shapiro_stat) else None, "p": float(shapiro_p) if not np.isnan(shapiro_p) else None},
                 "overall_cv": overall_cv,
-                "random_effects_results": random_effects_results
+                "random_effects_results": random_effects_results,
+                "variance_components": variance_components
             })
 
         except ValueError as e:

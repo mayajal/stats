@@ -818,14 +818,8 @@ export default function ALPHAPage() {
                                         {renderColumnSelector(responseCol, setResponseCol, "Select Response")}
                                     </div>
                                     <div>
-                                        <label htmlFor="tukey-factor">Factor for Tukey's Test <span className="text-red-500">*</span></label>
-                                        {renderColumnSelector(tukeyFactor, setTukeyFactor, "Select Tukey Factor")}
-                                    </div>
-                                </div>
-                                <div className="space-y-4">
-                                    <div>
                                         <h4 className="font-medium mb-2">Fixed Variables</h4>
-                                        <div className="space-y-2 pl-4 border-l-2 border-gray-300">
+                                        <div className="space-y-2">
                                             <div>
                                                 <label>Treatment <span className="text-red-500">*</span></label>
                                                 {renderColumnSelector(treatment, setTreatment, "Select Treatment")}
@@ -836,9 +830,15 @@ export default function ALPHAPage() {
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label htmlFor="tukey-factor">Factor for Tukey's Test <span className="text-red-500">*</span></label>
+                                        {renderColumnSelector(tukeyFactor, setTukeyFactor, "Select Tukey Factor")}
+                                    </div>
                                     <div>
                                         <h4 className="font-medium mb-2">Random Variables</h4>
-                                        <div className="space-y-2 pl-4 border-l-2 border-gray-300">
+                                        <div className="space-y-2">
                                             <div>
                                                 <label>Replication <span className="text-red-500">*</span></label>
                                                 {renderColumnSelector(replication, setReplication, "Select Replication")}

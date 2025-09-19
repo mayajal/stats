@@ -327,7 +327,7 @@ def analyze():
                 plot_data = plot_data.sort_values(by='Treatment_sorted', ascending=True).drop(columns='Treatment_sorted')
 
                 if len(plot_data) > 0:
-                    fig, ax = plt.subplots(figsize=(12.8, 4.8)) # Double the width
+                    fig, ax = plt.subplots(figsize=(12, 6)) # Double the width
                     colors = sns.color_palette('tab10', n_colors=len(plot_data['Treatment']))
                     ax.bar(plot_data['Treatment'], plot_data['Mean'].astype(float), yerr=plot_data['SEM'].astype(float), capsize=5, color=colors)
                     ax.set_xlabel(tukey_factor or "")
@@ -347,7 +347,7 @@ def analyze():
                     # Ensure categories are naturally sorted for plotting
                     data[tukey_factor] = pd.Categorical(data[tukey_factor], categories=sorted(data[tukey_factor].unique(), key=natural_sort_key), ordered=True)
 
-                    fig, ax = plt.subplots(figsize=(12.8, 4.8)) # Double the width
+                    fig, ax = plt.subplots(figsize=(12, 6)) # Double the width
                     unique_levels = data[tukey_factor].unique()
                     if len(unique_levels) > 0:
                         palette = sns.color_palette('tab10', n_colors=len(unique_levels))

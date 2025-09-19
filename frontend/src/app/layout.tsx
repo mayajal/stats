@@ -4,7 +4,7 @@ import './globals.css'
 import Link from "next/link";
 import Image from 'next/image';
 import Script from 'next/script';
-import { FaHome, FaBook} from "react-icons/fa";
+import { FaHome, FaRobot} from "react-icons/fa";
 import { FaRepeat } from "react-icons/fa6";
 
 const ibmPlexSans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '700'] })
@@ -47,7 +47,7 @@ export default function RootLayout({
               <span>Home</span>
             </Link>
             <Link href="/guide" className="flex items-center space-x-2 text-white hover:text-yellow-200">
-              <FaBook />
+              <FaRobot />
               <span>AI-Guide</span>
             </Link>
             <Link href="/tranx" className="flex items-center space-x-2 text-white hover:text-yellow-200">
@@ -60,6 +60,7 @@ export default function RootLayout({
         <main className="flex-grow">{children}</main>
         <hr className="border-t border-gray-200 my-4" />
         <footer className=" sticky top-0 z-50 text-center p-4 text-sm text-gray-500">
+          <p className="mb-1">Developed for larger screens 1440 x 900 pixels</p>
           &copy; Chloropy 2025 || <a href="mailto:contact@chloropy.com" className="text-blue-600 hover:underline">Feedback ||</a>  <a href="https://www.chloropy.com/vita/data-privacy" className="text-blue-600 hover:underline">Data Privacy</a>
         </footer>
       </body>

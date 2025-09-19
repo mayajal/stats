@@ -4,6 +4,7 @@ import { useState, useRef, ReactNode } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { FaBug } from "react-icons/fa";
 import { Upload } from 'lucide-react';
@@ -46,7 +47,10 @@ export default function ProbitPage() {
   const [file, setFile] = useState<File | null>(null);
   const [data, setData] = useState<any[]>([]);
   const [dataPreview, setDataPreview] = useState<any[]>([]);
-  const [columnHeaders, setColumnHeaders] = useState<string[]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
+  const [doseColumn, setDoseColumn] = useState<string | null>(null);
+  const [totalColumn, setTotalColumn] = useState<string | null>(null);
+  const [responseColumn, setResponseColumn] = useState<string | null>(null);
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
@@ -62,7 +66,7 @@ export default function ProbitPage() {
       setError("");
       setData([]);
       setDataPreview([]);
-      setColumnHeaders([]);
+      setHeaders([]);
       setResults(null);
       setAvailableSheets([]);
       setSelectedSheet("");
@@ -88,7 +92,7 @@ export default function ProbitPage() {
               const sheet = wb.Sheets[sheets[0]];
               const json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" }) as any[];
               const headers = Array.isArray(json[0]) ? (json[0] as any[]).map((h) => String(h).trim()) : [];
-              setColumnHeaders(headers);
+              setHeaders(headers);
             }
           } catch (er) {
             setError("Failed to read XLSX file. Ensure it is a valid spreadsheet.");
@@ -103,7 +107,7 @@ export default function ProbitPage() {
           if (typeof text === "string") {
             const rows = text.split("\n");
             const headers = rows[0].split(",").map(h => h.trim());
-            setColumnHeaders(headers);
+            setHeaders(headers);
           }
         };
         reader.readAsText(f);
@@ -131,7 +135,7 @@ export default function ProbitPage() {
         const json = XLSX.utils.sheet_to_json(sheet, { defval: "" }) as any[];
         const preview = json.slice(0, 5);
         setDataPreview(preview);
-        setColumnHeaders(Object.keys(json[0] || {}));
+                setHeaders(Object.keys(json[0] || {}));
       } else {
         const text = await file.text();
         const parsed = text.split("\n").map((row) => row.split(","));
@@ -145,7 +149,7 @@ export default function ProbitPage() {
           return rowData;
         });
         setDataPreview(formatted.slice(0, 5));
-        setColumnHeaders(headers.map(h => String(h).trim()))
+        setHeaders(headers.map(h => String(h).trim()))
       }
     } catch (er: any) {
       setError(er.message || "Failed to process file preview");
@@ -188,6 +192,11 @@ export default function ProbitPage() {
     } else {
       formData.append("file", file);
     }
+
+    // Append selected column names to formData
+    if (doseColumn) formData.append("dose_column", doseColumn);
+    if (totalColumn) formData.append("total_column", totalColumn);
+    if (responseColumn) formData.append("response_column", responseColumn);
 
     try {
       const response = await fetch(process.env.NEXT_PUBLIC_PROBIT_SERVICE_URL || '', {
@@ -253,7 +262,7 @@ export default function ProbitPage() {
     setFile(null);
     setData([]);
     setDataPreview([]);
-    setColumnHeaders([]);
+    setHeaders([]);
     setResults(null);
     setError("");
     setAvailableSheets([]);
@@ -364,7 +373,7 @@ export default function ProbitPage() {
               Upload Data
             </CardTitle>
             <CardDescription>
-            Upload a .CSV or .XLSX file (max 1 MB). File should have columns named exactly as <b>DOSE</b>, <b>RESPONSE</b>, and <b>TOTAL</b>. If control group (DOSE = 0) has RESPONSE counts, corrected mortality will be automatically calculated for non-control groups using Abbott&apos;s formula.
+            Upload a .CSV or .XLSX file (max 1 MB). File should have <b>DOSE</b>, <b>RESPONSE</b>, and <b>TOTAL</b> columns. If control group (DOSE = 0) has RESPONSE counts, corrected mortality will be automatically calculated for non-control groups using Abbott&apos;s formula.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -435,7 +444,7 @@ export default function ProbitPage() {
                 <table className="min-w-full divide-y divide-blue-200">
                   <thead className="bg-blue-100">
                     <tr>
-                      {columnHeaders.map((key) => (
+                      {headers.map((key) => (
                         <th key={key} className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">{key}</th>
                       ))}
                     </tr>
@@ -443,7 +452,7 @@ export default function ProbitPage() {
                   <tbody className="divide-y divide-blue-200">
                     {dataPreview.map((row, i) => (
                       <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
-                        {columnHeaders.map((key) => (
+                        {headers.map((key) => (
                           <td key={key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row[key]}</td>
                         ))}
                       </tr>
@@ -451,49 +460,77 @@ export default function ProbitPage() {
                   </tbody>
                 </table>
               </div>
-              <div className="mt-4">
-                <Button 
-                  onClick={handleAnalyze} 
-                  disabled={!file || loading}
-                  className="min-w-[120px]"
-                >
-                  {loading ? 'Analyzing...' : 'Analyze'}
-                </Button>
-              </div>
+              
             </CardContent>
           </Card>
         )}
 
-        {data.length > 0 && (
-          <Card className="mb-8 border border-blue-200 rounded-lg">
-            <CardHeader>
-              <CardTitle>Uploaded Data</CardTitle>
-              <CardDescription>The data from your uploaded file.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-blue-200">
-                  <thead className="bg-blue-100">
-                    <tr>
-                      {Object.keys(data[0]).map((key) => (
-                        <th key={key} className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">{key}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-blue-200">
-                    {data.map((row, i) => (
-                      <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
-                        {Object.values(row).map((value: any, j: number) => (
-                          <td key={j} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{value}</td>
+        {dataPreview.length > 0 && headers.length > 0 && (
+            <Card className="w-full max-w-4xl mt-4">
+              <CardHeader>
+                <CardTitle>Model Specification</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label htmlFor="dose-column" className="block text-sm font-medium text-gray-700">DOSE Column</label>
+                    <Select onValueChange={setDoseColumn} value={doseColumn || ""}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select DOSE column" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {headers.map((header) => (
+                          <SelectItem key={header} value={header}>
+                            {header}
+                          </SelectItem>
                         ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label htmlFor="total-column" className="block text-sm font-medium text-gray-700">TOTAL Column</label>
+                    <Select onValueChange={setTotalColumn} value={totalColumn || ""}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select TOTAL column" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {headers.map((header) => (
+                          <SelectItem key={header} value={header}>
+                            {header}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label htmlFor="response-column" className="block text-sm font-medium text-gray-700">RESPONSE Column</label>
+                    <Select onValueChange={setResponseColumn} value={responseColumn || ""}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select RESPONSE column" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {headers.map((header) => (
+                          <SelectItem key={header} value={header}>
+                            {header}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button 
+                    onClick={handleAnalyze} 
+                    disabled={!file || loading || !doseColumn || !totalColumn || !responseColumn}
+                    variant="secondary"
+                    className="bg-gray-200 text-black-800 font-bold hover:bg-gray-300 border border-gray-300 min-w-[120px]"
+                  >
+                    {loading ? 'Analyzing...' : 'Run Analysis'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
         {results && (
           <Tabs.Root defaultValue="finney" className="mb-8">

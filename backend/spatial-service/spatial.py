@@ -1,4 +1,3 @@
-
 import googlemaps
 import os
 import pandas as pd
@@ -33,6 +32,33 @@ CORS(app, resources={r"/*": {"origins": [
 
 @app.route('/spatial', methods=['POST'])
 def spatial_analysis():
+    """
+    This function performs spatial analysis on the given data.
+    The data is expected to be a JSON object with a key "data".
+    The value of "data" should be an array of objects, where each object has the following keys:
+    - "LOCATION": A string representing the location (e.g., "New York, NY").
+    - "Value": A numerical value representing the yield.
+    - "latitude" (optional): A numerical value representing the latitude.
+    - "longitude" (optional): A numerical value representing the longitude.
+    
+    If "latitude" and "longitude" are not provided, the backend will attempt to geocode the "LOCATION".
+
+    Example:
+    {
+      "data": [
+        {
+          "LOCATION": "New York, NY",
+          "Value": 100
+        },
+        {
+          "LOCATION": "Los Angeles, CA",
+          "Value": 150,
+          "latitude": 34.0522,
+          "longitude": -118.2437
+        }
+      ]
+    }
+    """
     MAX_GP_ROWS = 100  # Limit for GP model to prevent timeouts
     try:
         data = request.get_json()
@@ -41,27 +67,51 @@ def spatial_analysis():
         if not api_key:
             return jsonify({"error": "'GEOCODING_API_KEY' not set in .env file."}), 500
 
-        gmaps = googlemaps.Client(key=api_key)
+        df = df_raw.rename(columns={'Value': 'YIELD'})
+        df['YIELD'] = pd.to_numeric(df['YIELD'], errors='coerce')
 
-        def get_coords(place):
-            try:
-                geocode_result = gmaps.geocode(place)
-                if geocode_result:
-                    location = geocode_result[0]['geometry']['location']
-                    return pd.Series({'latitude': location['lat'], 'longitude': location['lng']})
-                else:
+        # Ensure latitude and longitude columns exist
+        if 'latitude' not in df.columns:
+            df['latitude'] = np.nan
+        if 'longitude' not in df.columns:
+            df['longitude'] = np.nan
+
+        # Convert existing lat/lon to numeric, coercing errors
+        df['latitude'] = pd.to_numeric(df['latitude'], errors='coerce')
+        df['longitude'] = pd.to_numeric(df['longitude'], errors='coerce')
+
+        # Identify rows that need geocoding
+        missing_coords_mask = df['latitude'].isnull() | df['longitude'].isnull()
+        locations_to_geocode = df.loc[missing_coords_mask, 'LOCATION']
+
+        if not locations_to_geocode.empty:
+            gmaps = googlemaps.Client(key=api_key)
+
+            def get_coords(place):
+                try:
+                    geocode_result = gmaps.geocode(place)
+                    if geocode_result:
+                        location = geocode_result[0]['geometry']['location']
+                        return pd.Series({'latitude': location['lat'], 'longitude': location['lng']})
+                    else:
+                        return pd.Series({'latitude': None, 'longitude': None})
+                except Exception as e:
                     return pd.Series({'latitude': None, 'longitude': None})
-            except Exception as e:
-                return pd.Series({'latitude': None, 'longitude': None})
 
-        df_raw = df_raw.rename(columns={'Value': 'YIELD'})
-        df_raw['YIELD'] = pd.to_numeric(df_raw['YIELD'], errors='coerce')
-        coords = df_raw['LOCATION'].apply(get_coords)
-        df = pd.concat([df_raw, coords], axis=1)
+            # Get new coordinates
+            new_coords = locations_to_geocode.apply(get_coords)
+
+            # Update the dataframe with the new coordinates
+            df.loc[missing_coords_mask, ['latitude', 'longitude']] = new_coords.values
+
+        # Drop rows that still have missing coordinates after geocoding
         df.dropna(subset=['latitude', 'longitude', 'YIELD'], inplace=True)
 
         if df.empty:
             return jsonify({"error": "No locations with valid coordinates and yield data found."}), 400
+
+        if len(df) < 2:
+            return jsonify({"error": "At least 2 locations with valid coordinates are required for spatial analysis."}), 400
 
         gdf = gpd.GeoDataFrame(
             df,
@@ -89,7 +139,7 @@ def spatial_analysis():
                 gdf['LISA_cluster'] = lisa.q
                 gdf['LISA_p'] = lisa.p_sim
                 
-                response_data["lisa_results"] = gdf[['LOCATION', 'LISA_cluster', 'LISA_p']].to_dict(orient='records')
+                response_data["lisa_results"] = gdf[['LOCATION', 'LISA_cluster', 'LISA_p', 'latitude', 'longitude']].to_dict(orient='records')
 
                 fig, ax = plt.subplots(figsize=(8,8))
                 lisa_cluster(lisa, gdf, p=0.05, ax=ax)
@@ -115,7 +165,7 @@ def spatial_analysis():
         # Interactive Map
         if len(gdf) > 0:
             center = [gdf.latitude.mean(), gdf.longitude.mean()]
-            spatial_map = folium.Map(location=center, zoom_start=6)
+            spatial_map = folium.Map(location=center, zoom_start=6, tiles="CartoDB positron")
 
             lisa_colors = {
                 1: 'red',    # High-High

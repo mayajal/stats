@@ -16,56 +16,163 @@ interface ResultsDisplayProps {
     error: string;
 }
 
+const MoranInterpretation = ({ moranI, pValue }: { moranI: number, pValue: number }) => {
+    let interpretationText;
+    if (moranI > 0) {
+        interpretationText = "positive spatial autocorrelation (similar values cluster together).";
+    } else if (moranI < 0) {
+        interpretationText = "negative spatial autocorrelation (neighboring values are dissimilar).";
+    } else {
+        interpretationText = "no discernible pattern (spatial randomness).";
+    }
+
+    let significanceText;
+    if (pValue < 0.05) {
+        significanceText = "The observed spatial pattern is statistically significant and is unlikely to be due to random chance.";
+    } else {
+        significanceText = "The observed spatial pattern is not statistically significant, so randomness cannot be ruled out.";
+    }
+
+    return (
+        <div className="mt-4 text-sm text-gray-700">
+            <p><b>Interpretation of Moran's I:</b></p>
+            <ul className="list-disc list-inside">
+                <li>Values close to +1 indicate strong positive spatial autocorrelation (similar values cluster together).</li>
+                <li>Near 0 means spatial randomness (no discernible pattern).</li>
+                <li>Close to -1 signals negative spatial autocorrelation (neighboring values are dissimilar).</li>
+            </ul>
+            <p className="mt-2">Based on the calculated Moran's I value of <b>{moranI.toFixed(4)}</b>, the data exhibits {interpretationText}</p>
+            <p className="mt-2"><b>Significance (p-value):</b> A p-value less than 0.05 is typically considered statistically significant. With a p-value of <b>{pValue.toFixed(4)}</b>, {significanceText}</p>
+        </div>
+    );
+};
+
+const LISAInterpretationCard = () => {
+    return (
+        <Card className="mt-6 !border border-[#34d399] rounded-lg">
+            <CardHeader>
+                <CardTitle>Interpreting LISA Cluster Maps</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p>LISA (Local Indicators of Spatial Association) shows local clusters and spatial outliers for each region or point.</p>
+                <p className="mt-2">LISA clusters are color-coded:</p>
+                <ul className="list-disc list-inside">
+                    <li><b>High-High (red):</b> Region with high values and neighboring high values—a significant hot spot.</li>
+                    <li><b>Low-Low (orange):</b> Low value with neighboring low values—cold spot.</li>
+                    <li><b>High-Low (purple):</b> High value with neighboring low values—outlier.</li>
+                    <li><b>Low-High (blue):</b> Low value with neighboring high values—outlier.</li>
+                </ul>
+                <p className="mt-2"><b>Significance (p-value):</b> The map may filter or highlight clusters that are statistically significant at chosen thresholds (e.g., 0.05).</p>
+                <p className="mt-2"><b>Interpretation:</b></p>
+                <ul className="list-disc list-inside">
+                    <li>Hotspots and cold spots direct attention to areas where environmental or management factors may create clustering.</li>
+                    <li>Outliers signal potential anomalies or cases requiring further study.</li>
+                </ul>
+            </CardContent>
+        </Card>
+    );
+};
+
+const LISAClustersTable = ({ lisaData }: { lisaData: any[] }) => {
+    if (!lisaData || lisaData.length === 0) return null;
+
+    const clusterOrder = ['High-High', 'Low-Low', 'High-Low', 'Low-High'];
+
+    const clusters: { [key: string]: any[] } = {
+        "High-High": lisaData.filter(d => d.LISA_cluster === 1),
+        "Low-Low": lisaData.filter(d => d.LISA_cluster === 4),
+        "High-Low": lisaData.filter(d => d.LISA_cluster === 2),
+        "Low-High": lisaData.filter(d => d.LISA_cluster === 3),
+    };
+
+    return (
+        <Card className="mt-6 !border border-[#34d399] rounded-lg">
+            <CardHeader>
+                <CardTitle>LISA Cluster Classifications</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-1 gap-4">
+                    {clusterOrder.map((clusterType) => {
+                        const data = clusters[clusterType];
+                        return (
+                            data.length > 0 && (
+                                <div key={clusterType}>
+                                    <h3 className="font-bold">{clusterType}</h3>
+                                    <table className="w-full border-collapse !border border-[#34d399] mt-2">
+                                        <thead className="bg-cyan-50">
+                                            <tr>
+                                                <th className="!border border-[#34d399] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Location</th>
+                                                <th style={{ width: '120px' }} className="!border border-[#34d399] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Latitude</th>
+                                                <th style={{ width: '120px' }} className="!border border-[#34d399] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Longitude</th>
+                                                <th style={{ width: '120px' }} className="!border border-[#34d399] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">P-Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {data.map((row: any, i: number) => (
+                                                <tr key={i}>
+                                                    <td className="!border border-[#34d399] px-4 py-2 whitespace-nowrap text-sm text-gray-900">{row.LOCATION}</td>
+                                                    <td className="!border border-[#34d399] px-4 py-2 whitespace-nowrap text-sm text-gray-900">{row.latitude.toFixed(4)}</td>
+                                                    <td className="!border border-[#34d399] px-4 py-2 whitespace-nowrap text-sm text-gray-900">{row.longitude.toFixed(4)}</td>
+                                                    <td className="!border border-[#34d399] px-4 py-2 whitespace-nowrap text-sm text-gray-900">{row.LISA_p.toFixed(4)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )
+                        )
+                    })}
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
 const ResultsDisplay = ({ results, loading, error }: ResultsDisplayProps) => {
     if (loading) return <div className="text-center py-4">Loading...</div>;
     if (error) return <div className="text-red-500 bg-red-100 p-4 rounded-md">Error: {error}</div>;
     if (!results) return null;
 
     return (
-        <Card className="mt-6 !border !border-primary rounded-lg">
-            <CardHeader>
-                <CardTitle className="flex items-center"><FaMapMarkedAlt className="mr-2" /> Analysis Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-                {results.moran_i && (
-                    <div className="bg-cyan-50 p-4 rounded-md my-4">
+        <>
+            {results.moran_i && (
+                <Card className="mt-6 !border border-[#34d399] rounded-lg">
+                    <CardHeader>
+                        <CardTitle>Moran's I</CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <p><b>Moran's I:</b> {results.moran_i.I.toFixed(4)}</p>
                         <p><b>P-value:</b> {results.moran_i.p_value.toFixed(4)}</p>
-                    </div>
-                )}
+                        <MoranInterpretation moranI={results.moran_i.I} pValue={results.moran_i.p_value} />
+                    </CardContent>
+                </Card>
+            )}
 
-                {results.plots && (
-                    <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-2">Plots</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {results.plots.morans_scatterplot && (
-                                <div className="!border !border-primary rounded-lg p-2">
-                                <img src={`data:image/png;base64,${results.plots.morans_scatterplot}`} alt="Moran's I Scatterplot" className="mx-auto" />
-                                </div>
-                            )}
-                            {results.plots.lisa_cluster_map && (
-                                <div className="!border !border-primary rounded-lg p-2">
-                                    <img src={`data:image/png;base64,${results.plots.lisa_cluster_map}`} alt="LISA Cluster Map" className="mx-auto" />
-                                </div>
-                            )}
-                            {results.plots.gp_spatial_map && (
-                                <div className="!border !border-primary rounded-lg p-2">
-                                    <img src={`data:image/png;base64,${results.plots.gp_spatial_map}`} alt="GP Spatial Map" className="mx-auto" />
-                                </div>
-                            )}
+            {results.plots && (
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {results.plots.morans_scatterplot && (
+                        <div className="!border border-[#34d399] rounded-lg p-2">
+                        <img src={`data:image/png;base64,${results.plots.morans_scatterplot}`} alt="Moran's I Scatterplot" className="mx-auto" />
                         </div>
-                    </div>
-                )}
+                    )}
+                    {results.plots.gp_spatial_map && (
+                        <div className="!border border-[#34d399] rounded-lg p-2">
+                            <img src={`data:image/png;base64,${results.plots.gp_spatial_map}`} alt="GP Spatial Map" className="mx-auto" />
+                        </div>
+                    )}
+                </div>
+            )}
 
-                {results.interactive_map && (
-                    <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-2">Interactive Map</h3>
-                        <div className="!border !border-primary rounded-lg p-2" dangerouslySetInnerHTML={{ __html: results.interactive_map }} />
-                    </div>
-                )}
+            {results.interactive_map && (
+                <div className="mt-6">
+                    <h3 className="text-lg font-semibold mb-2">Interactive Map</h3>
+                    <div className="!border border-[#34d399] rounded-lg p-2" dangerouslySetInnerHTML={{ __html: results.interactive_map }} />
+                </div>
+            )}
 
-            </CardContent>
-        </Card>
+            {results.lisa_results && <LISAClustersTable lisaData={results.lisa_results} />}
+            {results.lisa_results && <LISAInterpretationCard />}
+        </>
     );
 };
 
@@ -79,6 +186,11 @@ export default function SpatialPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [availableSheets, setAvailableSheets] = useState<string[]>([]);
     const [selectedSheet, setSelectedSheet] = useState<string>("");
+
+    const [locationCol, setLocationCol] = useState("");
+    const [valueCol, setValueCol] = useState("");
+    const [latCol, setLatCol] = useState("");
+    const [longCol, setLongCol] = useState("");
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -139,10 +251,13 @@ export default function SpatialPage() {
                         setError("Selected sheet not found in workbook.");
                         return;
                     }
+                    const headerRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    const headers = headerRows[0] as string[];
+                    setColumnHeaders(headers);
+
                     const json = XLSX.utils.sheet_to_json(sheet, { defval: "" }) as any[];
                     const preview = json.slice(0, 5);
                     setDataPreview(preview);
-                    setColumnHeaders(Object.keys(json[0] || {}));
                 } catch (er: any) {
                     setError("Failed to parse the selected sheet. Please verify your file.");
                 }
@@ -169,15 +284,22 @@ export default function SpatialPage() {
 
         const processAndFetch = async (jsonData: any[]) => {
             try {
-                const serviceUrl = process.env.NEXT_PUBLIC_SPATIAL_SERVICE_URL || '';
+                const serviceUrl = (process.env.NEXT_PUBLIC_SPATIAL_SERVICE_URL || '').replace(/\/$/, "");
                 if (!serviceUrl) throw new Error("Spatial service URL is not configured");
+
+                const mappedData = jsonData.map(row => ({
+                    LOCATION: row[locationCol],
+                    Value: row[valueCol],
+                    latitude: latCol ? row[latCol] : undefined,
+                    longitude: longCol ? row[longCol] : undefined,
+                }));
                 
                 const response = await fetch(serviceUrl, { 
                     method: "POST", 
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ data: jsonData })
+                    body: JSON.stringify({ data: mappedData })
                 });
                 const raw = await response.text();
                 let resultData: any;
@@ -232,10 +354,21 @@ export default function SpatialPage() {
         setColumnHeaders([]);
         setAvailableSheets([]);
         setSelectedSheet("");
+        setLocationCol("");
+        setValueCol("");
+        setLatCol("");
+        setLongCol("");
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
     };
+
+    const renderColumnSelector = (value: string, onChange: (val: string) => void, placeholder: string, isOptional: boolean = false) => (
+        <select value={value} onChange={e => onChange(e.target.value)} className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+            <option value="">{isOptional ? `${placeholder} (Optional)` : placeholder}</option>
+            {columnHeaders.map(h => <option key={h} value={h}>{h}</option>)}
+        </select>
+    );
 
     return (
         <div className="min-h-screen bg-background p-4">
@@ -245,13 +378,14 @@ export default function SpatialPage() {
                         <FaMapMarkedAlt style={{ height: '2rem', width: '2rem', color: "#34d399", marginRight: '0.75rem' }} />
                         <h1 className="text-3xl font-bold">Spatial Stability Analysis</h1>
                     </div>
-                    <p className="text-muted-foreground">Analyze geographical stability of varieties and hybrids.</p>
+                    <p className="text-muted-foreground font-bold">Exploratory Spatial Data Analysis (Moran's I and Local Indicators of Spatial Association (LISA)) identifies local clusters and spatial outliers.</p>
+                    <p className="text-muted-foreground">Using these tools, researchers can identify regions where their products perform consistently well (high-high clusters) or poorly (low-low clusters). This helps in tailoring breeding programs to specific environments, optimize number of field trials and cut costs.</p>
                 </div>
 
-                <Card className="mb-8 !border !border-primary rounded-lg">
+                <Card className="mb-8 !border border-[#34d399] rounded-lg">
                     <CardHeader>
                         <CardTitle className="flex items-center"><Upload className="mr-2" /> Upload Data</CardTitle>
-                        <CardDescription>Upload a .CSV or .XLSX file (max 1 MB) with 'LOCATION' and 'YIELD' (or 'Value') columns. Select the sheet and process to see a preview.</CardDescription>
+                        <CardDescription>Upload a .CSV or .XLSX file (max 1 MB). Required columns are location and value. Location column should have state name in addition to location for accuracy. eg. "Hyderabad, Telangana". If you know latitude and longitude degrees provide them in separate columns (EPSG:4326 format). Then, map your data columns to the required fields.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-center space-x-4">
@@ -266,7 +400,7 @@ export default function SpatialPage() {
                                     <select
                                         value={selectedSheet}
                                         onChange={(e) => setSelectedSheet(e.target.value)}
-                                        className="block w-full p-2 border !border-primary rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                        className="block w-full p-2 border border-[#34d399] rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                     >
                                         {availableSheets.map(s => (
                                             <option key={s} value={s}>{s}</option>
@@ -282,18 +416,18 @@ export default function SpatialPage() {
                 </Card>
 
                 {dataPreview.length > 0 && (
-                    <Card className="mb-8 !border !border-primary rounded-lg">
+                    <Card className="mb-8 !border border-[#34d399] rounded-lg">
                         <CardHeader>
                             <CardTitle>Data Preview</CardTitle>
                             <CardDescription>Showing the first 5 rows of your data.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="overflow-x-auto">
-                                <table className="w-full border-collapse !border !border-primary">
+                                <table className="w-full border-collapse !border border-[#34d399]">
                                     <thead className="bg-cyan-50">
                                         <tr>
                                             {columnHeaders.map(h => (
-                                                <th key={h} className="!border !border-primary px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                                <th key={h} className="!border border-[#34d399] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                                     {h}
                                                 </th>
                                             ))}
@@ -303,7 +437,7 @@ export default function SpatialPage() {
                                         {dataPreview.map((row: any, i: number) => (
                                             <tr key={i}>
                                                 {columnHeaders.map(h => (
-                                                    <td key={h} className="!border !border-primary px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                                                    <td key={h} className="!border border-[#34d399] px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                         {row[h]}
                                                     </td>
                                                 ))}
@@ -317,10 +451,28 @@ export default function SpatialPage() {
                 )}
 
                 {dataPreview.length > 0 && (
-                    <Card className="mb-8 !border !border-primary rounded-lg">
-                        <CardHeader><CardTitle>Run Analysis</CardTitle></CardHeader>
-                        <CardContent>
-                            <Button onClick={handleAnalyze} disabled={loading} variant="secondary" className="bg-gray-200 text-black-800 font-bold hover:bg-black-300 border border-gray-300">
+                    <Card className="mb-8 !border border-[#34d399] rounded-lg">
+                        <CardHeader><CardTitle>Model Specification</CardTitle></CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label>Location <span className="text-red-500">*</span></label>
+                                    {renderColumnSelector(locationCol, setLocationCol, "Select Location")}
+                                </div>
+                                <div className="space-y-2">
+                                    <label>Value <span className="text-red-500">*</span></label>
+                                    {renderColumnSelector(valueCol, setValueCol, "Select Value")}
+                                </div>
+                                <div className="space-y-2">
+                                    <label>Latitude</label>
+                                    {renderColumnSelector(latCol, setLatCol, "Select Latitude", true)}
+                                </div>
+                                <div className="space-y-2">
+                                    <label>Longitude</label>
+                                    {renderColumnSelector(longCol, setLongCol, "Select Longitude", true)}
+                                </div>
+                            </div>
+                            <Button onClick={handleAnalyze} disabled={loading || !locationCol || !valueCol} variant="secondary" className="bg-gray-200 text-black-800 font-bold hover:bg-black-300 border border-gray-300">
                                 {loading ? "Analyzing..." : "Run Analysis"}
                             </Button>
                         </CardContent>
